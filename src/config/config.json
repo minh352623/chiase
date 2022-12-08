@@ -1,0 +1,42 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "database": "nl_tram",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "logging": true,
+    "dialectOptions": {
+      "useUTC": false,
+      "dateStrings": true,
+      "typeCast": true
+    },
+    "timezone": "+05:30"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "dialectOptions": {
+      "useUTC": false,
+      "dateStrings": true,
+      "typeCast": true
+    },
+    "timezone": "+05:30"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "dialectOptions": {
+      "useUTC": false,
+      "dateStrings": true,
+      "typeCast": true
+    },
+    "timezone": "+05:30"
+  }
+}
