@@ -5,13 +5,13 @@
     "database": "nl_tram",
     "host": "127.0.0.1",
     "dialect": "mysql",
-    "logging": true,
+    "logging": false,
     "dialectOptions": {
       "useUTC": false,
       "dateStrings": true,
       "typeCast": true
     },
-    "timezone": "+05:30"
+    "timezone": "+07:00"
   },
   "test": {
     "username": "root",
@@ -24,7 +24,7 @@
       "dateStrings": true,
       "typeCast": true
     },
-    "timezone": "+05:30"
+    "timezone": "+07:00"
   },
   "production": {
     "username": "root",
@@ -37,6 +37,6 @@
       "dateStrings": true,
       "typeCast": true
     },
-    "timezone": "+05:30"
+    "timezone": "+07:00"
   }
 }

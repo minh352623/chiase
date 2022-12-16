@@ -1,4 +1,7 @@
-const { getMessagesService } = require("../services/MeesageService");
+const {
+  getMessagesService,
+  createMessageService,
+} = require("../services/MeesageService");
 
 const getMessages = (req, res) => {
   try {
@@ -8,6 +11,15 @@ const getMessages = (req, res) => {
   }
 };
 
+const createMessage = (req, res) => {
+  try {
+    return createMessageService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
 module.exports = {
   getMessages,
+  createMessage,
 };

@@ -1,4 +1,3 @@
-const db = require("../models/index");
 const {
   createUserService,
   getPaginateUser,
@@ -58,6 +57,47 @@ const getUserHome = (req, res) => {
     return res.status(500).send(e);
   }
 };
+const jwt = require("jsonwebtoken");
+const db = require("../models");
+const { Op } = require("sequelize");
+const getTokenVideo = async (req, res) => {
+  // console.log("token video ");
+
+  // return res.status(200).send("token video call");
+  const apiKeySid = "SK.0.cCnyxivuoD4CTlhRmgfQqm2Tr9mWKNCh";
+  const apiKeySecret = "OVZhdTNPR3RQVFg4bWxJY1JGd3pFand1MkNVTmJveQ==";
+  var now = Math.floor(Date.now() / 1000);
+  var exp = now + 3600 * 30;
+
+  var header = { cty: "stringee-api;v=1" };
+  var payload = {
+    jti: apiKeySid + "-" + now,
+    iss: apiKeySid,
+    exp: exp,
+    userId: req.params.id,
+  };
+
+  var token = jwt.sign(payload, apiKeySecret, {
+    algorithm: "HS256",
+    header: header,
+  });
+  console.log(token);
+  const tokenOld = await db.Token_Video.findOne({
+    where: {
+      user_id: req.params.id,
+    },
+  });
+  if (tokenOld) {
+    await tokenOld.destroy({
+      force: true,
+    });
+  }
+  const tokenVideo = await db.Token_Video.create({
+    user_id: req.params.id,
+    token: token,
+  });
+  return res.status(200).send({ tokenVideo: token });
+};
 module.exports = {
   getListUser: getListUser,
   createUser: createUser,
@@ -65,4 +105,5 @@ module.exports = {
   UpdateUser: UpdateUser,
   DeleteUser: DeleteUser,
   getUserHome,
+  getTokenVideo,
 };

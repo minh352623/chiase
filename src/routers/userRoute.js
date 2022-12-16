@@ -6,11 +6,13 @@ const {
   UpdateUser,
   DeleteUser,
   getUserHome,
+  getTokenVideo,
 } = require("../controllers/userController");
 
 const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
 
 let router = express.Router();
+router.get("/callVideo/:id", [isAuthentication], getTokenVideo);
 router.get("/", [isAuthentication, isAdmin], getListUser);
 router.get("/home", [isAuthentication], getUserHome);
 

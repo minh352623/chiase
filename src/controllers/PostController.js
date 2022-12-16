@@ -2,6 +2,7 @@ const {
   createPostService,
   getPostHomeService,
   getPostAdminService,
+  getDetailPostService,
 } = require("../services/PostService");
 
 const createPost = async (req, res) => {
@@ -29,8 +30,17 @@ const getPostAdmin = (req, res) => {
   }
 };
 
+const getDetailPost = (req, res) => {
+  try {
+    return getDetailPostService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
 module.exports = {
   createPost,
   getPostHome,
   getPostAdmin,
+  getDetailPost,
 };

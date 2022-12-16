@@ -13,10 +13,27 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "post_id",
         as: "file_data",
       });
+      Post.hasMany(models.likes, {
+        foreignKey: "post_id",
+        as: "like_data",
+      });
+      Post.hasMany(models.Comment, {
+        foreignKey: "post_id",
+        as: "comment_data",
+      });
       Post.belongsTo(models.User, {
         foreignKey: "user_id",
         targetKey: "id",
         as: "user_data",
+      });
+      Post.hasOne(models.Post, {
+        foreignKey: "share_post_id",
+        as: "post_data",
+      });
+      Post.belongsTo(models.Post, {
+        foreignKey: "share_post_id",
+        targetKey: "id",
+        as: "post_data_two",
       });
     }
   }
@@ -25,6 +42,11 @@ module.exports = (sequelize, DataTypes) => {
       user_id: DataTypes.INTEGER,
       content: DataTypes.TEXT,
       friend_tag: DataTypes.TEXT,
+      access_modifier: DataTypes.STRING,
+      like_count: DataTypes.INTEGER,
+      comment_count: DataTypes.INTEGER,
+
+      share_post_id: DataTypes.INTEGER,
     },
     {
       sequelize,

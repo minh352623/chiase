@@ -13,7 +13,16 @@ const getMessagesService = async (req, res) => {
     return res.status(500).send(e);
   }
 };
+const createMessageService = async (req, res) => {
+  try {
+    const message = await db.Message.create(req.body);
+    return res.status(200).send(message);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
 
 module.exports = {
   getMessagesService,
+  createMessageService,
 };
