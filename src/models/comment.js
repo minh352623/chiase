@@ -19,10 +19,14 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
         as: "post_data",
       });
-      Comment.hasMany(models.Like_comment, {
-        foreignKey: "comment_id",
-        as: "like_comment_data",
-      });
+      Comment.hasMany(
+        models.Like_comment,
+        {
+          foreignKey: "comment_id",
+          as: "like_comment_data",
+        },
+        { onDelete: "cascade" }
+      );
     }
   }
   Comment.init(

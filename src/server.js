@@ -9,6 +9,8 @@ const messageRouter = require("./routers/messageRoute");
 const likeRoute = require("./routers/likeRoute");
 const notiRoute = require("./routers/notifycationRoute");
 const commentRoute = require("./routers/commentRoute");
+const optionReportRoute = require("./routers/optionReportRoute");
+const ReportRoute = require("./routers/reportPostRoute");
 let port = process.env.PORT;
 
 var bodyParser = require("body-parser");
@@ -115,7 +117,21 @@ io.on("connection", (socket) => {
       io.to(user?.socketId).emit("videoCall", data);
     }
   });
-  //and call video
+  //end call video
+  socket.on("reportToAdmin", (data) => {
+    io.emit("reportToAdminCurrent", data);
+  });
+
+  //noti report to user
+  socket.on("browserReport", (data) => {
+    const user = getUser(data.ownPost);
+    console.log(user);
+    if (user?.socketId) {
+      io.to(user?.socketId).emit("browserReportToUser", data);
+    }
+  });
+  //end report
+
   //when disconnect
   socket.on("disconnect", () => {
     console.log("a user disconnected!");
@@ -148,6 +164,8 @@ app.use("/api/auth/message", messageRouter);
 app.use("/api/auth/like", likeRoute);
 app.use("/api/auth/notifycation", notiRoute);
 app.use("/api/auth/comment", commentRoute);
+app.use("/api/auth/admin/option_report", optionReportRoute);
+app.use("/api/auth/report", ReportRoute);
 
 app.listen(port, function () {
   console.log(`khoi tao server hi ${process.env.PORT}`);

@@ -5,6 +5,11 @@ const {
   updateUserService,
   deleteUserService,
   getUserHomeService,
+  getUserTrashService,
+  restoreUserService,
+  DeleteUserForceService,
+  exportExcelService,
+  importExcelService,
 } = require("../services/UserServices");
 const getListUser = async (req, res) => {
   try {
@@ -49,7 +54,14 @@ const DeleteUser = (req, res) => {
     console.log(e);
   }
 };
-
+const DeleteUserForce = (req, res) => {
+  try {
+    return DeleteUserForceService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+    console.log(e);
+  }
+};
 const getUserHome = (req, res) => {
   try {
     return getUserHomeService(req, res);
@@ -98,6 +110,38 @@ const getTokenVideo = async (req, res) => {
   });
   return res.status(200).send({ tokenVideo: token });
 };
+
+const getUserTrash = (req, res) => {
+  try {
+    return getUserTrashService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
+const restoreUser = (req, res) => {
+  try {
+    return restoreUserService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
+const exportExcel = (req, res) => {
+  try {
+    return exportExcelService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+const importExcel = (req, res) => {
+  try {
+    const file = req.files?.uploaded_file || "";
+    return importExcelService(req, res, file);
+  } catch (e) {
+    console.log(e);
+  }
+};
 module.exports = {
   getListUser: getListUser,
   createUser: createUser,
@@ -106,4 +150,9 @@ module.exports = {
   DeleteUser: DeleteUser,
   getUserHome,
   getTokenVideo,
+  getUserTrash,
+  restoreUser,
+  DeleteUserForce,
+  exportExcel,
+  importExcel,
 };
