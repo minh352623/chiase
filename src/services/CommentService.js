@@ -25,6 +25,7 @@ const createCommentService = async (req, res, file) => {
         file: fileNew,
       });
       const updatePost = await db.Post.findByPk(req.body.post_id);
+      if (!updatePost) return res.status(404).send("POST NOT FOUND");
       updatePost.comment_count = updatePost.comment_count + 1;
       let update = await updatePost.save();
 
@@ -50,6 +51,7 @@ const createCommentService = async (req, res, file) => {
           text: req.body.text,
           post_id: req.body.post_id,
           key: "comment",
+          avatar: req.body.avatar_comment,
         });
         // }
       }
@@ -79,6 +81,7 @@ const createLikeCommentService = async (req, res) => {
         },
       });
       const comment = await db.Comment.findByPk(req.body.comment_id);
+      if (!comment) return res.status(404).send("COMMENT NOT FOUND");
 
       if (like_comment_own) {
         await like_comment_own.destroy({
@@ -116,6 +119,7 @@ const createLikeCommentService = async (req, res) => {
               text: req.body.text,
               comment_id: req.body.comment_id,
               key: "like_comment",
+              avatar: req.body.avatar_comment,
             });
           }
         }

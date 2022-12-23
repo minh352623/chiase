@@ -16,6 +16,7 @@ const createLikeService = async (req, res) => {
       },
     });
     const post = await db.Post.findByPk(req.body.post_id);
+    if (!post) return res.status(404).send("POST NOT FOUND");
 
     if (like) {
       await like.destroy({
@@ -54,6 +55,7 @@ const createLikeService = async (req, res) => {
             user_id: req.body.ownPost,
             text: req.body.text,
             post_id: req.body.post_id,
+            avatar: req.body.avatar_like,
           });
         }
       }

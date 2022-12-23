@@ -3,6 +3,8 @@ const {
   getPostHomeService,
   getPostAdminService,
   getDetailPostService,
+  deletePostService,
+  updatePostService,
 } = require("../services/PostService");
 
 const createPost = async (req, res) => {
@@ -37,10 +39,26 @@ const getDetailPost = (req, res) => {
     return res.status(500).send(e);
   }
 };
+const deletePost = (req, res) => {
+  try {
+    return deletePostService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
 
+const UpdatePost = (req, res) => {
+  try {
+    return updatePostService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
 module.exports = {
   createPost,
   getPostHome,
   getPostAdmin,
+  UpdatePost,
   getDetailPost,
+  deletePost,
 };
