@@ -17,6 +17,10 @@ import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { Link, Navigate, NavLink, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { handleFetchNotis } from "../store/reducers/userReducer";
+import { CaculateTime } from "../trait/CaculateTime";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -58,9 +62,42 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function HeaderClient({ user }) {
+export default function HeaderClient({ user, socket }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [showNoti, setShowNoti] = React.useState(false);
+  const { nofitycations, loopNoti } = useSelector((state) => state.user);
+  const fetchNoti = () => {
+    dispatch(handleFetchNotis());
+  };
 
+  React.useEffect(() => {
+    socket?.off("fetchNoti");
+    // socket.current = io("ws://localhost:8900");
+    socket?.on("fetchNoti", (data) => {
+      dispatch(handleFetchNotis());
+    });
+  }, []);
+  React.useEffect(() => {
+    fetchNoti();
+  }, []);
+
+  const readNotis = async () => {
+    try {
+      const response = await axios({
+        method: "PATCH",
+        url: "/auth/notifycation/" + user?.id,
+      });
+      if (response.status === 200) {
+        fetchNoti();
+      }
+    } catch (e) {
+      console.log(e);
+      if (e.response.status == 401) {
+        navigate("/login");
+      }
+    }
+  };
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -127,7 +164,11 @@ export default function HeaderClient({ user }) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      <MenuItem
+        onClick={() => {
+          navigate("/messager");
+        }}
+      >
         <IconButton size="large" aria-label="show 4 new mails" color="">
           <Badge badgeContent={4} color="error">
             <QuestionAnswerIcon />
@@ -141,11 +182,68 @@ export default function HeaderClient({ user }) {
           aria-label="show 17 new notifications"
           color=""
         >
-          <Badge badgeContent={15} color="error">
-            <NotificationsIcon />
-          </Badge>
+          {nofitycations && (
+            <Badge
+              onClick={() => {
+                setShowNoti((showNoti) => !showNoti);
+              }}
+              badgeContent={nofitycations.noty_count}
+              color="error"
+            >
+              <NotificationsIcon />
+            </Badge>
+          )}
         </IconButton>
+
         <p>Notifications</p>
+
+        {showNoti && (
+          <div className="xl:w-[28vw] lg:w-[75vw]  w-[85vw] fixed top-1/4 right-[10%]  z-10 h-[60vh] overflow-y-auto shadow_noti  rounded-lg py-3 px-2 bg-white">
+            <p className="text-2xl m-0 text-black text-start font-bold">
+              Thông báo
+            </p>
+            <div className="flex gap-3 my-2">
+              <span className="text-sm opacity-70 hover:opacity-100 transition-all font-bold text-blue-700 bg-blue-200 p-2 rounded-full">
+                Tất cả
+              </span>
+            </div>
+            <div className="flex flex-col break-all">
+              {nofitycations?.notys?.length > 0 ? (
+                nofitycations?.notys?.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-2 hover:bg-gray-300 transition-all rounded-lg flex items-center gap-3"
+                  >
+                    <span className=" block w-[20%] xl:w-[10%]">
+                      <img
+                        className="w-full  rounded-full"
+                        src={
+                          item?.user_data?.avatar
+                            ? item?.user_data?.avatar
+                            : "./undraw_profile.svg"
+                        }
+                        alt=""
+                      />
+                    </span>
+                    <div className="flex flex-col gap-1   w-[80%]">
+                      <p className="m-0 css_dot  text-sm font-semibold text-black">
+                        {item.text}
+                      </p>
+                      <span className="text-sm text-start text-blue-400 font-semibold">
+                        {CaculateTime(item.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-center">
+                  {" "}
+                  không có thông báo
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
@@ -218,6 +316,7 @@ export default function HeaderClient({ user }) {
                 <QuestionAnswerIcon
                   onClick={() => {
                     navigate("/messager");
+                    // location.href = "/messager";
                   }}
                 />
               </Badge>
@@ -226,10 +325,108 @@ export default function HeaderClient({ user }) {
               size="large"
               aria-label="show 17 new notifications"
               color=""
+              // className="relative"
             >
-              <Badge badgeContent={15} color="error">
-                <NotificationsIcon />
-              </Badge>
+              {nofitycations && (
+                <Badge
+                  onClick={() => {
+                    setShowNoti((showNoti) => !showNoti);
+                  }}
+                  badgeContent={nofitycations.noty_count}
+                  color="error"
+                >
+                  <NotificationsIcon />
+                </Badge>
+              )}
+              {showNoti && (
+                <div className="xl:w-[28vw] w-[40vw] absolute z-10 h-[60vh] overflow-y-auto shadow_noti right-0 top-[90%] rounded-lg py-3 px-2 bg-white">
+                  <div className="flex justify-between items-center">
+                    <p className="text-2xl  m-0 text-black text-start font-bold">
+                      Thông báo
+                    </p>
+                    <p
+                      onClick={() => {
+                        readNotis();
+                      }}
+                      className="m-0 text-sm text-blue-400 px-2 py-1 hover:bg-blue-100 rounded-full"
+                    >
+                      Đánh dấu đã đọc
+                    </p>
+                  </div>
+                  <div className="flex gap-3 my-2">
+                    <span className="text-sm opacity-70 hover:opacity-100 transition-all font-bold text-blue-700 bg-blue-200 p-2 rounded-full">
+                      Tất cả
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    {nofitycations?.notys?.length > 0 ? (
+                      nofitycations?.notys?.map((item) => {
+                        if (item.read == 0)
+                          return (
+                            <div
+                              key={item.id}
+                              className="p-2 my-1 texy-start hover:bg-gray-400 bg-gray-300 transition-all rounded-lg  flex items-center gap-3"
+                            >
+                              <span className="block w-[10%]">
+                                <img
+                                  className="w-full block rounded-full"
+                                  src={
+                                    item?.avatar
+                                      ? item?.avatar
+                                      : "./undraw_profile.svg"
+                                  }
+                                  alt=""
+                                />
+                              </span>
+                              <div className="flex flex-col gap-1 w-[90%]">
+                                <span className="text-sm text-start font-semibold text-black">
+                                  {item.text}
+                                </span>
+                                <div className="flex justify-between">
+                                  <span className="text-sm text-start text-blue-400 font-semibold">
+                                    {CaculateTime(item.createdAt)}
+                                  </span>
+                                  <span className="p-2 inline-block w-[20px] h-[20px] text-end bg-blue-500 rounded-full"></span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        return (
+                          <div
+                            key={item.id}
+                            className="p-2 my-1 hover:bg-gray-300 transition-all rounded-lg flex items-center gap-3"
+                          >
+                            <span className="block w-[10%]">
+                              <img
+                                className="w-full rounded-full"
+                                src={
+                                  item?.avatar
+                                    ? item?.avatar
+                                    : "./undraw_profile.svg"
+                                }
+                                alt=""
+                              />
+                            </span>
+                            <div className="flex flex-col gap-1 w-[90%] ">
+                              <span className="text-sm text-start font-semibold text-black">
+                                {item.text}
+                              </span>
+                              <span className="text-sm text-start text-blue-400 font-semibold">
+                                {CaculateTime(item.createdAt)}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="flex items-center justify-center">
+                        {" "}
+                        không có thông báo
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </IconButton>
             <IconButton
               size="large"
@@ -243,7 +440,7 @@ export default function HeaderClient({ user }) {
               {/* <AccountCircle /> */}
               <img
                 className="w-[40px] rounded-full"
-                src={user?.avatar ? user.avatar : ""}
+                src={user?.avatar ? user.avatar : "./undraw_profile.svg"}
                 alt=""
               />
             </IconButton>

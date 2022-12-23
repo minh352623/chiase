@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import LoadingAdmin from "./LoadingAdmin";
 import { setUpLoadPost } from "../store/reducers/authReducer";
 import { useDispatch } from "react-redux";
-
+import Picker from "emoji-picker-react";
 const schema = yup.object({});
 const Status = ({ user }) => {
   const [isShowStatus, setIsShowStatus] = useState(false);
@@ -62,6 +62,7 @@ const Status = ({ user }) => {
       if (response.status === 200) {
         // navigate("/admin/user");
         console.log(response);
+        setContent("");
         setIsShowStatus(false);
         dispatch(setUpLoadPost());
         setFileUpload("");
@@ -114,16 +115,30 @@ const Status = ({ user }) => {
           video.muted = false;
           video.className = "w-full";
           video.src = file;
+          let span = document.createElement("span");
+          span.textContent = "x";
+          span.className =
+            "p-2 rounded-full bg-gray-300 flex items-center justify-center text-xl block cursor-pointer";
+
           let p = document.createElement("p");
           if ([...fileUpload].length >= 2) {
             p.className = "col-span-6";
           } else {
             p.className = "col-span-12";
           }
+          span.onclick = function () {
+            setFileUpload((old) => fileUpload.filter((item) => item != file));
+            p.remove();
+          };
           p.appendChild(video);
-
+          p.appendChild(span);
           showImg.current.insertAdjacentElement("beforeend", p);
         } else {
+          let span = document.createElement("span");
+          span.textContent = "x";
+          span.className =
+            "p-2 rounded-full bg-gray-300 flex items-center justify-center text-xl block  cursor-pointer";
+
           let img = document.createElement("img");
           let p = document.createElement("p");
           if ([...fileUpload].length >= 2) {
@@ -131,7 +146,14 @@ const Status = ({ user }) => {
           } else {
             p.className = "col-span-12";
           }
+          span.onclick = function () {
+            console.log(fileUpload.filter((item) => item != file));
+            setFileUpload((old) => fileUpload.filter((item) => item != file));
+            p.remove();
+          };
           p.appendChild(img);
+          p.appendChild(span);
+
           img.className = "w-full";
           img.src = file;
           showImg.current.insertAdjacentElement("beforeend", p);
@@ -144,8 +166,18 @@ const Status = ({ user }) => {
       showImage();
     }
   }, [fileUpload]);
+
+  const [showEmoji, setShowEmoji] = useState(false);
+  const textarea = useRef();
+  const onEmojiClick = (event, emojiObject) => {
+    console.log(event);
+    textarea.current.value = content + " " + event.emoji;
+    setContent((pre) => pre + " " + event.emoji);
+    setShowEmoji(false);
+  };
+  console.log(content);
   return (
-    <div className="shadow_main h-[20vh] bg-white rounded-xl p-3">
+    <div className="shadow_main xl:h-[20vh] h-[23vh] bg-white rounded-xl p-3">
       {isShowEdit && (
         <div className="popup fixed z-[11] inset-0 bg-[rgba(255,255,255,0.5)] transition-all m-auto flex">
           <div className="py-2 px-3 bg-white shadow_main xl:w-[40vw] w-[90vw] h-[80vh] m-auto">
@@ -225,7 +257,7 @@ const Status = ({ user }) => {
         </div>
       )}
       {isShowStatus && (
-        <div className="popup fixed z-10 inset-0 bg-[rgba(255,255,255,0.5)] transition-all m-auto flex">
+        <div className="popup fixed z-[10] inset-0 bg-[rgba(255,255,255,0.5)] transition-all m-auto flex">
           <div className="py-2 px-3 bg-white shadow_main xl:w-[40vw] w-[90vw] h-[80vh] m-auto">
             <div className="h-[10%] flex justify-between py-3 border-b-2">
               <span></span>
@@ -279,12 +311,34 @@ const Status = ({ user }) => {
                 >
                   <div className="h-[90%] overflow-y-auto">
                     <textarea
+                      ref={textarea}
                       name="content"
                       id=""
                       onChange={(e) => setContent(e.target.value)}
-                      className="p-3 outline-none w-full resize-none h-[50%] text-black"
+                      className="p-3 outline-none w-full resize-none h-[30%] text-black"
                       placeholder="Bạn đang nghĩ gì thế?"
                     ></textarea>
+                    <div className="flex justify-between">
+                      <span></span>
+                      <div className="my-1 p-2 relative hover:bg-gray-300 rounded-full w-fit cursor-pointer">
+                        {showEmoji && (
+                          <div className="fixed  z-[100] top-1/2 right-[10%] -translate-y-1/2">
+                            <Picker
+                              pickerStyle={{ width: "100%" }}
+                              onEmojiClick={onEmojiClick}
+                            ></Picker>
+                          </div>
+                        )}
+                        <img
+                          onClick={() =>
+                            setShowEmoji((showEmoji) => !showEmoji)
+                          }
+                          src="./smile.png"
+                          className="w-[40px]"
+                          alt=""
+                        />
+                      </div>
+                    </div>
                     <div className="relative min-h-[40%] p-2 border-2 border-slate-400 rounded-lg">
                       <div
                         ref={showImg}
@@ -296,14 +350,14 @@ const Status = ({ user }) => {
                             onClick={() => {
                               myWidget.open();
                             }}
-                            className="absolute cursor-pointer hover:scale-105 transition-all w-[150px] text-center text-black bg-white p-2 rounded-full top-[12px] left-[12px]"
+                            className="absolute cursor-pointer hover:scale-105 shadow_noti transition-all w-[150px] text-center text-black bg-white p-2 rounded-full top-[12px] left-[12px]"
                             htmlFor="file_status"
                           >
                             Thêm ảnh/ Video
                           </label>
                           <p
                             onClick={() => setIsShowEdit(true)}
-                            className="absolute cursor-pointer hover:scale-105 transition-all w-[150px] text-center text-black bg-white p-2 rounded-full top-[12px] left-[170px]"
+                            className="absolute cursor-pointer hover:scale-105 shadow_noti transition-all w-[150px] text-center text-black bg-white p-2 rounded-full top-[12px] left-[170px]"
                           >
                             Chỉnh sửa
                           </p>
@@ -382,7 +436,7 @@ const Status = ({ user }) => {
             setIsShowStatus(true);
             setFileUpload("");
           }}
-          className="px-3 py-3  bg-blue-100 rounded-full hover:bg-gray-300 flex-1 cursor-pointer transition-all "
+          className="px-3 xl:text-lg text-sm py-3 css_dot  bg-blue-100 rounded-full hover:bg-gray-300 flex-1 cursor-pointer transition-all "
         >
           {user.lastName} ơi, Bạn đang nghĩ gì thế
         </p>

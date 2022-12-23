@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const schema = yup.object({
   name: yup.string().min(2, "Group Name less than 2 characters"),
 });
-const CreateUser = () => {
+const CreateUser = ({ socket }) => {
   const navigate = useNavigate();
 
   const {
@@ -45,7 +45,7 @@ const CreateUser = () => {
     reset();
   };
   return (
-    <LayoutAdmin>
+    <LayoutAdmin socket={socket}>
       <div className="my-3">
         <h1 className="text-center">Create Group</h1>
         <form onSubmit={handleSubmit(createGroup)}>
