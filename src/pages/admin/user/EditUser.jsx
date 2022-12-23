@@ -26,7 +26,7 @@ const schema = yup.object({
 
   address: yup.string().min(8, "Address less than 8 characters"),
 });
-const EditUser = () => {
+const EditUser = ({ socket }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
@@ -155,7 +155,7 @@ const EditUser = () => {
     }
   };
   return (
-    <LayoutAdmin>
+    <LayoutAdmin socket={socket}>
       <div className="my-3">
         <h1 className="text-center">Update User</h1>
         {loading && <LoadingAdmin></LoadingAdmin>}

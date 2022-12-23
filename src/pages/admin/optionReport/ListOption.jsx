@@ -14,25 +14,28 @@ import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
 import lodash from "lodash";
 import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import LoadingAdmin from "../../../components/LoadingAdmin";
 
-const ListGroup = ({ socket }) => {
+const ListOption = ({ socket }) => {
   const navigate = useNavigate();
-
-  const [groups, setGroup] = React.useState();
+  //${
+  //gender > -1 ? `&gender=${gender}` : ""
+  //}
+  const [options, setOptions] = React.useState();
   const [page, setPage] = React.useState(1);
   const [loading, setLoading] = React.useState(false);
-  const getListUser = async () => {
+  const getListOption = async () => {
     try {
       setLoading(true);
       const response = await axios({
-        url: "/auth/admin/group?page=" + page + "&keyword=" + query,
+        url: `/auth/admin/option_report/?page=${page}&keyword=${query}`,
+        // headers: {
+        //   Accept: "application/json;charset=UTF-8",
+        // },
       });
       if (response.status == 200) {
         console.log(response);
-        setGroup(response.data);
+        setOptions(response.data);
         setLoading(false);
       }
     } catch (err) {
@@ -58,29 +61,13 @@ const ListGroup = ({ socket }) => {
         confirmButtonText: "Yes, delete it!",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          try {
-            const response = await axios({
-              method: "DELETE",
-              url: "/auth/admin/group/" + id,
-            });
-            console.log(response);
-            if (response.status === 200) {
-              getListUser();
-              //console.log(data);
-              Swal.fire("Deleted!", "Your post has been deleted.", "success");
-            }
-          } catch (e) {
-            console.log(e);
-            if (e.response.status == 400) {
-              toast.error(e.response.data, {
-                position: "top-right",
-                autoClose: 2000,
-              });
-            }
-            if (e.response.status == 401) {
-              navigate("/admin/login");
-            }
-          }
+          const data = await axios({
+            method: "DELETE",
+            url: "/auth/admin/option_report/" + id,
+          });
+          getListOption();
+          //console.log(data);
+          Swal.fire("Deleted!", "Your option has been deleted.", "success");
         }
       });
     } catch (err) {
@@ -93,21 +80,19 @@ const ListGroup = ({ socket }) => {
   //phan trang
   const [pageCount, setPageCount] = React.useState(0);
   const [itemOffset, setItemOffset] = React.useState(0);
-  const { per_page } = groups || [];
+  const { per_page } = options || [];
   //   //console.log(per_page);
   React.useEffect(() => {
-    if (!groups || !groups.count) return;
+    if (!options || !options.count) return;
 
-    groups && setPageCount(Math.ceil(groups.count / per_page));
-  }, [itemOffset, groups]);
+    options && setPageCount(Math.ceil(options.count / per_page));
+  }, [itemOffset, options]);
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * per_page) % groups.count;
+    const newOffset = (event.selected * per_page) % options.count;
     setItemOffset(newOffset);
     setPage(event.selected + 1);
   };
-  function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-  }
+
   //end phan trang
 
   //seaerch
@@ -115,29 +100,32 @@ const ListGroup = ({ socket }) => {
   const handleSearch = lodash.debounce((e) => {
     setQuery(e.target.value);
   }, 700);
+  const [gender, setGender] = useState(-1);
   //
   React.useEffect(() => {
-    getListUser();
-  }, [page, query]);
+    getListOption();
+  }, [page, query, gender]);
   return (
     <LayoutAdmin socket={socket}>
-      <h2 className="uppercase text-center mb-3">list group</h2>
-      <div className="flex items-center justify-between my-2">
-        <div>
-          <form>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search name group..."
-              onChange={handleSearch}
-            />
-          </form>
-        </div>
+      <h2 className="uppercase text-center mb-3">list Option Report</h2>
+      <div className="flex items-center justify-between my-2 gap-4">
+        <form>
+          <div className="flex gap-3">
+            <div className="w-full">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search info user..."
+                onChange={handleSearch}
+              />
+            </div>
+          </div>
+        </form>
         <Link
           className="px-4 py-2 border-2 rounded-lg font-semibold no-underline hover:bg-blue-500 transition-all hover:text-slate-50  border-blue-500"
-          to="/admin/groupuser/create"
+          to="/admin/option/create"
         >
-          Add Group
+          Add Option
         </Link>
       </div>
       {loading && <LoadingAdmin></LoadingAdmin>}
@@ -147,38 +135,58 @@ const ListGroup = ({ socket }) => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Stt</TableCell>
-                  <TableCell align="right">Name</TableCell>
-                  <TableCell align="right">Permission</TableCell>
-                  <TableCell align="right">CreatedAt</TableCell>
-                  <TableCell align="right">Edit</TableCell>
-                  <TableCell align="right">Delete</TableCell>
+                  <TableCell className="w-[6%]">Stt</TableCell>
+                  <TableCell align="left" className="w-[30%]">
+                    Ảnh
+                  </TableCell>
+                  <TableCell align="right" className="w-[30%]">
+                    Text
+                  </TableCell>
+
+                  <TableCell align="right" className="w-[20%]">
+                    CreatedAt
+                  </TableCell>
+                  <TableCell align="right" className="w-[7%]">
+                    Edit
+                  </TableCell>
+                  <TableCell align="right" className="w-[7%]">
+                    Delete
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {groups?.rows &&
-                  groups?.rows.map((group, index) => (
+                {options?.rows &&
+                  options?.rows.map((user, index) => (
                     <TableRow
-                      key={group.id}
+                      key={user.id}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell component="th" scope="row">
                         {index + 1}
                       </TableCell>
-                      <TableCell align="right">{group.name}</TableCell>
+                      <TableCell align="left">
+                        <span className="w-full block">
+                          <img
+                            src={user?.img || ""}
+                            className="object-cover w-full h-[200px]"
+                            alt=""
+                          />
+                        </span>
+                      </TableCell>
+
                       <TableCell align="right">
-                        <span className="px-4 py-3 bg-blue-500 rounded-lg text-slate-50 cursor-pointer">
-                          Permission
+                        <span className="font-bold text-yellow-500 text-lg">
+                          {user?.text}
                         </span>
                       </TableCell>
                       <TableCell align="right">
-                        {moment(group.createdAt)
+                        {moment(user.createdAt)
                           .tz("Asia/Bangkok")
                           .format("DD/MM/YYYY h:mm:ss A")}
                       </TableCell>
                       <TableCell align="right">
                         <Link
-                          to={`/admin/groupuser/${group.id}`}
+                          to={`/admin/option/${user.id}`}
                           className="text-end flex justify-end"
                         >
                           <svg
@@ -200,7 +208,7 @@ const ListGroup = ({ socket }) => {
                       <TableCell align="right">
                         <span className="flex justify-end">
                           <svg
-                            onClick={() => handleDelete(group.id)}
+                            onClick={() => handleDelete(user.id)}
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
@@ -218,16 +226,15 @@ const ListGroup = ({ socket }) => {
                       </TableCell>
                     </TableRow>
                   ))}
-                {!groups?.rows ||
-                  (groups?.rows?.length <= 0 && (
-                    <TableRow>
-                      <TableCell colSpan="6">
-                        <span className="block w-full text-red-500 text-center font-semibold">
-                          Không có dữ liệu
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                {(!options || options.rows.length == 0) && (
+                  <TableRow>
+                    <TableCell colSpan="8">
+                      <span className="block w-full text-red-500 text-center font-semibold">
+                        Không có dữ liệu
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -277,4 +284,4 @@ const ListGroup = ({ socket }) => {
   );
 };
 
-export default ListGroup;
+export default ListOption;

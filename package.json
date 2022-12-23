@@ -8,6 +8,10 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "node": {
+    "fs": "empty",
+    "child_process": "empty"
+  },
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
@@ -18,11 +22,15 @@
     "@sweetalert2/themes": "^5.0.15",
     "axios": "^1.1.3",
     "bcrypt": "^5.1.0",
+    "bootstrap": "^5.2.3",
     "cors": "^2.8.5",
+    "emoji-picker-react": "^4.4.7",
+    "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "moment-timezone": "^0.5.39",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.7.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.39.1",
     "react-paginate": "^8.1.4",
@@ -31,6 +39,10 @@
     "react-toastify": "^9.1.1",
     "redux": "^4.2.0",
     "redux-devtools-extension": "^2.13.9",
+    "simple-peer": "^9.11.1",
+    "socket.io-client": "^4.5.4",
+    "uuid": "^9.0.0",
+    "xlsx": "^0.18.5",
     "yup": "^0.32.11"
   },
   "devDependencies": {

@@ -33,7 +33,7 @@ const schema = yup.object({
     .oneOf([yup.ref("password")], "Password not same"),
   address: yup.string().min(8, "Address less than 8 characters"),
 });
-const CreateUser = () => {
+const CreateUser = ({ socket }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const {
@@ -117,7 +117,7 @@ const CreateUser = () => {
     }
   };
   return (
-    <LayoutAdmin>
+    <LayoutAdmin socket={socket}>
       <div className="my-3">
         <h1 className="text-center">Create User</h1>
         <form onSubmit={handleSubmit(createUser)}>
@@ -279,11 +279,21 @@ const CreateUser = () => {
                     <label htmlFor="lastname">Role</label>
                     <select {...register("role")} className="form-control">
                       {groups &&
-                        groups.map((group, index) => (
-                          <option key={group.id} value={group.id}>
-                            {group.name}
-                          </option>
-                        ))}
+                        groups.map((group, index) => {
+                          if (index === 0) {
+                            return (
+                              <option selected key={group.id} value={group.id}>
+                                {group.name}
+                              </option>
+                            );
+                          } else {
+                            return (
+                              <option key={group.id} value={group.id}>
+                                {group.name}
+                              </option>
+                            );
+                          }
+                        })}
                     </select>
 
                     {errors?.role && (

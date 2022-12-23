@@ -3,11 +3,12 @@ import { createAsyncThunk, createSlice, createAction } from "@reduxjs/toolkit";
 export const fetchCurrentUser = createAction("getUser");
 
 const authReducer = createSlice({
-  name: "user",
+  name: "auth",
   initialState: {
     user: {},
     isLogin: false,
     isLoadPost: 0,
+    socket: null,
   },
   reducers: {
     setUser: (state, action) => {
@@ -41,6 +42,6 @@ const authReducer = createSlice({
   },
 });
 
-export const { setUser, setUpLoadPost } = authReducer.actions;
+export const { setUser, setUpLoadPost, setSocket } = authReducer.actions;
 
 export default authReducer.reducer;

@@ -5,7 +5,10 @@ const NavbarComponent = () => {
   const auth = useSelector((state) => state.auth);
   console.log(auth);
   return (
-    <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+    <nav
+      id="#page-top"
+      className="navbar  navbar-expand navbar-light bg-white topbar mb-4 static-top shadow"
+    >
       <button
         id="sidebarToggleTop"
         className="btn btn-link d-md-none rounded-circle mr-3"

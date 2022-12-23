@@ -15,11 +15,13 @@ import Swal from "sweetalert2";
 import lodash from "lodash";
 import { useState } from "react";
 import LoadingAdmin from "../../../components/LoadingAdmin";
-const ListPost = () => {
+const ListPost = ({ socket }) => {
   const navigate = useNavigate();
   //${
   //gender > -1 ? `&gender=${gender}` : ""
   //}
+  const [query, setQuery] = useState("");
+
   const [posts, setPosts] = React.useState();
   const [page, setPage] = React.useState(1);
   const [loading, setLoading] = React.useState(false);
@@ -68,7 +70,6 @@ const ListPost = () => {
   //end phan trang
 
   //seaerch
-  const [query, setQuery] = useState("");
   const handleSearch = lodash.debounce((e) => {
     setQuery(e.target.value);
   }, 700);
@@ -77,8 +78,9 @@ const ListPost = () => {
   React.useEffect(() => {
     getListUser();
   }, [page, query, gender]);
+
   return (
-    <LayoutAdmin>
+    <LayoutAdmin socket={socket}>
       <h2 className="uppercase text-center mb-3">list User</h2>
       <div className="flex items-center justify-between my-2 gap-4">
         <div className="flex-1 w-3/4">
@@ -113,18 +115,24 @@ const ListPost = () => {
                   <TableCell align="right" className="w-[20%]">
                     Content
                   </TableCell>
-                  <TableCell align="right">File_uplaod</TableCell>
-                  <TableCell align="right" className="w-[8%]">
-                    Total React
+                  <TableCell align="right" className="w-[5%]">
+                    Share_Post_Id
                   </TableCell>
-                  <TableCell align="right" className="w-[15%]">
+                  <TableCell align="right">File_upload</TableCell>
+                  <TableCell align="right" className="w-[10%]">
+                    Total Like
+                  </TableCell>
+                  <TableCell align="right" className="w-[11%]">
+                    Total Comment
+                  </TableCell>
+                  <TableCell align="right" className="w-[10%]">
                     CreatedAt
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {posts?.rows &&
-                  posts?.rows.map((post, index) => (
+                {posts?.data &&
+                  posts?.data.map((post, index) => (
                     <TableRow
                       key={post.id}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -133,7 +141,7 @@ const ListPost = () => {
                         {index + 1}
                       </TableCell>
                       <TableCell align="left">
-                        <p>
+                        <p className="text-sm">
                           <span className="italic text-gray-600 font-semibold">
                             Fullname:{" "}
                           </span>
@@ -143,7 +151,7 @@ const ListPost = () => {
                               post.user_data.lastName}
                           </span>
                         </p>
-                        <p>
+                        <p className="text-sm">
                           <span className="italic text-gray-600 font-semibold">
                             Email:{" "}
                           </span>
@@ -151,7 +159,7 @@ const ListPost = () => {
                             {post.user_data.email}
                           </span>
                         </p>
-                        <p>
+                        <p className="text-sm">
                           <span className="italic text-gray-600 font-semibold">
                             Address:{" "}
                           </span>
@@ -175,12 +183,15 @@ const ListPost = () => {
                         <p className="hidden_show">{post.content}</p>
                       </TableCell>
                       <TableCell align="right">
+                        {post?.share_post_id ? "False" : "TRUE"}
+                      </TableCell>
+                      <TableCell align="right">
                         <p className="grid grid-cols-12 gap-1">
                           {post?.file_data &&
                             post.file_data.map((item) => {
                               return (
                                 <div key={item.id} className="col-span-6">
-                                  {item.link.includes("video") ? (
+                                  {item.link?.includes("video") ? (
                                     <video
                                       className="w-full object-cover h-full"
                                       src={item.link}
@@ -199,7 +210,10 @@ const ListPost = () => {
                         </p>
                       </TableCell>
                       <TableCell align="right">
-                        <p>0</p>
+                        <p>{post?.like_count}</p>
+                      </TableCell>
+                      <TableCell align="right">
+                        <p>{post?.comment_count}</p>
                       </TableCell>
                       <TableCell align="right">
                         {moment(post.createdAt)
@@ -208,9 +222,9 @@ const ListPost = () => {
                       </TableCell>
                     </TableRow>
                   ))}
-                {(!posts || posts.rows.length == 0) && (
+                {(!posts || posts.data.length == 0) && (
                   <TableRow>
-                    <TableCell colSpan="8">
+                    <TableCell colSpan="9">
                       <span className="block w-full text-red-500 text-center font-semibold">
                         Không có dữ liệu
                       </span>

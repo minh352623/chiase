@@ -11,11 +11,14 @@ import "../assets/js/sb-admin-2.min.js";
 import SidebarComponent from "../components/SidebarComponent.jsx";
 import NavbarComponent from "../components/NavbarComponent.jsx";
 import FooterComponent from "../components/FooterComponent.jsx";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../store/reducers/authReducer.js";
+import { ToastContainer, toast } from "react-toastify";
+import { handleFetchNotiReport } from "../store/reducers/userReducer.js";
 
-const LayoutAdmin = ({ children }) => {
+const LayoutAdmin = ({ children, socket }) => {
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
   const FetchUserReload = () => {
@@ -24,9 +27,29 @@ const LayoutAdmin = ({ children }) => {
     console.log(decodedPayload);
     dispatch(setUser(decodedPayload));
   };
+  useEffect(() => {
+    console.log(socket);
 
+    socket?.off("reportToAdminCurrent");
+
+    // socket.current = io("ws://localhost:8900");
+    socket?.on("reportToAdminCurrent", (data) => {
+      console.log("get ne");
+      if (+user?.group_id == 1) {
+        let myAudio = new Audio("../notification-125767.mp3");
+        myAudio.play();
+        dispatch(handleFetchNotiReport());
+
+        toast.info(`Bạn có 1 báo cáo mới từ người dùng`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      }
+    });
+  }, [socket]);
   useEffect(() => {
     FetchUserReload();
+    dispatch(handleFetchNotiReport());
   }, []);
 
   return (

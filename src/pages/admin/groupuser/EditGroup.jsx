@@ -9,7 +9,7 @@ import LoadingAdmin from "../../../components/LoadingAdmin";
 const schema = yup.object({
   name: yup.string().min(2, "Group Name less than 2 characters"),
 });
-const EditGroup = () => {
+const EditGroup = ({ socket }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
@@ -74,7 +74,7 @@ const EditGroup = () => {
     FecthGroup();
   }, []);
   return (
-    <LayoutAdmin>
+    <LayoutAdmin socket={socket}>
       <div className="my-3">
         <h1 className="text-center">Update Group</h1>
         {message && (

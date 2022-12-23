@@ -45,14 +45,7 @@ const UserOnline = ({ user: userF }) => {
           src={userF?.avatar ? userF.avatar : "./undraw_profile.svg"}
           alt=""
         />
-        {userF.isOnline && (
-          <span className="absolute w-[10px] h-[10px] rounded-full bg-green-600 right-0 bottom-0 border border-[10px] border-white"></span>
-        )}
-        {!userF.isOnline && (
-          <span className="absolute text-sm bg-gray-300 font-bold w-[150%] bottom-[-12px] left-1/2 -translate-x-1/2 rounded-lg px-1 text-green-600">
-            1 phút
-          </span>
-        )}
+        <span className="absolute w-[10px] h-[10px] rounded-full bg-green-600 right-0 bottom-0 border border-[10px] border-white"></span>
       </span>
       <span className="font-bold  text-slate-900">
         {userF.firstName + " " + userF.lastName}

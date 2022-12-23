@@ -1,5 +1,6 @@
 import axios from "axios";
 import React from "react";
+import { useRef } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -7,15 +8,53 @@ import { useNavigate } from "react-router-dom";
 import ItemConversationCurrent from "../../components/ItemConversationCurrent";
 import Message from "../../components/Message";
 import LayoutClient from "../../layouts/LayoutClient";
-
-const Messager = () => {
+import Picker from "emoji-picker-react";
+const Messager = ({ socket }) => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  console.log(user);
   const [curentChat, setCurrentChat] = useState();
   const [conversation, setConversation] = useState();
   const [messages, setMesssages] = useState();
   const [friend, setFriend] = useState();
   const [message, setMessage] = useState();
+  const srcollRef = useRef();
+  const [arrivalMessage, setArrivalMessage] = useState();
+  const { tokenCallVideo } = useSelector((state) => state.user);
+
+  // const socket = useRef();
+  //socket io
+  // useEffect(() => {
+  //   setSocket(io("ws://localhost:8900"));
+  // }, []);
+  useEffect(() => {
+    socket.off("alertMessage");
+
+    // socket.current = io("ws://localhost:8900");
+    socket?.on("getMessage", (data) => {
+      console.log("get ne");
+      setArrivalMessage({
+        sender: data.senderId,
+        text: data.text,
+        createdAt: Date.now(),
+      });
+    });
+  }, []);
+  useEffect(() => {
+    arrivalMessage &&
+      [curentChat?.user_one, curentChat?.user_second]?.includes(
+        arrivalMessage.sender
+      ) &&
+      setMesssages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage, curentChat]);
+
+  useEffect(() => {
+    // socket?.current.emit("addUser", user?.id);
+    socket?.on("getUsers", (users) => {
+      console.log(users);
+    });
+  }, [user]);
+  //end socket io
   const FetchConversation = async () => {
     try {
       const response = await axios({
@@ -83,22 +122,99 @@ const Messager = () => {
 
   const createMessage = async (e) => {
     e.preventDefault();
-    const messgae = {
+    if (!message) return alert("vui lòng nhập kí tự");
+    const message_data = {
       sender: user?.id,
       text: message,
       id_conversation: curentChat.id,
     };
-    console.log(messgae);
+
+    const receiverId = [curentChat.user_one, curentChat.user_second].find(
+      (u) => u !== user?.id
+    );
+    socket?.emit("sendMessage", {
+      senderId: user?.id,
+      nameSender: user?.firstName + " " + user?.lastName,
+      receiverId: receiverId,
+      text: message,
+    });
+
+    try {
+      const response = await axios({
+        method: "POST",
+        url: "/auth/message",
+        data: message_data,
+      });
+      if (response.status === 200) {
+        console.log(response);
+
+        setMesssages([...messages, response.data]);
+        setMessage("");
+      }
+    } catch (e) {
+      console.log(e);
+      if (e.response.status == 401) {
+        navigate("/login");
+      }
+    }
+    // console.log(messgae);
   };
+
+  useEffect(() => {
+    srcollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const [showEmoji, setShowEmoji] = useState(false);
+  const input_value = useRef();
+
+  const onEmojiClick = (event, emojiObject) => {
+    console.log(event);
+    input_value.current.value = message + " " + event.emoji;
+    setMessage((pre) => pre + " " + event.emoji);
+    setShowEmoji(false);
+  };
+
+  //video call
+  const [joinded, setJoined] = useState(false);
+  const callVideoChat = async () => {
+    try {
+      // setJoined(true);
+      socket?.emit("callVideo", {
+        avatar: user?.avatar,
+        senderId: user?.id,
+        nameSender: user?.firstName + " " + user?.lastName,
+        receiverId: friend?.id,
+        text: "Bạn có cuộc gọi từ " + user?.firstName + " " + user?.lastName,
+      });
+      window.open(
+        "https://minh352623.github.io/service-chiase-ctu/?callerId=" +
+          user?.id +
+          "&calleeId=" +
+          friend?.id +
+          "&token=" +
+          tokenCallVideo +
+          "&caller=" +
+          1,
+        "_blank"
+      );
+    } catch (e) {
+      console.log(e);
+      if (e.response.status == 401) {
+        navigate("/login");
+      }
+    }
+  };
+  //end video call
+
   return (
-    <LayoutClient>
+    <LayoutClient socket={socket}>
       <div className="grid grid-cols-12 h-[91.5vh] ">
         <div className="col-span-3 h-[91.5vh] ">
           <div className="p-3 h-full">
-            <div className="h-1/4">
+            <div className="xl:h-1/4 h-[1/8]">
               <div className="flex justify-between items-center">
                 <span className="text-2xl font-bold text-black">Chat</span>
-                <div className="flex gap-2 items-center">
+                <div className="hidden xl:flex gap-2 items-center">
                   <span className="p-2 rounded-full bg-slate-300 transition-all hover:bg-gray-400 cursor-pointer">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +231,16 @@ const Messager = () => {
                       />
                     </svg>
                   </span>
-                  <span className="p-2 rounded-full bg-slate-300 transition-all hover:bg-gray-400 cursor-pointer">
+                  <span
+                    onClick={() => {
+                      window.open(
+                        "https://minh352623.github.io/service-chiase-ctu/group_call.html",
+
+                        "_blank"
+                      );
+                    }}
+                    className="p-2 rounded-full bg-slate-300 transition-all hover:bg-gray-400 cursor-pointer"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -148,7 +273,7 @@ const Messager = () => {
                   </span>
                 </div>
               </div>
-              <div className="my-3 relative">
+              <div className="hidden xl:block my-3 relative">
                 <input
                   type="text"
                   placeholder="Tìm kiếm trên messager"
@@ -171,22 +296,23 @@ const Messager = () => {
                   </svg>
                 </span>
               </div>
-              <div className="flex gap-3">
+              <div className="hidden xl:block  flex gap-3">
                 <span className="py-2 cursor-pointer px-3 font-bold text-blue-500 bg-blue-100 opacity-70 transition-all hover:opacity-100 rounded-full">
                   Hộp thư
                 </span>
               </div>
             </div>
-            <div className="h-3/4 overflow-y-auto">
+            <div className="xl:h-3/4 h-[7/8] overflow-x-hidden overflow-y-auto">
               {conversation &&
                 conversation.map((cv) => (
-                  <div onClick={() => setCurrentChat(cv)}>
-                    <ItemConversationCurrent
-                      key={cv.id}
-                      conversation={cv}
-                      currentUser={user}
-                    ></ItemConversationCurrent>
-                  </div>
+                  <ItemConversationCurrent
+                    key={cv.id}
+                    setCurrentChat={setCurrentChat}
+                    conversation={cv}
+                    arrivalMessage={arrivalMessage}
+                    currentUser={user}
+                    curentChat={curentChat}
+                  ></ItemConversationCurrent>
                 ))}
             </div>
           </div>
@@ -219,15 +345,20 @@ const Messager = () => {
                     )}
                   </div>
                   <div className="flex gap-3">
-                    <span className="p-2 hover:bg-gray-200 transition-all rounded-full cursor-pointer">
+                    <span
+                      onClick={callVideoChat}
+                      className="p-2 hover:bg-gray-200 transition-all rounded-full cursor-pointer"
+                    >
                       <img
                         src="../../phone-call.png"
                         className="w-[25px]"
                         alt=""
                       />
                     </span>
-
-                    <span className="p-2 hover:bg-gray-200 transition-all rounded-full cursor-pointer">
+                    <span
+                      onClick={callVideoChat}
+                      className="p-2 hover:bg-gray-200 transition-all rounded-full cursor-pointer"
+                    >
                       <img
                         src="../../video-camera.png"
                         className="w-[25px]"
@@ -240,17 +371,20 @@ const Messager = () => {
                   </div>
                 </div>
               </div>
-              <div className="h-[80%] max-h-80%] overflow-y-auto px-3 content_center">
+              <div className="h-[80%] max-h-80%] overflow-y-auto px-3 ">
                 {messages &&
+                  friend &&
+                  user &&
                   messages.length > 0 &&
                   messages.map((item) => (
-                    <>
+                    <div key={item.id} ref={srcollRef}>
                       <Message
                         item={item}
+                        own={user}
+                        friend={friend}
                         current={item.sender == user?.id ? 1 : 0}
-                        key={item.id}
                       ></Message>
-                    </>
+                    </div>
                   ))}
                 {messages && messages.length <= 0 && (
                   <div className="h-full text-xl w-full bg-gray-200 flex rounded-xl items-center justify-center">
@@ -264,12 +398,29 @@ const Messager = () => {
                   <div className="flex gap-3">
                     <input
                       type="text"
+                      ref={input_value}
                       onChange={(e) => setMessage(e.target.value)}
                       name="message"
                       className="w-full resize-none py-2 px-4 text-black outline-none bg-gray-200 rounded-full"
                       placeholder="Aa"
                       value={message}
                     />
+                    <div className="p-1 relative hover:bg-gray-300 rounded-full w-fit cursor-pointer">
+                      {showEmoji && (
+                        <div className="fixed  z-[100] top-[60%] right-[5%] -translate-y-1/2">
+                          <Picker
+                            pickerStyle={{ width: "100%" }}
+                            onEmojiClick={onEmojiClick}
+                          ></Picker>
+                        </div>
+                      )}
+                      <img
+                        onClick={() => setShowEmoji((showEmoji) => !showEmoji)}
+                        src="./smile.png"
+                        className="w-[40px]"
+                        alt=""
+                      />
+                    </div>
                     <button
                       type="submit"
                       className="p-2 hover:bg-gray-300 rounded-full transition-all"

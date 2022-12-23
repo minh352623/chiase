@@ -1,11 +1,12 @@
 import axios from "axios";
 import React from "react";
+import { useRef } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserOnline from "./UserOnline";
 
-const ContentRight = () => {
+const ContentRight = ({ userOnlineCurrent }) => {
   const [userOnline, setUserOnline] = useState();
   const navigate = useNavigate();
 
@@ -16,7 +17,11 @@ const ContentRight = () => {
       });
       console.log(response);
       if (response.status === 200) {
-        setUserOnline(response.data);
+        setUserOnline(
+          response.data.filter((u) =>
+            userOnlineCurrent?.some((o) => o.userId === u.id)
+          )
+        );
       }
     } catch (e) {
       console.log(e);
@@ -33,7 +38,7 @@ const ContentRight = () => {
       <div className="border-t border-t-2 border-gray-300">
         <div className="title">
           <span className="py-2 font-bold text-gray-700 text-lg block">
-            Người liên hệ
+            Người liên hệ online
           </span>
 
           <div className="list_friend">
