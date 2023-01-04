@@ -3,7 +3,7 @@ import Picker from "emoji-picker-react";
 import LoadingAdmin from "./LoadingAdmin";
 import lodash from "lodash";
 import { CaculateTime } from "../trait/CaculateTime";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import RenderComment from "./RenderComment";
 import axios from "axios";
@@ -23,7 +23,7 @@ const PostHome = ({
   socket,
 }) => {
   const [showFormComment, setShowFormComment] = useState(true);
-  console.log(showFormComment);
+  //console.log(showFormComment);
 
   const caculateTime = (time) => {
     let message = "abc";
@@ -49,7 +49,7 @@ const PostHome = ({
   const navigate = useNavigate();
 
   const onEmojiClick = (event, emojiObject) => {
-    console.log(event);
+    //console.log(event);
     inputComment.current.value = content + " " + event.emoji;
     setContent((pre) => pre + " " + event.emoji);
     setShowEmoji(false);
@@ -66,7 +66,7 @@ const PostHome = ({
         inputComment.current.value = "";
       }
     } catch (e) {
-      console.log(e);
+      //console.log(e);
     }
   };
   const showImg = useRef();
@@ -122,7 +122,7 @@ const PostHome = ({
           position: "bottom-left",
           autoClose: 1500,
         });
-        console.log(response);
+        //console.log(response);
         setContentShare("");
         setSharePost(false);
         setLoading(false);
@@ -130,7 +130,7 @@ const PostHome = ({
     } catch (e) {
       setLoading(false);
 
-      console.log(e);
+      //console.log(e);
       if (e.response.status == 401) {
         navigate("/login");
       }
@@ -139,7 +139,7 @@ const PostHome = ({
   const [sharePost, setSharePost] = useState(false);
   const [contentShare, setContentShare] = useState("");
   const onEmojiClickShare = (event, emojiObject) => {
-    console.log(event);
+    //console.log(event);
     textarea.current.value = contentShare + " " + event.emoji;
     setContentShare((pre) => pre + " " + event.emoji);
     setShowEmoji(false);
@@ -149,21 +149,21 @@ const PostHome = ({
   const createPostShare = async (id_post_share) => {
     try {
       setSharePost(true);
-      console.log(contentShare);
-      console.log(id_post_share);
+      //console.log(contentShare);
+      //console.log(id_post_share);
 
       const response = await axios({
         method: "GET",
         url: "/auth/post/detail/" + id_post_share,
       });
       if (response.status === 200) {
-        console.log(response);
+        //console.log(response);
         setLoadingShare(false);
         setDataSharePost(response.data);
       }
     } catch (e) {
       setLoadingShare(false);
-      console.log(e);
+      //console.log(e);
       if (e.response.status == 404) {
         Swal.fire("Bài viết!", e.response.data, "error");
       }
@@ -188,7 +188,7 @@ const PostHome = ({
           const response = handleDeltePost(id);
           setOptionPost(false);
         } catch (e) {
-          console.log(e);
+          //console.log(e);
         }
       }
     });
@@ -210,14 +210,14 @@ const PostHome = ({
         url: "/auth/post/detail/" + id,
       });
       if (response.status === 200) {
-        console.log(response);
+        //console.log(response);
         setLoadingEditPost(false);
 
         setDataEditPost(response.data);
       }
     } catch (e) {
       setLoadingEditPost(false);
-      console.log(e);
+      //console.log(e);
       if (e.response.status == 401) {
         navigate("/login");
       }
@@ -228,7 +228,7 @@ const PostHome = ({
     try {
       const response = handleEditPostParent(item.id, contentEdit);
     } catch (e) {
-      console.log(e);
+      //console.log(e);
     }
   };
   //end edit post
@@ -248,13 +248,13 @@ const PostHome = ({
         // },
       });
       if (response.status == 200) {
-        console.log(response);
+        //console.log(response);
         setOptionsReport(response.data);
         setLoadingReport(false);
       }
     } catch (e) {
       setLoadingReport(false);
-      console.log(e);
+      //console.log(e);
       if (e.response.status == 401) {
         navigate("/admin/login");
       }
@@ -286,7 +286,7 @@ const PostHome = ({
         );
       }
     } catch (e) {
-      console.log(e);
+      //console.log(e);
       if (e.response.status == 401) {
         navigate("/admin/login");
       }
@@ -297,7 +297,7 @@ const PostHome = ({
   const renderUserComment = (arr) => {
     let arrNew = [];
     arrNew.push(arr[0]);
-    console.log(arr);
+    //console.log(arr);
 
     for (let i = 0; i < arr.length; i++) {
       let check = 0;
@@ -313,7 +313,7 @@ const PostHome = ({
         arrNew.push(item);
       }
     }
-    console.log(arrNew);
+    //console.log(arrNew);
     return arrNew;
   };
 
@@ -351,6 +351,7 @@ const PostHome = ({
                 {optiosReport &&
                   optiosReport.map((option) => (
                     <div
+                      key={option.id}
                       onClick={() => createReportToAdmin(option)}
                       className="flex gap-3 items-center cursor-pointer hover:bg-gray-200 p-2 rounded-lg"
                     >
@@ -394,7 +395,11 @@ const PostHome = ({
                   <span className="w-[45px]">
                     <img
                       className="rounded-full"
-                      src={user?.avatar ? user.avatar : "./undraw_profile.svg"}
+                      src={
+                        user?.avatar
+                          ? user.avatar
+                          : "http://localhost:5173/undraw_profile.svg"
+                      }
                       alt=""
                     />
                   </span>
@@ -406,7 +411,7 @@ const PostHome = ({
                       <span>
                         <img
                           className="w-[15px]"
-                          src="./planet-earth.png"
+                          src="http://localhost:5173/planet-earth.png"
                           alt=""
                         />
                       </span>
@@ -440,7 +445,7 @@ const PostHome = ({
                           <div className="grid grid-cols-12 gap-2">
                             {dataEditPost?.file_data.length > 1 ? (
                               dataEditPost?.file_data.map((item) => (
-                                <div className="col-span-6">
+                                <div key={item.id} className="col-span-6">
                                   <img
                                     className="w-full"
                                     src={item?.link}
@@ -449,7 +454,7 @@ const PostHome = ({
                                 </div>
                               ))
                             ) : (
-                              <div className="col-span-12">
+                              <div key={item.id} className="col-span-12">
                                 <img
                                   className="w-full"
                                   src={dataEditPost?.file_data[0]?.link}
@@ -465,7 +470,7 @@ const PostHome = ({
                               1 ? (
                                 dataEditPost.post_data_two?.file_data.map(
                                   (item) => (
-                                    <div className="col-span-6">
+                                    <div key={item.id} className="col-span-6">
                                       <img
                                         className="w-full"
                                         src={item?.link}
@@ -475,7 +480,7 @@ const PostHome = ({
                                   )
                                 )
                               ) : (
-                                <div className="col-span-12">
+                                <div key={item.id} className="col-span-12">
                                   <img
                                     className="w-full"
                                     src={
@@ -495,7 +500,7 @@ const PostHome = ({
                                         .avatar
                                         ? dataEditPost.post_data_two.user_data
                                             .avatar
-                                        : "./undraw_profile.svg"
+                                        : "http://localhost:5173/undraw_profile.svg"
                                     }
                                     alt=""
                                   />
@@ -592,7 +597,11 @@ const PostHome = ({
                   <span className="w-[45px]">
                     <img
                       className="rounded-full"
-                      src={user?.avatar ? user.avatar : "./undraw_profile.svg"}
+                      src={
+                        user?.avatar
+                          ? user.avatar
+                          : "http://localhost:5173/undraw_profile.svg"
+                      }
                       alt=""
                     />
                   </span>
@@ -604,7 +613,7 @@ const PostHome = ({
                       <span>
                         <img
                           className="w-[15px]"
-                          src="./planet-earth.png"
+                          src="http://localhost:5173/planet-earth.png"
                           alt=""
                         />
                       </span>
@@ -641,7 +650,7 @@ const PostHome = ({
                             1 ? (
                               dataSharePost.post_data_two?.file_data.map(
                                 (item) => (
-                                  <div className="col-span-6">
+                                  <div key={item.id} className="col-span-6">
                                     <img
                                       className="w-full"
                                       src={item?.link}
@@ -651,7 +660,7 @@ const PostHome = ({
                                 )
                               )
                             ) : (
-                              <div className="col-span-12">
+                              <div key={item.id} className="col-span-12">
                                 <img
                                   className="w-full"
                                   src={
@@ -670,7 +679,7 @@ const PostHome = ({
                                     dataSharePost.post_data_two.user_data.avatar
                                       ? dataSharePost.post_data_two.user_data
                                           .avatar
-                                      : "./undraw_profile.svg"
+                                      : "http://localhost:5173/undraw_profile.svg"
                                   }
                                   alt=""
                                 />
@@ -716,7 +725,7 @@ const PostHome = ({
                             <div className="grid grid-cols-12 gap-2">
                               {dataSharePost?.file_data.length > 1 ? (
                                 dataSharePost?.file_data.map((item) => (
-                                  <div className="col-span-6">
+                                  <div key={item.id} className="col-span-6">
                                     <img
                                       className="w-full"
                                       src={item?.link}
@@ -725,7 +734,7 @@ const PostHome = ({
                                   </div>
                                 ))
                               ) : (
-                                <div className="col-span-12">
+                                <div key={item.id} className="col-span-12">
                                   <img
                                     className="w-full"
                                     src={dataSharePost?.file_data[0]?.link}
@@ -742,7 +751,7 @@ const PostHome = ({
                                     src={
                                       dataSharePost.user_data.avatar
                                         ? dataSharePost.user_data.avatar
-                                        : "./undraw_profile.svg"
+                                        : "http://localhost:5173/undraw_profile.svg"
                                     }
                                     alt=""
                                   />
@@ -803,20 +812,20 @@ const PostHome = ({
         </div>
       )}
       <div className="flex px-3 justify-between">
-        <div className="flex gap-3">
+        <Link to={`/profile/${item.user_id}`} className="flex gap-3">
           <span className="w-[45px]">
             <img
               className="w-full rounded-full"
               src={
                 item.user_data.avatar
                   ? item.user_data.avatar
-                  : "./undraw_profile.svg"
+                  : "http://localhost:5173/undraw_profile.svg"
               }
               alt=""
             />
           </span>
-          <p className="font-bold text-black flex flex-col">
-            <span>
+          <p className="font-bold  text-black flex flex-col">
+            <span className="hover:underline">
               {item.user_data.firstName + " " + item.user_data.lastName}
             </span>
             <span className="text-gray-600 m-0">
@@ -830,17 +839,17 @@ const PostHome = ({
               )}
             </span>
           </p>
-        </div>
+        </Link>
         <div className="m-0 block relative text-2xl leading-none   font-bold ">
           <span
             onClick={() => {
-              console.log(item.id);
+              //console.log(item.id);
               setOptionPost((old) => !old);
               // deletePost(item.id);
             }}
             className="cursor-pointer p-1 h-[30px] w-[30px] inline-block rounded-full hover:bg-gray-300 transition-all"
           >
-            <i class="fa-solid fa-ellipsis"></i>
+            <i className="fa-solid fa-ellipsis"></i>
           </span>
           {optionPost && (
             <div className="absolute text-lg right-0 xl:w-[30vw] w-[50vw]  p-3 shadow_noti bg-white rounded-lg">
@@ -913,12 +922,12 @@ const PostHome = ({
           <div className="grid grid-cols-12 gap-2">
             {item.post_data_two?.file_data.length > 1 ? (
               item.post_data_two?.file_data.map((item) => (
-                <div className="col-span-6">
+                <div key={item.id} className="col-span-6">
                   <img className="w-full" src={item?.link} alt="" />
                 </div>
               ))
             ) : (
-              <div className="col-span-12">
+              <div key={item.id} className="col-span-12">
                 <img
                   className="w-full"
                   src={item.post_data_two?.file_data[0]?.link}
@@ -928,20 +937,23 @@ const PostHome = ({
             )}
           </div>
           <div className="share_content px-3 mt-3">
-            <div className="flex  gap-3">
+            <Link
+              to={`/profile/${item.post_data_two.user_id}`}
+              className="flex  gap-3"
+            >
               <span className="w-[45px]">
                 <img
                   className="w-full rounded-full"
                   src={
                     item.post_data_two.user_data.avatar
                       ? item.post_data_two.user_data.avatar
-                      : "./undraw_profile.svg"
+                      : "http://localhost:5173/undraw_profile.svg"
                   }
                   alt=""
                 />
               </span>
               <p className="font-bold text-black flex flex-col">
-                <span>
+                <span className="hover:underline">
                   {item.post_data_two.user_data.firstName +
                     " " +
                     item.post_data_two.user_data.lastName}
@@ -959,7 +971,7 @@ const PostHome = ({
                   )}
                 </span>
               </p>
-            </div>
+            </Link>
             <div className="text-black fonr-bold ">
               {item.post_data_two.content}
             </div>
@@ -1022,10 +1034,14 @@ const PostHome = ({
         {item.like_count > 0 && (
           <div className="flex user_like gap-1 items-center hover:underline cursor-pointer relative">
             <span>
-              <img src="./heart_full.png" className="w-[25px]" alt="" />
+              <img
+                src="http://localhost:5173/heart_full.png"
+                className="w-[25px]"
+                alt=""
+              />
             </span>
             <span className="font-bold">{item.like_count} Tym</span>
-            <div className="absolute hidden transition-all user_like_data top-full z-10 w-[150px] text-white rounded-xl bg-[rgba(0,0,0,0.8)] px-3 py-2">
+            <div className="absolute hidden transition-all user_like_data top-full z-10 w-[180px] text-white rounded-xl bg-[rgba(0,0,0,0.8)] px-3 py-2">
               {item.like_data.slice(0, 10).map((like) => (
                 <p key={like.id + uuidv4()} className="m-0 text-start">
                   {like?.user_data?.firstName + " " + like?.user_data?.lastName}
@@ -1046,7 +1062,7 @@ const PostHome = ({
                 {item.comment_count} Bình luận
               </span>
               {() => {}}
-              <div className="absolute hidden transition-all right-0 user_comment_data top-full z-10 w-[150px] text-white rounded-xl bg-[rgba(0,0,0,0.8)] px-3 py-2">
+              <div className="absolute hidden transition-all right-0 user_comment_data top-full z-10 w-[180px] text-white rounded-xl bg-[rgba(0,0,0,0.8)] px-3 py-2">
                 {renderUserComment(item.comment_data).map((comment) => (
                   <p key={comment.id + uuidv4()} className="m-0 text-start">
                     {comment?.user_data?.firstName +
@@ -1067,7 +1083,7 @@ const PostHome = ({
               >
                 {item.share_count} Chia sẻ
               </span>
-              <div className="absolute hidden transition-all right-0 user_share_data top-full z-10 w-[150px] text-white rounded-xl bg-[rgba(0,0,0,0.8)] px-3 py-2">
+              <div className="absolute hidden transition-all right-0 user_share_data top-full z-10 w-[180px] text-white rounded-xl bg-[rgba(0,0,0,0.8)] px-3 py-2">
                 {item.user_share.slice(0, 10).map((like) => (
                   <p key={like.id + uuidv4()} className="m-0 text-start">
                     {like?.user_data?.firstName +
@@ -1096,14 +1112,14 @@ const PostHome = ({
             item.like_data.some((item) => item.user_id === user?.id) ? (
               <img
                 key={item.id}
-                src="./heart_full.png"
+                src="http://localhost:5173/heart_full.png"
                 className="w-[20px]"
                 alt=""
               />
             ) : (
               <img
                 key={item.id}
-                src="./heart.png"
+                src="http://localhost:5173/heart.png"
                 className="w-[20px]"
                 alt=""
               />
@@ -1118,7 +1134,11 @@ const PostHome = ({
           className="like flex items-center gap-2 xl:px-5 px-1 lg:px-2 mt-3 py-1 rounded-lg transition-all cursor-pointer  hover:bg-gray-300 "
         >
           <span>
-            <img src="./comment.png" className="w-[20px]" alt="" />
+            <img
+              src="http://localhost:5173/comment.png"
+              className="w-[20px]"
+              alt=""
+            />
           </span>
           <span className="font-bold text-gray-600">Bình luận</span>
         </div>
@@ -1127,7 +1147,11 @@ const PostHome = ({
           className="like flex items-center gap-2 xl:px-5 px-1 lg:px-2 mt-3 py-1 rounded-lg transition-all cursor-pointer  hover:bg-gray-300 "
         >
           <span>
-            <img src="./share.png" className="w-[20px]" alt="" />
+            <img
+              src="http://localhost:5173/share.png"
+              className="w-[20px]"
+              alt=""
+            />
           </span>
           <span className="font-bold text-gray-600">Chia sẻ</span>
         </div>
@@ -1139,7 +1163,11 @@ const PostHome = ({
               <span className=" relative md:w-[5%] lg:w-[5%] w-[10%]">
                 <img
                   className="w-full max-w-[40px] rounded-full"
-                  src={user?.avatar ? user?.avatar : "./undraw_profile.svg"}
+                  src={
+                    user?.avatar
+                      ? user?.avatar
+                      : "http://localhost:5173/undraw_profile.svg"
+                  }
                   alt=""
                 />
                 <span className="absolute w-[10px] h-[10px] rounded-full bg-green-600 right-0 bottom-0 border border-[10px] border-white"></span>
@@ -1165,7 +1193,7 @@ const PostHome = ({
                 <span className="p-1 absolute xl:right-[7%] right-[12%] top-1/2 cursor-pointer hover:bg-gray-300 rounded-full -translate-y-1/2 transition-all">
                   <img
                     onClick={() => setShowEmoji((showEmoji) => !showEmoji)}
-                    src="./smile.png"
+                    src="http://localhost:5173/smile.png"
                     className="w-[20px] "
                     alt=""
                   />
@@ -1174,7 +1202,11 @@ const PostHome = ({
                   htmlFor="file_comment"
                   className="p-1 absolute right-[2%] top-1/2 cursor-pointer hover:bg-gray-300 rounded-full -translate-y-1/2 transition-all"
                 >
-                  <img src="./camera.png" className="w-[20px] " alt="" />
+                  <img
+                    src="http://localhost:5173/camera.png"
+                    className="w-[20px] "
+                    alt=""
+                  />
                   <input
                     onChange={(e) => showImage(e)}
                     id="file_comment"
@@ -1213,15 +1245,16 @@ const PostHome = ({
           <div className="mx-3 py-2 max-w-full">
             {item?.comment_data.length > 0 &&
               item?.comment_data.slice(0, showComment).map((comment) => {
-                console.log(comment);
+                //console.log(comment);
                 if (comment.parent_id == 0) {
                   return (
-                    <>
+                    <div key={comment.id}>
                       <CommentPost
                         key={comment.id}
                         user={user}
                         // setShowReply={setShowReply}
                         item={item}
+                        handleLikeComment={handleLikeComment}
                         comment={comment}
                       ></CommentPost>
                       <RenderComment
@@ -1233,7 +1266,7 @@ const PostHome = ({
                         user={user}
                         handleLikeComment={handleLikeComment}
                       ></RenderComment>
-                    </>
+                    </div>
                   );
                 }
               })}

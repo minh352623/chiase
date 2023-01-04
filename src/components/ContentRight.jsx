@@ -4,10 +4,12 @@ import { useRef } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import SuggestUser from "./SuggestUser";
 import UserOnline from "./UserOnline";
 
 const ContentRight = ({ userOnlineCurrent }) => {
   const [userOnline, setUserOnline] = useState();
+  const [userSuggest, setUserSuggest] = useState();
   const navigate = useNavigate();
 
   const FetchUserOnline = async () => {
@@ -30,12 +32,47 @@ const ContentRight = ({ userOnlineCurrent }) => {
       }
     }
   };
+  const fetchUserSuggest = async () => {
+    try {
+      const response = await axios({
+        url: `/auth/admin/user/suggest`,
+      });
+      if (response.status === 200) {
+        setUserSuggest(response.data);
+      }
+    } catch (e) {
+      console.log(e);
+      if (e.response.status == 401) {
+        navigate("/login");
+      }
+    }
+  };
   useEffect(() => {
     FetchUserOnline();
+    fetchUserSuggest();
   }, []);
+  // if()
   return (
     <div className="h-">
-      <div className="border-t border-t-2 border-gray-300">
+      <div className="  border-gray-300">
+        <div className="title">
+          <span className="py-2 font-bold text-gray-700 text-lg block">
+            Gợi ý cho bạn
+          </span>
+
+          <div className="list_friend">
+            {userSuggest &&
+              userSuggest.map((user) => (
+                <SuggestUser
+                  key={user.id}
+                  suggest={true}
+                  user={user}
+                ></SuggestUser>
+              ))}
+          </div>
+        </div>
+      </div>
+      <div className=" border-t-2 border-gray-300">
         <div className="title">
           <span className="py-2 font-bold text-gray-700 text-lg block">
             Người liên hệ online

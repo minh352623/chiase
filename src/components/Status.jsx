@@ -177,7 +177,7 @@ const Status = ({ user }) => {
   };
   console.log(content);
   return (
-    <div className="shadow_main xl:h-[20vh] h-[23vh] bg-white rounded-xl p-3">
+    <div className="shadow_main xl:h-[21vh] h-[23vh] bg-white rounded-xl p-3">
       {isShowEdit && (
         <div className="popup fixed z-[11] inset-0 bg-[rgba(255,255,255,0.5)] transition-all m-auto flex">
           <div className="py-2 px-3 bg-white shadow_main xl:w-[40vw] w-[90vw] h-[80vh] m-auto">
@@ -280,7 +280,7 @@ const Status = ({ user }) => {
                   <span className="w-[45px]">
                     <img
                       className="rounded-full"
-                      src={user?.avatar ? user.avatar : "./undraw_profile.svg"}
+                      src={user?.avatar ? user.avatar : "../undraw_profile.svg"}
                       alt=""
                     />
                   </span>
@@ -292,7 +292,7 @@ const Status = ({ user }) => {
                       <span>
                         <img
                           className="w-[15px]"
-                          src="./planet-earth.png"
+                          src="../planet-earth.png"
                           alt=""
                         />
                       </span>
@@ -333,7 +333,7 @@ const Status = ({ user }) => {
                           onClick={() =>
                             setShowEmoji((showEmoji) => !showEmoji)
                           }
-                          src="./smile.png"
+                          src="../smile.png"
                           className="w-[40px]"
                           alt=""
                         />
@@ -377,7 +377,7 @@ const Status = ({ user }) => {
                             <span>
                               <img
                                 className="w-[100px]"
-                                src="./image.png"
+                                src="../image.png"
                                 alt=""
                               />
                             </span>
@@ -441,10 +441,10 @@ const Status = ({ user }) => {
           {user.lastName} ơi, Bạn đang nghĩ gì thế
         </p>
       </div>
-      <div className="flex justify-between xl:px-5 items-center  pt-2">
+      <div className="flex justify-between xl:px-5 items-center  py-2">
         <p className="flex gap-3 m-0 items-center hover:bg-gray-300 px-2 py-1 cursor-pointer rounded-lg">
           <span className="w-[40px]">
-            <img src="./video-player.png" alt="" />
+            <img src="../video-player.png" alt="" />
           </span>
           <span className="xl:text-sl text-sm font-bold">Video trực tiếp</span>
         </p>
@@ -453,13 +453,13 @@ const Status = ({ user }) => {
           className="flex gap-3 m-0 items-center hover:bg-gray-300 px-2 py-1 cursor-pointer rounded-lg"
         >
           <span className="w-[40px]">
-            <img src="./gallery.png" alt="" />
+            <img src="../gallery.png" alt="" />
           </span>
           <span className="xl:text-sl text-sm font-bold">Ảnh/Video</span>
         </p>
         <p className="hidden xl:flex gap-3 m-0 items-center hover:bg-gray-300 px-2 py-1 cursor-pointer rounded-lg">
           <span className="w-[40px]">
-            <img src="./laughing.png" alt="" />
+            <img src="../laughing.png" alt="" />
           </span>
           <span className="xl:text-sl text-sm font-bold">Feeling/Activity</span>
         </p>

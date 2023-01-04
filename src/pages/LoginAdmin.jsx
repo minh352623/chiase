@@ -15,13 +15,13 @@ const schema = yup.object({
     .string()
     .required("Email bắt buộc phải nhập")
     .email("Email không hợp lệ"),
-  password: yup
-    .string()
-    .required("Mật khẩu bắt buộc phải nhập")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      "Mật khẩu phải 8 chữ số và ít nhất có 1 chữ hoa, 1 chữ thường, 1 kí tự đặt biệt,1 số"
-    ),
+  // password: yup
+  //   .string()
+  //   .required("Mật khẩu bắt buộc phải nhập")
+  //   .matches(
+  //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+  //     "Mật khẩu phải 8 chữ số và ít nhất có 1 chữ hoa, 1 chữ thường, 1 kí tự đặt biệt,1 số"
+  //   ),
 });
 const LoginAdmin = () => {
   const navigate = useNavigate();

@@ -139,6 +139,44 @@ const SidebarComponent = () => {
           </span>
         )}
       </li>
+      <li className="nav-item">
+        <NavLink
+          className={({ isActive }) =>
+            isActive
+              ? "text-green-500 nav-link flex gap-3 bg-blue-300"
+              : "nav-link flex gap-3"
+          }
+          to="/admin/cate-profile"
+          data-target="#collapseTwo"
+          aria-expanded="true"
+          aria-controls="collapseTwo"
+        >
+          <span>
+            <i class="fa-solid fa-table-list text-white text-2xl inline-block"></i>
+          </span>
+          <span className="ml-1 text-2xl font-semibold">
+            Danh mục giới thiệu
+          </span>
+        </NavLink>
+      </li>
+      <li className="nav-item">
+        <NavLink
+          className={({ isActive }) =>
+            isActive
+              ? "text-green-500 nav-link flex gap-3 bg-blue-300"
+              : "nav-link flex gap-3"
+          }
+          to="/admin/option-profile"
+          data-target="#collapseTwo"
+          aria-expanded="true"
+          aria-controls="collapseTwo"
+        >
+          <span>
+            <i class="fa-regular fa-address-card text-white text-2xl inline-block"></i>
+          </span>
+          <span className="ml-1 text-2xl font-semibold">Option giới thiệu</span>
+        </NavLink>
+      </li>
     </ul>
   );
 };

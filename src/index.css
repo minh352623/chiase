@@ -99,13 +99,17 @@ a {
 .shadow_noti {
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
-
+.shadow_search {
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
 .css_dot {
+  width: 75%;
   overflow: hidden;
   display: block !important;
   display: -webkit-box !important;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
 }
 #video-container {
   position: relative;
@@ -185,4 +189,59 @@ video {
 }
 .user_comment:hover .user_comment_data {
   display: block !important;
+}
+
+.left-1 {
+  left: 20px;
+}
+
+.left-2 {
+  left: 40px;
+}
+
+.left-3 {
+  left: 60px;
+}
+
+.left-4 {
+  left: 80px;
+}
+
+.left-5 {
+  left: 100px;
+}
+
+.bg_anima::before {
+  content: "";
+  display: block;
+  position: fixed;
+  width: 300%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  border-radius: 100%;
+  transform: translateX(-50%) skewY(-8deg);
+  background-color: #60a5fa;
+  z-index: -1;
+  -webkit-animation: wave 8s ease-in-out infinite alternate;
+  animation: wave 8s ease-in-out infinite alternate;
+}
+@-webkit-keyframes wave {
+  0% {
+    transform: translateX(-50%) skew(0deg, -8deg);
+  }
+
+  to {
+    transform: translateX(-30%) skew(8deg, -4deg);
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: translateX(-50%) skew(0deg, -8deg);
+  }
+
+  to {
+    transform: translateX(-30%) skew(8deg, -4deg);
+  }
 }

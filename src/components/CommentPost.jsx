@@ -1,8 +1,15 @@
 import React from "react";
 import { CaculateTime } from "../trait/CaculateTime";
 import { v4 as uuidv4 } from "uuid";
+import { Link } from "react-router-dom";
 
-const CommentPost = ({ setShowReply, comment, item, user }) => {
+const CommentPost = ({
+  setShowReply,
+  comment,
+  item,
+  user,
+  handleLikeComment,
+}) => {
   return (
     <div className="" key={comment.id + comment.createdAt + uuidv4()}>
       <div
@@ -15,7 +22,7 @@ const CommentPost = ({ setShowReply, comment, item, user }) => {
             src={
               comment?.user_data?.avatar
                 ? comment?.user_data?.avatar
-                : "./undraw_profile.svg"
+                : "../undraw_profile.svg"
             }
             alt=""
           />
@@ -23,16 +30,19 @@ const CommentPost = ({ setShowReply, comment, item, user }) => {
         <div className="w-[95%] ">
           {comment.text && (
             <div className="relative m-0 px-2 py-1 bg-gray-300 rounded-lg text-black">
-              <span className="block font-semibold my-1">
+              <Link
+                to={`/profile/${comment.user_id}`}
+                className="block text-black font-semibold my-1"
+              >
                 {comment?.user_data.firstName +
                   " " +
                   comment?.user_data.lastName}
-              </span>
+              </Link>
               <span>{comment.text}</span>
               {comment.like_count > 0 && (
                 <p className="absolute flex gap-1 m-0  right-0 bottom-[-8px] shadow-xl px-3 py-1 rounded-full bg-white">
                   <span>
-                    <img src="./like_color.png" className="w-[20px]" alt="" />
+                    <img src="../like_color.png" className="w-[20px]" alt="" />
                   </span>
                   <span>{comment.like_count}</span>
                 </p>

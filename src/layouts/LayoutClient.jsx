@@ -12,13 +12,18 @@ import jwt_decode from "jwt-decode";
 import { useRef } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
-import { handleFetchNotis, setClientCall } from "../store/reducers/userReducer";
+import {
+  handleFetchFriends,
+  handleFetchNotis,
+  handleFetchRequestFriend,
+  setClientCall,
+} from "../store/reducers/userReducer";
 // import "../StringeeSDK-1.5.10";
 import { ToastContainer, toast } from "react-toastify";
 
-const LayoutClient = ({ children, socket }) => {
+const LayoutClient = ({ children, socket, search = "" }) => {
   const { user } = useSelector((state) => state.auth);
-  const { tokenCallVideo } = useSelector((state) => state.user);
+  const { tokenCallVideo, requestFriend } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [videoCall, setVideoCall] = useState(false);
   useEffect(() => {
@@ -41,6 +46,35 @@ const LayoutClient = ({ children, socket }) => {
       });
       dispatch(handleFetchNotis());
     });
+
+    socket?.off("notiAddFriend");
+
+    socket?.on("notiAddFriend", (data) => {
+      console.log("noti add friend");
+      let myAudio = new Audio("../notification-125767.mp3");
+      myAudio.play();
+      toast.success(`${data.text}`, {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      dispatch(handleFetchNotis());
+      dispatch(handleFetchFriends());
+      dispatch(handleFetchRequestFriend());
+    });
+    socket?.off("notiAcceptAddFriend");
+
+    socket?.on("notiAcceptAddFriend", (data) => {
+      console.log("noti add friend");
+      let myAudio = new Audio("../notification-125767.mp3");
+      myAudio.play();
+      toast.success(`${data.text}`, {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      dispatch(handleFetchNotis());
+      dispatch(handleFetchFriends());
+      dispatch(handleFetchRequestFriend());
+    });
   }, []);
   const answerCall = () => {
     console.log("ulatr me");
@@ -57,6 +91,10 @@ const LayoutClient = ({ children, socket }) => {
     );
     setVideoCall(false);
   };
+  useEffect(() => {
+    dispatch(handleFetchFriends());
+    dispatch(handleFetchRequestFriend());
+  }, [user]);
   return (
     <>
       {user && (
@@ -65,7 +103,9 @@ const LayoutClient = ({ children, socket }) => {
             <div className="fixed p-3 z-[100] left-1/2 top-1/2 flex items-center flex-col justify-center  -translate-x-1/2 -translate-y-1/2 bg-blue-400 xl:w-[30vw] w-[80vw] h-[80vh]  text-white shadow-xl rounded-lg">
               <p>
                 <img
-                  src={videoCall.avatar}
+                  src={
+                    videoCall.avatar ? videoCall.avatat : "./undraw_profile.svg"
+                  }
                   className="w-[100px] rounded-full"
                   alt=""
                 />
@@ -95,7 +135,12 @@ const LayoutClient = ({ children, socket }) => {
               </div>
             </div>
           )}
-          <HeaderClient socket={socket} user={user}></HeaderClient>
+          <HeaderClient
+            search={search}
+            requestFriend={requestFriend}
+            socket={socket}
+            user={user}
+          ></HeaderClient>
           {children}
         </>
       )}
