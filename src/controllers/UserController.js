@@ -10,6 +10,12 @@ const {
   DeleteUserForceService,
   exportExcelService,
   importExcelService,
+  getUserSuggestService,
+  getProfileUserService,
+  changeAvatarService,
+  changeBackgroundService,
+  updateDescriptionService,
+  getFriendsService,
 } = require("../services/UserServices");
 const getListUser = async (req, res) => {
   try {
@@ -142,6 +148,56 @@ const importExcel = (req, res) => {
     console.log(e);
   }
 };
+const getUserSuggest = (req, res) => {
+  try {
+    return getUserSuggestService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
+const getProfileUser = (req, res) => {
+  try {
+    return getProfileUserService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
+const changeAvatar = (req, res) => {
+  try {
+    const file = req.files?.avatar || "";
+    return changeAvatarService(req, res, file);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+const changeBackground = (req, res) => {
+  try {
+    const file = req.files?.background || "";
+    return changeBackgroundService(req, res, file);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
+const updateDescription = (req, res) => {
+  try {
+    return updateDescriptionService(req, res);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send(e);
+  }
+};
+
+const getFriends = (req, res) => {
+  try {
+    return getFriendsService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
 module.exports = {
   getListUser: getListUser,
   createUser: createUser,
@@ -155,4 +211,10 @@ module.exports = {
   DeleteUserForce,
   exportExcel,
   importExcel,
+  getUserSuggest,
+  getProfileUser,
+  changeAvatar,
+  changeBackground,
+  updateDescription,
+  getFriends,
 };

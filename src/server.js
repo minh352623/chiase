@@ -11,12 +11,15 @@ const notiRoute = require("./routers/notifycationRoute");
 const commentRoute = require("./routers/commentRoute");
 const optionReportRoute = require("./routers/optionReportRoute");
 const ReportRoute = require("./routers/reportPostRoute");
+const cateProfileRoute = require("./routers/cateProfileRoute");
+const optionProfileRoute = require("./routers/optionProfileRoute");
+const profileRoute = require("./routers/profileRoute");
+const friendRoute = require("./routers/friendRoute");
 let port = process.env.PORT;
-
 var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const app = express();
-//socket
+// socket
 const io = require("socket.io")(8900, {
   cors: {
     origin: "*",
@@ -52,11 +55,11 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", ({ senderId, receiverId, text, nameSender }) => {
     const user = getUser(receiverId);
     if (user && user.socketId) {
-      io.to(user.socketId).emit("getMessage", {
+      io.to(user?.socketId).emit("getMessage", {
         senderId,
         text,
       });
-      io.to(user.socketId).emit("alertMessage", {
+      io.to(user?.socketId).emit("alertMessage", {
         nameSender: nameSender,
         text: text,
       });
@@ -132,6 +135,26 @@ io.on("connection", (socket) => {
   });
   //end report
 
+  // addfriend
+  socket.on("addFriend", (data) => {
+    console.log(data);
+    const user = getUser(+data.receiverId);
+    console.log("addfriend", user);
+    if (user?.socketId) {
+      io.to(user?.socketId).emit("notiAddFriend", data);
+    }
+  });
+
+  socket.on("acceptAddFriend", (data) => {
+    console.log(data);
+    const user = getUser(+data.receiverId);
+    console.log("addfriend", user);
+    if (user?.socketId) {
+      io.to(user?.socketId).emit("notiAcceptAddFriend", data);
+    }
+  });
+  //end  addfriend
+
   //when disconnect
   socket.on("disconnect", () => {
     console.log("a user disconnected!");
@@ -166,6 +189,10 @@ app.use("/api/auth/notifycation", notiRoute);
 app.use("/api/auth/comment", commentRoute);
 app.use("/api/auth/admin/option_report", optionReportRoute);
 app.use("/api/auth/report", ReportRoute);
+app.use("/api/auth/admin/cate-profile", cateProfileRoute);
+app.use("/api/auth/admin/option-profile", optionProfileRoute);
+app.use("/api/auth/profile", profileRoute);
+app.use("/api/auth/friend", friendRoute);
 
 app.listen(port, function () {
   console.log(`khoi tao server hi ${process.env.PORT}`);

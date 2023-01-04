@@ -5,6 +5,8 @@ const {
   getDetailPostService,
   deletePostService,
   updatePostService,
+  getNineImageService,
+  searchGlobalService,
 } = require("../services/PostService");
 
 const createPost = async (req, res) => {
@@ -54,6 +56,21 @@ const UpdatePost = (req, res) => {
     return res.status(500).send(e);
   }
 };
+
+const getNineImage = (req, res) => {
+  try {
+    return getNineImageService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+// const searchGlobal = (req, res) => {
+//   try {
+//     return searchGlobalService(req, res);
+//   } catch (e) {
+//     return res.status(500).send(e);
+//   }
+// };
 module.exports = {
   createPost,
   getPostHome,
@@ -61,4 +78,6 @@ module.exports = {
   UpdatePost,
   getDetailPost,
   deletePost,
+  getNineImage,
+  // searchGlobal,
 };

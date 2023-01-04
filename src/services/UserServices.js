@@ -361,7 +361,6 @@ let updateUserService = async (req, res, avatar) => {
     } else {
       return res.status(500).send("User not found");
     }
-    return res.status(200).json(user);
   } catch (e) {
     console.log(e);
     return res.status(500).send(e.message);
@@ -491,6 +490,126 @@ const importExcelService = async (req, res, file) => {
     return res.status(500).send(e);
   }
 };
+
+const getUserSuggestService = async (req, res) => {
+  try {
+    const users = await db.User.findAll({
+      limit: 4,
+      where: {
+        group_id: 1,
+        id: {
+          [Op.ne]: req.userId,
+        },
+      },
+      // paranoid: false,
+    });
+
+    return res.status(200).send(users);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send(e);
+  }
+};
+const getProfileUserService = async (req, res) => {
+  try {
+    const profile = await db.User.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    if (!profile) return res.status(404).send("USER NOT FOUND");
+
+    return res.status(200).send(profile);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send(e);
+  }
+};
+
+const changeAvatarService = async (req, res, avatar) => {
+  try {
+    const id = req.params.id;
+
+    const user = await db.User.findByPk(id);
+    if (!user) return res.status(404).send("USER NOT FOUND");
+    let avatarnew = "";
+    if (avatar.tempFilePath) {
+      const info = await cloudinary.v2.uploader.upload(avatar.tempFilePath, {
+        folder: "home",
+      });
+      avatarnew = info.url;
+    }
+    if (avatarnew) {
+      user.avatar = avatarnew;
+      await user.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Avatar updated successfully",
+    });
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+const changeBackgroundService = async (req, res, bg_img) => {
+  try {
+    const id = req.params.id;
+
+    const user = await db.User.findByPk(id);
+    if (!user) return res.status(404).send("USER NOT FOUND");
+    let bg_imgNew = "";
+    if (bg_img.tempFilePath) {
+      const info = await cloudinary.v2.uploader.upload(bg_img.tempFilePath, {
+        folder: "home",
+      });
+      bg_imgNew = info.url;
+    }
+    if (bg_imgNew) {
+      user.bg_img = bg_imgNew;
+      await user.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Background updated successfully",
+    });
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
+const updateDescriptionService = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.params.id);
+    if (!user) return res.status(404).send("USER NOT FOUND");
+    if (!req.body.desc) return res.status(404).send("DESCRIPTION NOT FOUND");
+    user.description = req.body.desc;
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      message: "Description updated successfully",
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send(e);
+  }
+};
+
+const getFriendsService = async (req, res) => {
+  try {
+    const friends = await db.Friend.findAll({
+      where: {
+        [Op.or]: [{ sender: req.params.id }, { recie: req.params.id }],
+      },
+    });
+    return res.status(200).send(friends);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
 module.exports = {
   createUserService: createUserService,
   getPaginateUser: getPaginateUser,
@@ -503,4 +622,10 @@ module.exports = {
   DeleteUserForceService,
   exportExcelService,
   importExcelService,
+  getUserSuggestService,
+  getProfileUserService,
+  changeAvatarService,
+  changeBackgroundService,
+  updateDescriptionService,
+  getFriendsService,
 };
