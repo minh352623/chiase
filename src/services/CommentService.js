@@ -51,7 +51,7 @@ const createCommentService = async (req, res, file) => {
           text: req.body.text,
           post_id: req.body.post_id,
           key: "comment",
-          avatar: req.body.avatar_comment,
+          avatar: req.body?.avatar_comment || "",
         });
         // }
       }
@@ -119,7 +119,7 @@ const createLikeCommentService = async (req, res) => {
               text: req.body.text,
               comment_id: req.body.comment_id,
               key: "like_comment",
-              avatar: req.body.avatar_comment,
+              avatar: req.body?.avatar_comment || "",
             });
           }
         }

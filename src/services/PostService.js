@@ -67,77 +67,190 @@ let createPostService = async (req, res) => {
 
 let getPostHomeService = async (req, res) => {
   try {
-    let Posts = await db.Post.findAll({
-      limit: 15,
-      order: [["createdAt", "DESC"]],
+    let Posts;
+    const keyword = req.query.q || "";
+    if (req.query?.id_user) {
+      Posts = await db.Post.findAll({
+        where: {
+          user_id: req.query.id_user,
+        },
+        limit: 15,
+        order: [["createdAt", "DESC"]],
 
-      include: [
-        {
-          model: db.User,
-          as: "user_data",
-          attributes: ["firstName", "lastName", "id", "avatar"],
-        },
+        include: [
+          {
+            model: db.User,
+            as: "user_data",
+            attributes: ["firstName", "lastName", "id", "avatar"],
+          },
 
-        {
-          model: db.Post,
-          as: "post_data_two",
-          include: [
+          {
+            model: db.Post,
+            as: "post_data_two",
+            include: [
+              {
+                model: db.Video_Image,
+                as: "file_data",
+              },
+              {
+                model: db.User,
+                as: "user_data",
+                attributes: ["firstName", "lastName", "id", "avatar"],
+              },
+            ],
+          },
+          {
+            model: db.Video_Image,
+            as: "file_data",
+          },
+          {
+            model: db.likes,
+            as: "like_data",
+            attributes: ["user_id"],
+            include: [
+              {
+                model: db.User,
+                as: "user_data",
+                attributes: ["firstName", "lastName", "id"],
+              },
+            ],
+          },
+          {
+            model: db.Share_Post,
+            as: "user_share",
+            attributes: ["user_id"],
+            include: [
+              {
+                model: db.User,
+                as: "user_data",
+                attributes: ["firstName", "lastName", "id"],
+              },
+            ],
+          },
+          {
+            model: db.Comment,
+            as: "comment_data",
+            include: [
+              {
+                model: db.User,
+                as: "user_data",
+                attributes: ["firstName", "lastName", "avatar"],
+              },
+              {
+                model: db.Like_comment,
+                as: "like_comment_data",
+              },
+            ],
+          },
+        ],
+      });
+    } else {
+      Posts = await db.Post.findAll({
+        limit: 15,
+        order: [["createdAt", "DESC"]],
+        where: {
+          [Op.or]: [
             {
-              model: db.Video_Image,
-              as: "file_data",
+              content: {
+                [Op.substring]: keyword,
+              },
             },
             {
-              model: db.User,
-              as: "user_data",
-              attributes: ["firstName", "lastName", "id", "avatar"],
+              "$user_data.firstName$": {
+                [Op.substring]: keyword,
+              },
+            },
+            {
+              "$user_data.lastName$": {
+                [Op.substring]: keyword,
+              },
+            },
+            {
+              "$user_data.email$": {
+                [Op.substring]: keyword,
+              },
+            },
+            {
+              "$user_data.address$": {
+                [Op.substring]: keyword,
+              },
+            },
+            {
+              "$user_data.phone$": {
+                [Op.substring]: keyword,
+              },
             },
           ],
         },
-        {
-          model: db.Video_Image,
-          as: "file_data",
-        },
-        {
-          model: db.likes,
-          as: "like_data",
-          attributes: ["user_id"],
-          include: [
-            {
-              model: db.User,
-              as: "user_data",
-              attributes: ["firstName", "lastName", "id"],
-            },
-          ],
-        },
-        {
-          model: db.Share_Post,
-          as: "user_share",
-          attributes: ["user_id"],
-          include: [
-            {
-              model: db.User,
-              as: "user_data",
-              attributes: ["firstName", "lastName", "id"],
-            },
-          ],
-        },
-        {
-          model: db.Comment,
-          as: "comment_data",
-          include: [
-            {
-              model: db.User,
-              as: "user_data",
-              attributes: ["firstName", "lastName", "avatar"],
-            },
-            {
-              model: db.Like_comment,
-              as: "like_comment_data",
-            },
-          ],
-        },
-      ],
-    });
+        include: [
+          {
+            model: db.User,
+            as: "user_data",
+            attributes: ["firstName", "lastName", "id", "avatar"],
+            required: true,
+          },
+
+          {
+            model: db.Post,
+            as: "post_data_two",
+            include: [
+              {
+                model: db.Video_Image,
+                as: "file_data",
+              },
+              {
+                model: db.User,
+                as: "user_data",
+                attributes: ["firstName", "lastName", "id", "avatar"],
+              },
+            ],
+          },
+          {
+            model: db.Video_Image,
+            as: "file_data",
+          },
+          {
+            model: db.likes,
+            as: "like_data",
+            attributes: ["user_id"],
+            include: [
+              {
+                model: db.User,
+                as: "user_data",
+                attributes: ["firstName", "lastName", "id"],
+              },
+            ],
+          },
+          {
+            model: db.Share_Post,
+            as: "user_share",
+            attributes: ["user_id"],
+            include: [
+              {
+                model: db.User,
+                as: "user_data",
+                attributes: ["firstName", "lastName", "id"],
+              },
+            ],
+          },
+          {
+            model: db.Comment,
+            as: "comment_data",
+            include: [
+              {
+                model: db.User,
+                as: "user_data",
+                attributes: ["firstName", "lastName", "avatar"],
+              },
+              {
+                model: db.Like_comment,
+                as: "like_comment_data",
+              },
+            ],
+          },
+        ],
+      });
+    }
     return res.status(200).send(Posts);
   } catch (e) {
     console.log(e);
@@ -314,6 +427,151 @@ const updatePostService = async (req, res) => {
     return res.status(500).send(e);
   }
 };
+
+const getNineImageService = async (req, res) => {
+  try {
+    const images = await db.Post.findAll({
+      where: {
+        user_id: req.query.user_id,
+        "$file_data.link$": {
+          [Op.ne]: "",
+          // [Op.notLike]: `%mp4`,
+        },
+      },
+      include: [
+        {
+          model: db.Video_Image,
+          as: "file_data",
+          attributes: ["link"],
+          required: true,
+        },
+      ],
+    });
+    let convertData = [];
+
+    images.forEach((image) => {
+      convertData = [...convertData, ...image.file_data];
+    });
+    return res.status(200).send({
+      convertData,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send(e);
+  }
+};
+
+// const searchGlobalService = async (req, res) => {
+//   try {
+//     const keyword = req.query.q || "";
+//     Posts = await db.Post.findAll({
+//       order: [["createdAt", "DESC"]],
+//       where: {
+//         [Op.or]: [
+//           {
+//             content: {
+//               [Op.substring]: keyword,
+//             },
+//           },
+//           {
+//             "$user_data.firstName$": {
+//               [Op.substring]: keyword,
+//             },
+//           },
+//           {
+//             "$user_data.lastName$": {
+//               [Op.substring]: keyword,
+//             },
+//           },
+//           {
+//             "$user_data.email$": {
+//               [Op.substring]: keyword,
+//             },
+//           },
+//           {
+//             "$user_data.address$": {
+//               [Op.substring]: keyword,
+//             },
+//           },
+//           {
+//             "$user_data.phone$": {
+//               [Op.substring]: keyword,
+//             },
+//           },
+//         ],
+//       },
+//       include: [
+//         {
+//           model: db.User,
+//           as: "user_data",
+//         },
+
+//         {
+//           model: db.Post,
+//           as: "post_data_two",
+//           include: [
+//             {
+//               model: db.Video_Image,
+//               as: "file_data",
+//             },
+//             {
+//               model: db.User,
+//               as: "user_data",
+//               attributes: ["firstName", "lastName", "id", "avatar"],
+//             },
+//           ],
+//         },
+//         {
+//           model: db.Video_Image,
+//           as: "file_data",
+//         },
+//         {
+//           model: db.likes,
+//           as: "like_data",
+//           attributes: ["user_id"],
+//           include: [
+//             {
+//               model: db.User,
+//               as: "user_data",
+//               attributes: ["firstName", "lastName", "id"],
+//             },
+//           ],
+//         },
+//         {
+//           model: db.Share_Post,
+//           as: "user_share",
+//           attributes: ["user_id"],
+//           include: [
+//             {
+//               model: db.User,
+//               as: "user_data",
+//               attributes: ["firstName", "lastName", "id"],
+//             },
+//           ],
+//         },
+//         {
+//           model: db.Comment,
+//           as: "comment_data",
+//           include: [
+//             {
+//               model: db.User,
+//               as: "user_data",
+//               attributes: ["firstName", "lastName", "avatar"],
+//             },
+//             {
+//               model: db.Like_comment,
+//               as: "like_comment_data",
+//             },
+//           ],
+//         },
+//       ],
+//     });
+//     return res.status(200).json(Posts);
+//   } catch (e) {
+//     return res.status(500).send(e);
+//   }
+// };
+
 module.exports = {
   createPostService,
   getPostHomeService,
@@ -321,4 +579,6 @@ module.exports = {
   getDetailPostService,
   deletePostService,
   updatePostService,
+  getNineImageService,
+  // searchGlobalService,
 };
