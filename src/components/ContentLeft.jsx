@@ -1,12 +1,38 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { CaculateTime } from "../trait/CaculateTime";
 
-const ContentLeft = ({ user }) => {
+const ContentLeft = ({ user, nofitycations }) => {
+  console.log(nofitycations.notys);
   return (
     <div>
+      {/* <div
+            key={noti.id}
+            className="p-2 hover:bg-gray-300 transition-all rounded-lg flex notis-center gap-3"
+          >
+            <span className=" block w-[20%] xl:w-[10%]">
+              <img
+                className="w-full  rounded-full"
+                src={
+                  noti?.user_data?.avatar
+                    ? noti?.user_data?.avatar
+                    : "./undraw_profile.svg"
+                }
+                alt=""
+              />
+            </span>
+            <div className="flex flex-col gap-1   w-[80%]">
+              <p className="m-0 css_dot  text-sm font-semibold text-black">
+                {noti.text}
+              </p>
+              <span className="text-sm text-start text-blue-400 font-semibold">
+                {CaculateTime(noti.createdAt)}
+              </span>
+            </div>
+          </div>; */}
       <div className="flex flex-col">
         <Link
-          to="profile"
+          to={`/profile/${user?.id}`}
           className="flex gap-3 no-underline items-center hover:bg-gray-300 px-2 py-3 rounded-lg cursor-pointer"
         >
           <span>
@@ -42,6 +68,64 @@ const ContentLeft = ({ user }) => {
           </span>
           <span className="text-slate-900 font-bold">Bạn bè</span>
         </Link>
+      </div>
+      <div className="mt-3 shadow-sm p-3 rounded-2xl bg-white max-h-[50vh] h-[50vh] overflow-y-scroll content_center">
+        <h5 className="text-black text-lg">Thông báo mới nhất</h5>
+        {nofitycations.notys.map((noti) => {
+          if (noti.read == 0)
+            return (
+              <div
+                key={noti.id}
+                className="p-2 my-1 texy-start hover:bg-gray-400 bg-gray-300 transition-all rounded-lg  flex items-center gap-3"
+              >
+                <span className="block w-[15%]">
+                  <img
+                    className="w-full block rounded-full"
+                    src={noti?.avatar ? noti?.avatar : "./undraw_profile.svg"}
+                    alt=""
+                  />
+                </span>
+                <div className="flex flex-col gap-1 w-[90%]">
+                  <span className="text-sm text-start font-semibold text-black">
+                    {noti.text}
+                  </span>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-start text-blue-400 font-semibold">
+                      {CaculateTime(noti.createdAt)}
+                    </span>
+                    <span className="p-2 inline-block w-[20px] h-[20px] text-end bg-blue-500 rounded-full"></span>
+                  </div>
+                </div>
+              </div>
+            );
+          return (
+            <div
+              key={noti.id}
+              className="p-2 my-1 hover:bg-gray-300 transition-all rounded-lg flex items-center gap-3"
+            >
+              <span className="block w-[15%]">
+                <img
+                  className="w-full rounded-full"
+                  src={noti?.avatar ? noti?.avatar : "./undraw_profile.svg"}
+                  alt=""
+                />
+              </span>
+              <div className="flex flex-col gap-1 w-[90%] ">
+                <span className="text-sm text-start font-semibold text-black">
+                  {noti.text}
+                </span>
+                <span className="text-sm text-start text-blue-400 font-semibold">
+                  {CaculateTime(noti.createdAt)}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+        {(nofitycations.length <= 0 || nofitycations?.noty_count <= 0) && (
+          <div className="flex items-center justify-center">
+            không có thông báo
+          </div>
+        )}
       </div>
     </div>
   );

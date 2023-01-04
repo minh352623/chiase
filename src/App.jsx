@@ -22,17 +22,29 @@ import ListPost from "./pages/admin/post/ListPost";
 import Messager from "./pages/client/Messager";
 import { io } from "socket.io-client";
 import jwt_decode from "jwt-decode";
-import { handleFetchTokenCallVideo } from "./store/reducers/userReducer";
+import {
+  handleFetchFriends,
+  handleFetchTokenCallVideo,
+} from "./store/reducers/userReducer";
 import ListOption from "./pages/admin/optionReport/ListOption";
 import AddOption from "./pages/admin/optionReport/AddOption";
 import EditOption from "./pages/admin/optionReport/EditOption";
 import ListReportPost from "./pages/admin/reportPost/ListReportPost";
 import TrashUser from "./pages/admin/user/TrashUser";
+import Profile from "./pages/client/Profile";
+import ListCate from "./pages/admin/cateProfile/ListCate";
+import AddCate from "./pages/admin/cateProfile/AddCate";
+import EditCate from "./pages/admin/cateProfile/EditCate";
+import ListOptionCate from "./pages/admin/optionCate/ListOptionCate";
+import AddOptionCate from "./pages/admin/optionCate/AddOptionCate";
+import EditOptionCate from "./pages/admin/optionCate/EditOptionCate";
+import Friends from "./pages/client/Friends";
+import SearchTop from "./pages/client/SearchTop";
 // import jwt from "jsonwebtoken";
 
 function App() {
   const [socket, setSocket] = useState();
-  const { user } = useSelector((state) => state.auth);
+  const { user, friends } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -54,6 +66,7 @@ function App() {
   useEffect(() => {
     dispatch(handleFetchTokenCallVideo());
   }, [user]);
+
   return (
     <Fragment>
       <Routes>
@@ -68,6 +81,15 @@ function App() {
               path="/messager"
               element={<Messager socket={socket} />}
             ></Route>
+            <Route
+              path="/profile/:id"
+              element={<Profile socket={socket} />}
+            ></Route>
+            <Route
+              path="/friends"
+              element={<Friends socket={socket} />}
+            ></Route>
+            <Route path="/search/top" element={<SearchTop socket={socket} />} />
           </>
         )}
 
@@ -190,6 +212,54 @@ function App() {
           element={
             <PrivateRoute roles={[1]}>
               <ListReportPost socket={socket} />
+            </PrivateRoute>
+          }
+        ></Route>
+        <Route
+          path="/admin/cate-profile"
+          element={
+            <PrivateRoute roles={[1]}>
+              <ListCate socket={socket} />
+            </PrivateRoute>
+          }
+        ></Route>
+        <Route
+          path="/admin/cate-profile/create"
+          element={
+            <PrivateRoute roles={[1]}>
+              <AddCate socket={socket} />
+            </PrivateRoute>
+          }
+        ></Route>
+        <Route
+          path="/admin/cate-profile/:id"
+          element={
+            <PrivateRoute roles={[1]}>
+              <EditCate socket={socket} />
+            </PrivateRoute>
+          }
+        ></Route>
+        <Route
+          path="/admin/option-profile"
+          element={
+            <PrivateRoute roles={[1]}>
+              <ListOptionCate socket={socket} />
+            </PrivateRoute>
+          }
+        ></Route>
+        <Route
+          path="/admin/option-profile/create"
+          element={
+            <PrivateRoute roles={[1]}>
+              <AddOptionCate socket={socket} />
+            </PrivateRoute>
+          }
+        ></Route>
+        <Route
+          path="/admin/option-profile/:id"
+          element={
+            <PrivateRoute roles={[1]}>
+              <EditOptionCate socket={socket} />
             </PrivateRoute>
           }
         ></Route>

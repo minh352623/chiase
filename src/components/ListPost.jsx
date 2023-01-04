@@ -12,7 +12,7 @@ import { handleFetchNotis, setLoopNoti } from "../store/reducers/userReducer";
 import { v4 as uuidv4 } from "uuid";
 import Swal from "sweetalert2";
 
-const ListPost = ({ socket }) => {
+const ListPost = ({ socket, id_user, q = "" }) => {
   const navigate = useNavigate();
   const { isLoadPost, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -21,9 +21,16 @@ const ListPost = ({ socket }) => {
   const [loadingComment, setLoadingComment] = useState(false);
   const FetchPosts = async () => {
     try {
-      const response = await axios({
-        url: `/auth/post/home`,
-      });
+      let response;
+      if (id_user) {
+        response = await axios({
+          url: `/auth/post/home/?id_user=` + id_user + "&q=" + q,
+        });
+      } else {
+        response = await axios({
+          url: `/auth/post/home` + "/?q=" + q,
+        });
+      }
       console.log(response);
       if (response.status === 200) {
         const arrnew = response.data.map((item) => {
@@ -158,7 +165,7 @@ const ListPost = ({ socket }) => {
         formData.append("content", content);
         formData.append("post_id", post_id);
         formData.append("user_id", user?.id);
-        formData.append("avatar_comment", user?.avatar ? user.avatar : null);
+        formData.append("avatar_comment", user?.avatar ? user.avatar : "");
 
         formData.append("ownPost", ownPost);
         formData.append(
@@ -300,7 +307,7 @@ const ListPost = ({ socket }) => {
 
   return (
     <div>
-      {posts &&
+      {posts.length > 0 &&
         posts.map((post, index) => (
           <PostHome
             loadingComment={loadingComment}
@@ -315,6 +322,11 @@ const ListPost = ({ socket }) => {
             socket={socket}
           ></PostHome>
         ))}
+      {posts.length <= 0 && (
+        <div className="p-3 text-red-500 shadow_main bg-white mt-3 rounded-xl">
+          Chưa có bài viết
+        </div>
+      )}
     </div>
   );
 };

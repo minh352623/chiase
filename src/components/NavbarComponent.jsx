@@ -87,7 +87,11 @@ const NavbarComponent = () => {
             </span>
             <img
               className="img-profile rounded-circle"
-              src="../../undraw_profile.svg"
+              src={
+                auth?.user?.avatar
+                  ? auth?.user.avatar
+                  : "../../undraw_profile.svg"
+              }
             />
           </a>
           <div

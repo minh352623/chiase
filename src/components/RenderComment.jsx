@@ -35,7 +35,7 @@ const RenderComment = ({
                     src={
                       comment?.user_data?.avatar
                         ? comment?.user_data?.avatar
-                        : "./undraw_profile.svg"
+                        : "../undraw_profile.svg"
                     }
                     alt=""
                   />
@@ -53,7 +53,7 @@ const RenderComment = ({
                         <p className="absolute flex gap-1 m-0  right-0 bottom-[-8px] shadow-xl px-3 py-1 rounded-full bg-white">
                           <span>
                             <img
-                              src="./like_color.png"
+                              src="../like_color.png"
                               className="w-[20px]"
                               alt=""
                             />

@@ -3,7 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const UserOnline = ({ user: userF }) => {
+const UserOnline = ({ user: userF, suggest }) => {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
@@ -45,7 +45,9 @@ const UserOnline = ({ user: userF }) => {
           src={userF?.avatar ? userF.avatar : "./undraw_profile.svg"}
           alt=""
         />
-        <span className="absolute w-[10px] h-[10px] rounded-full bg-green-600 right-0 bottom-0 border border-[10px] border-white"></span>
+        {!suggest && (
+          <span className="absolute w-[10px] h-[10px] rounded-full bg-green-600 right-0 bottom-0 border border-[10px] border-white"></span>
+        )}
       </span>
       <span className="font-bold  text-slate-900">
         {userF.firstName + " " + userF.lastName}

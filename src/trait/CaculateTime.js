@@ -1,7 +1,6 @@
 const CaculateTime = (time) => {
   let message = "abc";
   let timeNew = Math.floor(new Date() - new Date(time)) / 1000 / 60 / 60;
-  console.log(timeNew);
   if (timeNew < 1) {
     message = parseFloat(timeNew * 60).toFixed(0) + " phút";
   }

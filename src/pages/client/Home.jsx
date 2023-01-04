@@ -11,6 +11,7 @@ import { ToastContainer, toast } from "react-toastify";
 
 const Home = ({ socket }) => {
   // const socket = useRef();
+  const { nofitycations } = useSelector((state) => state.user);
 
   const { user } = useSelector((state) => state.auth);
   const [userOnline, setUserOnline] = useState();
@@ -19,7 +20,7 @@ const Home = ({ socket }) => {
     // socket.current = io("ws://localhost:8900");
     socket?.on("getUsers", (users) => {
       console.log(users);
-
+      localStorage.setItem("usersOnline", JSON.stringify(users));
       setUserOnline(users);
     });
     socket?.on("alertMessage", (data) => {
@@ -32,21 +33,28 @@ const Home = ({ socket }) => {
       });
     });
   }, []);
-  // useEffect(() => {
-  //   socket?.current.emit("addUser", user?.id);
-  // }, [user]);
+  useEffect(() => {
+    console.log("asdasdasd");
+    console.log(JSON.parse(localStorage.getItem("usersOnline")));
+    setUserOnline(JSON.parse(localStorage.getItem("usersOnline")));
+  }, []);
   return (
     <LayoutClient socket={socket}>
-      <div className="grid grid-cols-12 gap-5 p-3 bg-gray-200 h-[91.5vh]">
-        <div className="xl:col-span-3 xl:block hidden">
-          <ContentLeft user={user}></ContentLeft>
+      <div className="lg:px-[80px] grid grid-cols-12 gap-5 py-3 bg-gray-200 h-[91.5vh]">
+        <div className="lg:col-span-3 lg:block hidden">
+          {nofitycations && (
+            <ContentLeft
+              nofitycations={nofitycations}
+              user={user}
+            ></ContentLeft>
+          )}
         </div>
-        <div className="content_center xl:col-span-6 col-span-12 overflow-y-auto">
-          <div className="xl:px-5 px-2">
+        <div className="content_center lg:col-span-6 col-span-12 overflow-y-auto">
+          <div className="lg:px-5 px-2">
             <ContentCenter socket={socket} user={user}></ContentCenter>
           </div>
         </div>
-        <div className="xl:col-span-3 xl:block hidden">
+        <div className="lg:col-span-3 lg:block hidden">
           {userOnline && (
             <ContentRight userOnlineCurrent={userOnline}></ContentRight>
           )}

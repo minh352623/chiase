@@ -17,22 +17,21 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingAdmin from "../../../components/LoadingAdmin";
-
-const ListGroup = ({ socket }) => {
+const ListOptionCate = ({ socket }) => {
   const navigate = useNavigate();
 
-  const [groups, setGroup] = React.useState();
+  const [cateProfile, setCateProfile] = React.useState();
   const [page, setPage] = React.useState(1);
   const [loading, setLoading] = React.useState(false);
-  const getListGroup = async () => {
+  const getCateProfile = async () => {
     try {
       setLoading(true);
       const response = await axios({
-        url: "/auth/admin/group?page=" + page + "&keyword=" + query,
+        url: "/auth/admin/option-profile/?page=" + page + "&keyword=" + query,
       });
       if (response.status == 200) {
         console.log(response);
-        setGroup(response.data);
+        setCateProfile(response.data);
         setLoading(false);
       }
     } catch (err) {
@@ -61,11 +60,11 @@ const ListGroup = ({ socket }) => {
           try {
             const response = await axios({
               method: "DELETE",
-              url: "/auth/admin/group/" + id,
+              url: "/auth/admin/option-profile/" + id,
             });
             console.log(response);
             if (response.status === 200) {
-              getListGroup();
+              getCateProfile();
               //console.log(data);
               Swal.fire("Deleted!", "Your post has been deleted.", "success");
             }
@@ -93,15 +92,15 @@ const ListGroup = ({ socket }) => {
   //phan trang
   const [pageCount, setPageCount] = React.useState(0);
   const [itemOffset, setItemOffset] = React.useState(0);
-  const { per_page } = groups || [];
+  const { per_page } = cateProfile || [];
   //   //console.log(per_page);
   React.useEffect(() => {
-    if (!groups || !groups.count) return;
+    if (!cateProfile || !cateProfile.count) return;
 
-    groups && setPageCount(Math.ceil(groups.count / per_page));
-  }, [itemOffset, groups]);
+    cateProfile && setPageCount(Math.ceil(cateProfile.count / per_page));
+  }, [itemOffset, cateProfile]);
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * per_page) % groups.count;
+    const newOffset = (event.selected * per_page) % cateProfile.count;
     setItemOffset(newOffset);
     setPage(event.selected + 1);
   };
@@ -117,11 +116,13 @@ const ListGroup = ({ socket }) => {
   }, 700);
   //
   React.useEffect(() => {
-    getListGroup();
+    getCateProfile();
   }, [page, query]);
   return (
     <LayoutAdmin socket={socket}>
-      <h2 className="uppercase text-center mb-3">list group</h2>
+      <h2 className="uppercase text-center mb-3">
+        Danh sách option danh mục giới thiệu
+      </h2>
       <div className="flex items-center justify-between my-2">
         <div>
           <form>
@@ -135,9 +136,9 @@ const ListGroup = ({ socket }) => {
         </div>
         <Link
           className="px-4 py-2 border-2 rounded-lg font-semibold no-underline hover:bg-blue-500 transition-all hover:text-slate-50  border-blue-500"
-          to="/admin/groupuser/create"
+          to="/admin/option-profile/create"
         >
-          Add Group
+          Thêm danh mục
         </Link>
       </div>
       {loading && <LoadingAdmin></LoadingAdmin>}
@@ -147,38 +148,38 @@ const ListGroup = ({ socket }) => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Stt</TableCell>
-                  <TableCell align="right">Name</TableCell>
-                  <TableCell align="right">Permission</TableCell>
+                  <TableCell>Id</TableCell>
+                  <TableCell align="right">Key</TableCell>
+                  <TableCell align="right">Tên danh mục</TableCell>
+
                   <TableCell align="right">CreatedAt</TableCell>
                   <TableCell align="right">Edit</TableCell>
                   <TableCell align="right">Delete</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {groups?.rows &&
-                  groups?.rows.map((group, index) => (
+                {cateProfile?.data.length > 0 &&
+                  cateProfile?.data.map((cate, index) => (
                     <TableRow
-                      key={group.id}
+                      key={cate.id}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell component="th" scope="row">
-                        {index + 1}
+                        {cate.id}
                       </TableCell>
-                      <TableCell align="right">{group.name}</TableCell>
+                      <TableCell align="right">{cate.key}</TableCell>
                       <TableCell align="right">
-                        <span className="px-4 py-3 bg-blue-500 rounded-lg text-slate-50 cursor-pointer">
-                          Permission
-                        </span>
+                        {cate?.cate_data?.name}
                       </TableCell>
+
                       <TableCell align="right">
-                        {moment(group.createdAt)
+                        {moment(cate.createdAt)
                           .tz("Asia/Bangkok")
                           .format("DD/MM/YYYY h:mm:ss A")}
                       </TableCell>
                       <TableCell align="right">
                         <Link
-                          to={`/admin/groupuser/${group.id}`}
+                          to={`/admin/option-profile/${cate.id}`}
                           className="text-end flex justify-end"
                         >
                           <svg
@@ -200,7 +201,7 @@ const ListGroup = ({ socket }) => {
                       <TableCell align="right">
                         <span className="flex justify-end">
                           <svg
-                            onClick={() => handleDelete(group.id)}
+                            onClick={() => handleDelete(cate.id)}
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
@@ -218,8 +219,8 @@ const ListGroup = ({ socket }) => {
                       </TableCell>
                     </TableRow>
                   ))}
-                {!groups?.rows ||
-                  (groups?.rows?.length <= 0 && (
+                {!cateProfile?.data ||
+                  (cateProfile?.data?.length <= 0 && (
                     <TableRow>
                       <TableCell colSpan="6">
                         <span className="block w-full text-red-500 text-center font-semibold">
@@ -277,4 +278,4 @@ const ListGroup = ({ socket }) => {
   );
 };
 
-export default ListGroup;
+export default ListOptionCate;
