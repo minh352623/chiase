@@ -23,6 +23,7 @@ import { ToastContainer, toast } from "react-toastify";
 
 const LayoutClient = ({ children, socket, search = "" }) => {
   const { user } = useSelector((state) => state.auth);
+  console.log(user);
   const { tokenCallVideo, requestFriend } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [videoCall, setVideoCall] = useState(false);
@@ -104,7 +105,7 @@ const LayoutClient = ({ children, socket, search = "" }) => {
               <p>
                 <img
                   src={
-                    videoCall.avatar ? videoCall.avatat : "./undraw_profile.svg"
+                    videoCall.avatar ? videoCall.avatar : "./undraw_profile.svg"
                   }
                   className="w-[100px] rounded-full"
                   alt=""

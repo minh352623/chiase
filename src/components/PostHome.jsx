@@ -21,6 +21,7 @@ const PostHome = ({
   handleEditPostParent,
   handleDeltePost,
   socket,
+  FetchPosts,
 }) => {
   const [showFormComment, setShowFormComment] = useState(true);
   //console.log(showFormComment);
@@ -74,10 +75,11 @@ const PostHome = ({
   const showImage = (e) => {
     // showImg.current.parentElement.parentElement.classList.remove("");
     const [file] = e.target.files;
+    setFile(e.target.files);
+    console.log(e.target.files[0]);
     if (file) {
       showImg.current.src = URL.createObjectURL(file);
     }
-    setFile(e.target.files);
   };
 
   const handleLikeComment = async (idComment, ownComment, status) => {
@@ -1224,14 +1226,15 @@ const PostHome = ({
               <p
                 onClick={(e) => {
                   setFile("");
-                  // showImg.current.src = "";
-                  e.target.parentElement.nextElementSibling.querySelector(
-                    "img"
-                  ).src = "";
+                  showImg.current.src = "";
+
+                  // e.target.parentElement.nextElementSibling.querySelector(
+                  //   "img"
+                  // ).src = "";
                 }}
                 className=" cursor-pointer text-end m-0 w-full leading-none "
               >
-                <span className="w-[30px] h-[30px]  text-xl  bg-gray-300 p-2  rounded-full mt-3 flex items-center justify-center hover:scale-110">
+                <span className="w-[30px] mb-3 h-[30px]  text-xl  bg-gray-300 p-2  rounded-full mt-3 flex items-center justify-center hover:scale-110">
                   x
                 </span>
               </p>
@@ -1250,22 +1253,15 @@ const PostHome = ({
                   return (
                     <div key={comment.id}>
                       <CommentPost
+                        socket={socket}
                         key={comment.id}
                         user={user}
+                        FetchPosts={FetchPosts}
                         // setShowReply={setShowReply}
                         item={item}
                         handleLikeComment={handleLikeComment}
                         comment={comment}
                       ></CommentPost>
-                      <RenderComment
-                        key={comment.id + comment.createdAt + uuidv4()}
-                        listComment={item.comment_data}
-                        id_parent={comment.id}
-                        id_post={item.id}
-                        rank={1}
-                        user={user}
-                        handleLikeComment={handleLikeComment}
-                      ></RenderComment>
                     </div>
                   );
                 }

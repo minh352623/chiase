@@ -27,7 +27,7 @@ const ContentRight = ({ userOnlineCurrent }) => {
       }
     } catch (e) {
       console.log(e);
-      if (err.response.status == 401) {
+      if (e.response.status == 401) {
         navigate("/login");
       }
     }

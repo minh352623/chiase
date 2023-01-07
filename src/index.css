@@ -95,7 +95,11 @@ a {
 .group:hover {
   /* background-color: red; */
 }
-
+.fio-ui-modal,
+.fio-show-modal,
+.fio-modal-content {
+  z-index: 999999 !important;
+}
 .shadow_noti {
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }

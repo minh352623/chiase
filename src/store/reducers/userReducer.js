@@ -10,6 +10,7 @@ import fetchNotis, {
   handleAcceptFriend,
   handleRefuseFriend,
 } from "../request/userRequest";
+export const setFaceioInstance = createAction("setFaceioInstance");
 
 export const handleFetchNotis = createAsyncThunk(
   "user/handleFetchNotis",
@@ -158,6 +159,7 @@ const userReducer = createSlice({
     notiReportAdmin: 0,
     requestFriend: null,
     friends: null,
+    faceioInstance: null,
   },
   reducers: {
     setLoopNoti: (state, action) => {
@@ -175,6 +177,9 @@ const userReducer = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(setFaceioInstance, (state, action) => {
+      state.faceioInstance = action.payload;
+    });
     builder.addCase(handleFetchNotis.fulfilled, (state, action) => {
       state.nofitycations = action.payload;
     });
@@ -187,7 +192,7 @@ const userReducer = createSlice({
     });
     builder.addCase(handleFetchTokenCallVideo.fulfilled, (state, action) => {
       console.log(action);
-      state.tokenCallVideo = action.payload.tokenVideo;
+      state.tokenCallVideo = action.payload?.tokenVideo;
     });
     builder.addCase(handleFetchTokenCallVideo.pending, (state, action) => {
       console.log("pending");

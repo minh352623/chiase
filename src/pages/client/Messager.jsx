@@ -387,7 +387,7 @@ const Messager = ({ socket }) => {
                     </div>
                   ))}
                 {messages && messages.length <= 0 && (
-                  <div className="h-full text-xl w-full bg-gray-200 flex rounded-xl items-center justify-center">
+                  <div className="h-full text-xl w-full bg-gray-200  mt-1 flex rounded-xl items-center justify-center">
                     Hãy bắt đầu cuộc trò chuyện ngay bây giờ!
                   </div>
                 )}
