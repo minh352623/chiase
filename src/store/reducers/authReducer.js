@@ -12,6 +12,7 @@ const authReducer = createSlice({
   },
   reducers: {
     setUser: (state, action) => {
+      console.log(action.payload);
       if (Object.keys(action.payload).length === 0) {
         return {
           ...state,
@@ -19,6 +20,7 @@ const authReducer = createSlice({
           user: {},
         };
       }
+      console.log("mesadasdasd");
       return {
         ...state,
         isLogin: true,

@@ -22,7 +22,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleFetchNotis } from "../store/reducers/userReducer";
 import { CaculateTime } from "../trait/CaculateTime";
 import { useState } from "react";
-
+import LoadingAdmin from "./LoadingAdmin";
+import { useRef } from "react";
+import { useEffect } from "react";
+import lodash from "lodash";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
+import MicroPhone from "./MicroPhone";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
 
@@ -126,7 +133,21 @@ export default function HeaderClient({
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // try {
+    //   const response = await axios({
+    //     method: "get",
+    //     url: "/auth/logout",
+    //   });
+    //   if (response.status === 200) {
+
+    //   }
+    // } catch (e) {
+    //   console.log(e);
+    //   if (e.response.status === 401) {
+    //     navigate("/login");
+    //   }
+    // }
     localStorage.removeItem("access_token");
     navigate("/login");
   };
@@ -280,8 +301,85 @@ export default function HeaderClient({
     </Menu>
   );
   const [searchGlobal, setSearchGlobal] = useState("");
+  const [showSuggest, setShowSuggest] = useState(false);
+  const [loadingSuggest, setLoadingSuggest] = useState(false);
+  const [dataSuggest, setDataSuggest] = useState();
+
+  const tableHisstory = useRef();
+  const inputSearch = useRef();
+
+  useEffect(() => {
+    const hiddenTable = function (e) {
+      console.log(e.target);
+      console.log(inputSearch?.current);
+      if (
+        !e.target.matches(".input_search_global") &&
+        !tableHisstory.current?.contains(e.target)
+      ) {
+        setShowSuggest(false);
+      }
+    };
+    document.addEventListener("click", hiddenTable);
+    return () => {
+      document.removeEventListener("click", hiddenTable);
+    };
+  }, [inputSearch.current, tableHisstory.current]);
+  const suggestSearch = async () => {
+    try {
+      setShowSuggest(true);
+      setLoadingSuggest(true);
+      const response = await axios({
+        url: "auth/history/?keyword=" + searchGlobal,
+      });
+      if (response.status === 200) {
+        console.log(response);
+        setDataSuggest(response.data);
+        setLoadingSuggest(false);
+      }
+    } catch (e) {
+      console.log(e);
+      setLoadingSuggest(false);
+
+      if (e.response.status === 401) {
+        navigate("/login");
+      }
+    }
+  };
+
+  const hanldeQueryKeyword = lodash.debounce((e) => {
+    // setQueryKeyword(e.target.value);
+    console.log(e.target.value);
+    suggestSearch(e.target.value || "");
+    setSearchGlobal(e.target.value);
+  }, 100);
+  useEffect(() => {
+    if (searchGlobal) {
+      suggestSearch(searchGlobal);
+    }
+  }, [searchGlobal]);
+
+  //void search
+  const { transcript, listening } = useSpeechRecognition();
+  if (!SpeechRecognition.browserSupportsSpeechRecognition) {
+    return null;
+  }
+
+  React.useEffect(() => {
+    const searchVoice = lodash.debounce(() => {
+      if (transcript) {
+        console.log("tran" + transcript);
+        inputSearch.current.value = transcript;
+        navigate(`/search/top/?q=${transcript}`);
+      }
+    }, 1000);
+    searchVoice();
+  }, [transcript]);
+
+  //end void search
   return (
     <Box className="h-[8.5vh]" sx={{ flexGrow: 1 }}>
+      {listening && <MicroPhone></MicroPhone>}
+
       <AppBar className="bg-white z-[100]">
         <Toolbar>
           <Link to="/home" className="mr-2">
@@ -292,25 +390,133 @@ export default function HeaderClient({
             />
           </Link>
           <Search className="rounded-full text-black">
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
             <form
               action=""
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
+
                 if (searchGlobal) {
-                  navigate(`/search/top/?q=${searchGlobal}`);
+                  try {
+                    const response = await axios({
+                      method: "POST",
+                      url: `/auth/history`,
+                      data: {
+                        keyword: searchGlobal,
+                      },
+                    });
+                    if (response.status == 201) {
+                      navigate(`/search/top/?q=${searchGlobal}`);
+                    }
+                  } catch (e) {
+                    console.log(e);
+                    if (e.response.status === 401) {
+                      navigate("/login");
+                    }
+                  }
                 }
+                setShowSuggest(false);
               }}
             >
-              <input
-                onChange={(e) => setSearchGlobal(e.target.value)}
-                type="text"
-                defaultValue={search}
-                className="pr-3 pl-5 outline-none rounded-full py-2 bg-gray-200"
-                placeholder="Tìm kiếm"
-              />
+              <div className="relative">
+                <SearchIconWrapper>
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <input
+                  ref={inputSearch}
+                  onChange={hanldeQueryKeyword}
+                  onFocus={suggestSearch}
+                  type="text"
+                  defaultValue={searchGlobal || search}
+                  className="pr-3 input_search_global pl-5 outline-none rounded-full py-2 bg-gray-200"
+                  placeholder="Tìm kiếm"
+                />
+                <span className="absolute top-1/2 -translate-y-1/2 hover:bg-slate-400 rounded-full cursor-pointer hover:text-slate-50 transition-all p-2 text-slate-900 right-0 ">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6"
+                    onClick={() => {
+                      SpeechRecognition.startListening({ language: "vi-Vn" });
+                    }}
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
+                    />
+                  </svg>
+                </span>
+                {showSuggest && dataSuggest?.length > 0 && (
+                  <div
+                    ref={tableHisstory}
+                    className="absolute w-[350px] right-0 bg-white top-full shadow_noti p-2 rounded-lg"
+                  >
+                    <div className="flex justify-between items-center mb-1 p-2">
+                      <p className="font-bold text-lg m-0">Tìm kiếm gần đây</p>
+                      <span className="text-blue-500 p-2 rounded-lg cursor-pointer hover:bg-blue-200 transition-all">
+                        Chỉnh sửa
+                      </span>
+                    </div>
+
+                    {loadingSuggest && <LoadingAdmin></LoadingAdmin>}
+                    {!loadingSuggest &&
+                      dataSuggest.map((suggest) => (
+                        <div
+                          key={suggest.id}
+                          onClick={() => {
+                            console.log(suggest);
+                            inputSearch.current
+                              ? (inputSearch.current.value = suggest.keyword)
+                              : "";
+                            setSearchGlobal(suggest.keyword);
+                            setShowSuggest(false);
+                            navigate(`/search/top/?q=${suggest.keyword}`);
+                          }}
+                          className="flex h-auto transition-all rounded-lg justify-between cursor-pointer p-2 hover:bg-gray-200 transition-all"
+                        >
+                          <p className="flex gap-3 items-center m-0">
+                            <span className="text-gray-600 p-1 rounded-full bg-gray-200">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="w-6 h-6"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                            </span>
+                            <span>{suggest.keyword}</span>
+                          </p>
+                          <span className="text-gray-600 p-1 flex items-center justify-center hover:bg-gray-300 rounded-full transition-all">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="w-5 h-5 leading-none"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
             </form>
           </Search>
           <Box sx={{ flexGrow: 1 }}>

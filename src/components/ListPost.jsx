@@ -320,6 +320,7 @@ const ListPost = ({ socket, id_user, q = "" }) => {
             key={post.id + uuidv4()}
             item={post}
             socket={socket}
+            FetchPosts={FetchPosts}
           ></PostHome>
         ))}
       {posts.length <= 0 && (

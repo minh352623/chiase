@@ -90,9 +90,9 @@ const Friends = ({ socket }) => {
                         to={`/profile/${friend.sender}`}
                         className="text-black font-semibold"
                       >
-                        {friend?.sender_data.firstName +
+                        {friend?.sender_data?.firstName +
                           " " +
-                          friend?.sender_data.lastName}
+                          friend?.sender_data?.lastName}
                       </Link>
                       <div>
                         <p

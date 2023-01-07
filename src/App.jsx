@@ -10,7 +10,6 @@ import ListGroup from "./pages/admin/groupuser/ListGroup";
 import CreateUser from "./pages/admin/user/CreateUser";
 import EditUser from "./pages/admin/user/EditUser";
 import Listuser from "./pages/admin/user/ListUser";
-import Index from "./pages/client";
 import Home from "./pages/client/Home";
 import Login from "./pages/Login";
 import LoginAdmin from "./pages/LoginAdmin";
@@ -25,6 +24,7 @@ import jwt_decode from "jwt-decode";
 import {
   handleFetchFriends,
   handleFetchTokenCallVideo,
+  setFaceioInstance,
 } from "./store/reducers/userReducer";
 import ListOption from "./pages/admin/optionReport/ListOption";
 import AddOption from "./pages/admin/optionReport/AddOption";
@@ -40,6 +40,11 @@ import AddOptionCate from "./pages/admin/optionCate/AddOptionCate";
 import EditOptionCate from "./pages/admin/optionCate/EditOptionCate";
 import Friends from "./pages/client/Friends";
 import SearchTop from "./pages/client/SearchTop";
+import axios from "axios";
+import LoginGoogleSuccess from "./pages/client/LoginGoogleSuccess";
+import LoginGithubSuccess from "./pages/client/LoginGithubSuccess";
+import ForgotPassword from "./pages/client/ForgotPassword";
+import ResetPassword from "./pages/client/ResetPassword";
 // import jwt from "jsonwebtoken";
 
 function App() {
@@ -49,6 +54,7 @@ function App() {
 
   useEffect(() => {
     setSocket(io("http://localhost:8900"));
+
     const FetchUserReload = () => {
       try {
         let accessToken = localStorage.getItem("access_token") || {};
@@ -66,12 +72,44 @@ function App() {
   useEffect(() => {
     dispatch(handleFetchTokenCallVideo());
   }, [user]);
+  let faceioInstance = null;
+  useEffect(() => {
+    const faceioScript = document.createElement("script");
+    faceioScript.src = "//cdn.faceio.net/fio.js";
+    faceioScript.async = true;
+    faceioScript.onload = () => faceioScriptLoaded();
+    document.body.appendChild(faceioScript);
 
+    return () => {
+      document.body.removeChild(faceioScript);
+    };
+  }, []);
+  const faceioScriptLoaded = () => {
+    console.log(faceIO);
+    if (faceIO && !faceioInstance) {
+      faceioInstance = new faceIO("fioa0d2f");
+      dispatch(setFaceioInstance(faceioInstance));
+    }
+  };
   return (
     <Fragment>
       <Routes>
         <Route path="/" element={<Login />}></Route>
+        <Route path="/forgot-password" element={<ForgotPassword />}></Route>
+        <Route path="/password/reset" element={<ResetPassword />}></Route>
 
+        <Route
+          path="/login-google-success/:id"
+          element={<LoginGoogleSuccess />}
+        ></Route>
+        <Route
+          path="/login-facebook-success/:id"
+          element={<LoginGoogleSuccess />}
+        ></Route>
+        <Route
+          path="/login-github-success/:id"
+          element={<LoginGithubSuccess />}
+        ></Route>
         <Route path="/register" element={<Register />}></Route>
         <Route path="/login" element={<Login />}></Route>
         {socket && (

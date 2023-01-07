@@ -27,9 +27,9 @@ const RenderComment = ({
             >
               <div
                 key={comment.id + comment.updatedAt + uuidv4()}
-                className={` my-2 w-3/5 flex f gap-2 max-w-4/5`}
+                className={` my-2 lg:w-3/5 flex f gap-2 w-full lg:max-w-4/5`}
               >
-                <p className="w-[10%]">
+                <p className="lg:w-[10%] w-[15%]">
                   <img
                     className="w-full rounded-full object-cover"
                     src={
@@ -40,7 +40,7 @@ const RenderComment = ({
                     alt=""
                   />
                 </p>
-                <div className="w-[95%] ">
+                <div className="lg:w-[95%] w-[85%]">
                   {comment.text && (
                     <div className="relative m-0 px-2 py-1 bg-gray-300 rounded-lg text-black">
                       <span className="block font-semibold my-1">
