@@ -1,6 +1,7 @@
 const {
   createCommentService,
   createLikeCommentService,
+  createReplyService,
 } = require("../services/CommentService");
 
 const createComment = (req, res) => {
@@ -21,7 +22,16 @@ const createLikeComment = (req, res) => {
   }
 };
 
+const createReply = (req, res) => {
+  try {
+    return createReplyService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
 module.exports = {
   createComment,
   createLikeComment,
+  createReply,
 };

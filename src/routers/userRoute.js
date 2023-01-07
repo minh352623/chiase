@@ -18,6 +18,8 @@ const {
   changeBackground,
   updateDescription,
   getFriends,
+  forgotPassword,
+  changePassword,
 } = require("../controllers/userController");
 
 const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
@@ -27,6 +29,9 @@ router.get("/exportExcel", [isAuthentication], exportExcel);
 router.get("/getFriends/:id", [isAuthentication], getFriends);
 
 router.post("/importExcel", [isAuthentication], importExcel);
+router.post("/forgotPassword", forgotPassword);
+router.post("/changePassword", changePassword);
+
 router.get("/suggest", [isAuthentication], getUserSuggest);
 router.get("/profile/:id", [isAuthentication], getProfileUser);
 
@@ -39,11 +44,7 @@ router.get("/:id", [isAuthentication], getUser);
 router.patch("/restore/:id", [isAuthentication, isAdmin], restoreUser);
 router.patch("/changeAvatar/:id", [isAuthentication], changeAvatar);
 router.patch("/changeBackground/:id", [isAuthentication], changeBackground);
-router.patch(
-  "/updateDescription/:id",
-  [isAuthentication, isAdmin],
-  updateDescription
-);
+router.patch("/updateDescription/:id", [isAuthentication], updateDescription);
 
 router.patch("/:id", [isAuthentication, isAdmin], UpdateUser);
 

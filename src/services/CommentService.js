@@ -134,7 +134,47 @@ const createLikeCommentService = async (req, res) => {
   }
 };
 
+const createReplyService = async (req, res) => {
+  try {
+    if (!req.body.content) return res.status(400).send("Content not found");
+    const reply = await db.Comment.create({
+      post_id: req.body.post_id,
+      user_id: req.body.user_id,
+      text: req.body.content,
+      parent_id: req.body.parent_id,
+    });
+    if (!reply) return res.status(500).send("DATABSE ERRROR");
+    const updatePost = await db.Post.findByPk(req.body.post_id);
+    if (!updatePost) return res.status(404).send("POST NOT FOUND");
+    updatePost.comment_count = updatePost.comment_count + 1;
+    let update = await updatePost.save();
+    if (req.body.ownPost != req.body.user_id) {
+      const notifycationNew = await db.Notifycation.create({
+        user_id: req.body.ownPost,
+        text: req.body.text,
+        post_id: req.body.post_id,
+        key: "comment",
+        avatar: req.body?.avatar_comment || "",
+      });
+    }
+    if (req.body.recie != req.body.user_id) {
+      const notifycationNew2 = await db.Notifycation.create({
+        user_id: req.body.recie,
+        text: req.body.textReply,
+        post_id: req.body.post_id,
+        key: "rep_comment",
+        avatar: req.body?.avatar_comment || "",
+      });
+    }
+    return res.status(200).send("create reply successfully");
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send(e);
+  }
+};
+
 module.exports = {
   createCommentService,
   createLikeCommentService,
+  createReplyService,
 };
