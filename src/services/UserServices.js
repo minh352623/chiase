@@ -9,6 +9,9 @@ cloudinary.config({
   api_key: process.env.CLOUD_API_KEY,
   api_secret: process.env.CLOUD_API_SECRET,
 });
+const jwt = require("jsonwebtoken");
+const { sendMail } = require("../utils/mailer");
+
 let per_page = 3;
 let getPaginateUser = async (req, res) => {
   try {
@@ -610,6 +613,88 @@ const getFriendsService = async (req, res) => {
   }
 };
 
+const createTokenGoogleService = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.params.id);
+    if (!user) return res.status(404).send("USER NOT FOUND");
+    const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
+      expiresIn: 3600,
+    });
+    return res.status(200).send({
+      accessToken: jwtToken,
+    });
+  } catch (e) {
+    return res.status(500).send;
+  }
+};
+
+const forgotPasswordService = async (req, res) => {
+  try {
+    if (!req.body.email) return res.status(404).send("EMAIL NOT FOUND");
+
+    const salt = bcrypt.genSaltSync(10);
+    const hashEmail = bcrypt.hashSync(req.body.email, salt);
+    await sendMail(
+      req.body.email,
+      "Reset Password",
+      `
+      <div style="text-align:start;border:1px solid #ccc;padding:12px;">
+      <p style="padding:24px;border-bottom:1px solid #ccc;margin:0;text-align:center;font-weight:bold;font-size:35px;color:black;">
+          From Website <span style="color:red">Chiase.com</span>
+      </p>
+      <h4>Hi ${req.body.email}</h4>
+      <h4>Bạn quên mật khẩu?</h4>
+      <h4>Chúng tôi trả lời cho yêu cầu thay đổi mật khẩu của bạn!</h4>
+
+      <h3>Chúng tôi gửi Link xác nhận đổi mật khẩu. Nếu không phải là bạn vui lòng báo cáo với chúng tôi ngay!</h3>
+      
+      <a style="padding:4px 8px;background-color:gray;color:white; text-decoration:none;border-radius:8px;font-size:18px;" href="${process.env.URL_CLIENT}/password/reset/?email=${req.body.email}&token=${hashEmail}">
+      Xác nhận
+      </a>
+      </div>`
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Email sent successfully",
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send(e);
+  }
+};
+
+const changePasswordService = async (req, res) => {
+  try {
+    if (!req.body.password) return res.status(400).send("PASSWORD NOT FOUND");
+    const isEamilValid = bcrypt.compareSync(
+      req.body.email,
+      req.body.tokenEmail
+    );
+
+    if (!isEamilValid) {
+      return res.status(400).send("Email và mã kèm theo không khớp");
+    }
+
+    const user = await db.User.findOne({
+      where: {
+        email: req.body.email,
+      },
+    });
+    if (!user) return res.status(400).send("USER NOT FOUND");
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(req.body.password, salt);
+    user.password = hash;
+    await user.save();
+    return res.status(201).json({
+      success: true,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send(e);
+  }
+};
+
 module.exports = {
   createUserService: createUserService,
   getPaginateUser: getPaginateUser,
@@ -628,4 +713,7 @@ module.exports = {
   changeBackgroundService,
   updateDescriptionService,
   getFriendsService,
+  createTokenGoogleService,
+  forgotPasswordService,
+  changePasswordService,
 };

@@ -16,6 +16,9 @@ const {
   changeBackgroundService,
   updateDescriptionService,
   getFriendsService,
+  createTokenGoogleService,
+  forgotPasswordService,
+  changePasswordService,
 } = require("../services/UserServices");
 const getListUser = async (req, res) => {
   try {
@@ -198,6 +201,36 @@ const getFriends = (req, res) => {
   }
 };
 
+const createTokenGoogle = (req, res) => {
+  try {
+    return createTokenGoogleService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+const logout = (req, res) => {
+  req.logout();
+  return res.status(200).send({
+    success: true,
+  });
+};
+
+const forgotPassword = (req, res) => {
+  try {
+    return forgotPasswordService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
+const changePassword = (req, res) => {
+  try {
+    return changePasswordService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
 module.exports = {
   getListUser: getListUser,
   createUser: createUser,
@@ -217,4 +250,8 @@ module.exports = {
   changeBackground,
   updateDescription,
   getFriends,
+  createTokenGoogle,
+  forgotPassword,
+  changePassword,
+  // logout,
 };

@@ -1,4 +1,5 @@
 const express = require("express");
+const passportSetup = require("./passport");
 const connectDB = require("./config/connectDb");
 const userRouter = require("./routers/UserRoute");
 const groupRouter = require("./routers/groupRoute");
@@ -15,10 +16,14 @@ const cateProfileRoute = require("./routers/cateProfileRoute");
 const optionProfileRoute = require("./routers/optionProfileRoute");
 const profileRoute = require("./routers/profileRoute");
 const friendRoute = require("./routers/friendRoute");
+const historyRoute = require("./routers/historySearchRoute");
 let port = process.env.PORT;
 var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
+// const cookieSession = require("cookie-session");
+// const passport = require("passport");
 const app = express();
+
 // socket
 const io = require("socket.io")(8900, {
   cors: {
@@ -193,6 +198,7 @@ app.use("/api/auth/admin/cate-profile", cateProfileRoute);
 app.use("/api/auth/admin/option-profile", optionProfileRoute);
 app.use("/api/auth/profile", profileRoute);
 app.use("/api/auth/friend", friendRoute);
+app.use("/api/auth/history", historyRoute);
 
 app.listen(port, function () {
   console.log(`khoi tao server hi ${process.env.PORT}`);

@@ -51,7 +51,57 @@ let registerService = async (req, res) => {
     res.status(500).send(e.message);
   }
 };
+
+const createTokenFacebookService = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.params.id);
+    if (!user) return res.status(404).send("USER NOT FOUND");
+    const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
+      expiresIn: 3600,
+    });
+    return res.status(200).send({
+      accessToken: jwtToken,
+    });
+  } catch (e) {
+    return res.status(500).send;
+  }
+};
+const createTokenGithubService = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.params.id);
+    if (!user) return res.status(404).send("USER NOT FOUND");
+    const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
+      expiresIn: 3600,
+    });
+    return res.status(200).send({
+      accessToken: jwtToken,
+    });
+  } catch (e) {
+    return res.status(500).send;
+  }
+};
+
+const loginWithFaceIDService = async (req, res) => {
+  try {
+    const user = await db.User.findOne({
+      where: { email: req.body.email },
+    });
+    if (!user) return res.status(404).send("USER NOT FOUND");
+    const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
+      expiresIn: 3600,
+    });
+    return res.status(200).send({
+      accessToken: jwtToken,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send(e);
+  }
+};
 module.exports = {
   loginAuthService,
   registerService,
+  createTokenFacebookService,
+  createTokenGithubService,
+  loginWithFaceIDService,
 };
