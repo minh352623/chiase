@@ -36,6 +36,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.39.1",
     "react-paginate": "^8.1.4",
+    "react-quill": "^2.0.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.4.3",
     "react-speech-recognition": "^3.10.0",

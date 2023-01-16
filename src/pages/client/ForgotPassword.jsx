@@ -32,7 +32,7 @@ const ForgotPassword = () => {
       const time =
         (new Date() - new Date(localStorage.getItem("timeSendMail"))) / 1000;
       console.log(time > 1);
-      if (+time < 1) {
+      if (+time < 120) {
         Swal.fire({
           title: "Error!",
           text: "Vui lòng đợi 2 phút kể từ lần cuối yêu cầu!",

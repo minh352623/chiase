@@ -73,7 +73,7 @@ const SearchTop = ({ socket }) => {
       <div className="">
         <div className="grid grid-cols-12">
           <div className="col-span-3  max-h-[92.5vh]">
-            <div className="p-3 bg-white shadow_noti max-h-[92.5vh] h-[92.5vh] overflow-y-hidden">
+            <div className="p-3 bg-white shadow_noti max-h-[91.5vh] h-[91.5vh] overflow-hidden">
               <div className="py-2 border-b border-gray-500">
                 <h5 className="font-bold text-2xl text-black">
                   Kết quả tìm kiếm cho:{" "}
@@ -148,7 +148,7 @@ const SearchTop = ({ socket }) => {
             </div>
           </div>
           <div className="col-span-9">
-            <div className="container flex justify-center  max-h-[92.5vh] h-[92.5vh] overflow-y-auto w-full items-start pt-5">
+            <div className="container flex justify-center  max-h-[91.5vh] h-[91.5vh] overflow-y-auto w-full items-start pt-5">
               {tab == 1 && (
                 <div className="p-3 rounded-xl shadow_search w-2/3 h-fit">
                   <h5 className="font-bold text-black">Mọi người</h5>

@@ -23,7 +23,7 @@ const PostHome = ({
   socket,
   FetchPosts,
 }) => {
-  const [showFormComment, setShowFormComment] = useState(true);
+  const [showFormComment, setShowFormComment] = useState(false);
   //console.log(showFormComment);
 
   const caculateTime = (time) => {
@@ -1064,7 +1064,7 @@ const PostHome = ({
                 {item.comment_count} Bình luận
               </span>
               {() => {}}
-              <div className="absolute hidden transition-all right-0 user_comment_data top-full z-10 w-[180px] text-white rounded-xl bg-[rgba(0,0,0,0.8)] px-3 py-2">
+              <div className="absolute hidden transition-all left-0 user_comment_data top-full z-10 w-[180px] text-white rounded-xl bg-[rgba(0,0,0,0.8)] px-3 py-2">
                 {renderUserComment(item.comment_data).map((comment) => (
                   <p key={comment.id + uuidv4()} className="m-0 text-start">
                     {comment?.user_data?.firstName +
@@ -1270,7 +1270,7 @@ const PostHome = ({
               <p
                 onClick={() =>
                   setShowComment((showComment) => {
-                    let showCommentCurent = showComment + 4;
+                    let showCommentCurent = showComment + 3;
 
                     return showCommentCurent;
                   })
