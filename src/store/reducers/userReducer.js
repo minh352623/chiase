@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import fetchNotis, {
+  fetchCoin,
   fetchFriends,
   fetchNotiReport,
   fetchRequestFriends,
@@ -47,6 +48,10 @@ export const handleFetchTokenCallVideo = createAsyncThunk(
     } catch (e) {
       console.log(e);
       // if (e.response.status == 401) {
+      //   location.href = "/login";
+      // }
+      // console.log(location);
+      // if (location.pathname != "/login") {
       //   location.href = "/login";
       // }
     }
@@ -148,6 +153,26 @@ export const handleFetchRequestFriend = createAsyncThunk(
     }
   }
 );
+export const handleFetchCoin = createAsyncThunk(
+  "user/handleFetchCoin",
+  async (_, thunkAPI) => {
+    try {
+      let accessToken = localStorage.getItem("access_token") || {};
+      var decodedPayload = jwt_decode(accessToken)?.dataValues || null;
+      const response = await fetchCoin(decodedPayload.id);
+      if (response.status == 200) {
+        console.log(response);
+
+        return response.data;
+      }
+    } catch (e) {
+      console.log(e);
+      if (e.response.status == 401) {
+        location.href = "/login";
+      }
+    }
+  }
+);
 const userReducer = createSlice({
   name: "user",
   initialState: {
@@ -160,6 +185,7 @@ const userReducer = createSlice({
     requestFriend: null,
     friends: null,
     faceioInstance: null,
+    coin: 0,
   },
   reducers: {
     setLoopNoti: (state, action) => {
@@ -231,6 +257,17 @@ const userReducer = createSlice({
       console.log("pending");
     });
     builder.addCase(handleFetchRequestFriend.rejected, (state, action) => {
+      console.log("rejected");
+      console.log(action);
+    });
+    builder.addCase(handleFetchCoin.fulfilled, (state, action) => {
+      console.log("request friend", action.payload);
+      state.coin = action.payload.coin;
+    });
+    builder.addCase(handleFetchCoin.pending, (state, action) => {
+      console.log("pending");
+    });
+    builder.addCase(handleFetchCoin.rejected, (state, action) => {
       console.log("rejected");
       console.log(action);
     });

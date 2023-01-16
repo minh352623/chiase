@@ -9,8 +9,9 @@
   align-items: center;
   justify-content: end;
   gap: 10px;
-  padding: 5px;
-  background-color: #fff;
+  width: fit-content;
+  padding: 5px 10px;
+  /* background-color: #fff; */
   font-weight: bold;
 }
 .pagination li {
@@ -247,5 +248,51 @@ video {
 
   to {
     transform: translateX(-30%) skew(8deg, -4deg);
+  }
+}
+
+.bg_baucua {
+  background-image: url("../../bg_baucua.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.bucket {
+  animation: bucket 0.5s linear infinite;
+}
+
+@keyframes bucket {
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+  10% {
+    transform: translate(-1px, -2px) rotate(-1deg);
+  }
+  20% {
+    transform: translate(-3px, 0px) rotate(1deg);
+  }
+  30% {
+    transform: translate(3px, 2px) rotate(0deg);
+  }
+  40% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+  60% {
+    transform: translate(-3px, 1px) rotate(0deg);
+  }
+  70% {
+    transform: translate(3px, 1px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(-1px, -1px) rotate(1deg);
+  }
+  90% {
+    transform: translate(1px, 2px) rotate(0deg);
+  }
+  100% {
+    transform: translate(1px, -2px) rotate(-1deg);
   }
 }

@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ItemConversationCurrent from "../../components/ItemConversationCurrent";
 import Message from "../../components/Message";
 import LayoutClient from "../../layouts/LayoutClient";
@@ -206,6 +206,12 @@ const Messager = ({ socket }) => {
   };
   //end video call
 
+  const [showInfoRoom, setShowInfoRoom] = useState(false);
+
+  const [dropdowOne, setDropdowOne] = useState(false);
+  const [dropdowTwo, setDropdowTwo] = useState(false);
+  const [dropdowThree, setDropdowThree] = useState(false);
+
   return (
     <LayoutClient socket={socket}>
       <div className="grid grid-cols-12 h-[91.5vh] ">
@@ -319,117 +325,340 @@ const Messager = ({ socket }) => {
         </div>
         <div className="col-span-9 h-[91.5vh] ">
           {curentChat ? (
-            <div className="h-full w-full border-l-2 border-2 border-r-2 overflow-hidden">
-              <div className="h-[10%] shadow-sm">
-                <div className="flex px-3 py-2 h-full justify-between items-center">
-                  <div className="flex gap-3 items-center">
-                    {friend && (
-                      <>
-                        <span className="h-full block">
-                          <img
-                            src={
-                              friend?.avatar
-                                ? friend.avatar
-                                : "../../undraw_profile.svg"
-                            }
-                            className="h-full rounded-full w-[50px]"
-                            alt=""
-                          />
-                        </span>
-                        <p className="m-0">
-                          <span className="font-bold text-black">
-                            {friend?.firstName + " " + friend.lastName}
+            <div className="h-full grid grid-cols-12 w-full border-l-2 border-2 border-r-2 overflow-hidden">
+              <div
+                className={`h-full w-full overflow-hidden  ${
+                  showInfoRoom ? "col-span-8" : "col-span-12"
+                }`}
+              >
+                <div className="h-[10%] shadow-sm">
+                  <div className="flex px-3 py-2 h-full justify-between items-center">
+                    <div className="flex gap-3 items-center">
+                      {friend && (
+                        <>
+                          <span className="h-full block">
+                            <img
+                              src={
+                                friend?.avatar
+                                  ? friend.avatar
+                                  : "../../undraw_profile.svg"
+                              }
+                              className="h-full rounded-full w-[50px]"
+                              alt=""
+                            />
                           </span>
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex gap-3">
-                    <span
-                      onClick={callVideoChat}
-                      className="p-2 hover:bg-gray-200 transition-all rounded-full cursor-pointer"
-                    >
-                      <img
-                        src="../../phone-call.png"
-                        className="w-[25px]"
-                        alt=""
-                      />
-                    </span>
-                    <span
-                      onClick={callVideoChat}
-                      className="p-2 hover:bg-gray-200 transition-all rounded-full cursor-pointer"
-                    >
-                      <img
-                        src="../../video-camera.png"
-                        className="w-[25px]"
-                        alt=""
-                      />
-                    </span>
-                    <span className="p-2 hover:bg-gray-200 transition-all rounded-full cursor-pointer">
-                      <img src="../../about.png" className="w-[25px]" alt="" />
-                    </span>
+                          <p className="m-0">
+                            <span className="font-bold text-black">
+                              {friend?.firstName + " " + friend.lastName}
+                            </span>
+                          </p>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex gap-3">
+                      <span
+                        onClick={callVideoChat}
+                        className="p-2 hover:bg-gray-200 transition-all rounded-full cursor-pointer"
+                      >
+                        <img
+                          src="../../phone-call.png"
+                          className="w-[25px]"
+                          alt=""
+                        />
+                      </span>
+                      <span
+                        onClick={callVideoChat}
+                        className="p-2 hover:bg-gray-200 transition-all rounded-full cursor-pointer"
+                      >
+                        <img
+                          src="../../video-camera.png"
+                          className="w-[25px]"
+                          alt=""
+                        />
+                      </span>
+                      <span
+                        onClick={() =>
+                          setShowInfoRoom((showInfoRoom) => !showInfoRoom)
+                        }
+                        className="p-2 hover:bg-gray-200 transition-all rounded-full cursor-pointer"
+                      >
+                        <img
+                          src="../../about.png"
+                          className="w-[25px]"
+                          alt=""
+                        />
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="h-[80%] max-h-80%] overflow-y-auto px-3 ">
-                {messages &&
-                  friend &&
-                  user &&
-                  messages.length > 0 &&
-                  messages.map((item) => (
-                    <div key={item.id} ref={srcollRef}>
-                      <Message
-                        item={item}
-                        own={user}
-                        friend={friend}
-                        current={item.sender == user?.id ? 1 : 0}
-                      ></Message>
+                <div className="h-[80%] max-h-80%] overflow-y-auto px-3 ">
+                  {messages &&
+                    friend &&
+                    user &&
+                    messages.length > 0 &&
+                    messages.map((item) => (
+                      <div key={item.id} ref={srcollRef}>
+                        <Message
+                          item={item}
+                          own={user}
+                          friend={friend}
+                          current={item.sender == user?.id ? 1 : 0}
+                        ></Message>
+                      </div>
+                    ))}
+                  {messages && messages.length <= 0 && (
+                    <div className="h-full text-xl w-full bg-gray-200  mt-1 flex rounded-xl items-center justify-center">
+                      Hãy bắt đầu cuộc trò chuyện ngay bây giờ!
                     </div>
-                  ))}
-                {messages && messages.length <= 0 && (
-                  <div className="h-full text-xl w-full bg-gray-200  mt-1 flex rounded-xl items-center justify-center">
-                    Hãy bắt đầu cuộc trò chuyện ngay bây giờ!
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
 
-              <div className="h-[10%] p-3">
-                <form onSubmit={createMessage} action="">
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      ref={input_value}
-                      onChange={(e) => setMessage(e.target.value)}
-                      name="message"
-                      className="w-full resize-none py-2 px-4 text-black outline-none bg-gray-200 rounded-full"
-                      placeholder="Aa"
-                      value={message}
-                    />
-                    <div className="p-1 relative hover:bg-gray-300 rounded-full w-fit cursor-pointer">
-                      {showEmoji && (
-                        <div className="fixed  z-[100] top-[60%] right-[5%] -translate-y-1/2">
-                          <Picker
-                            pickerStyle={{ width: "100%" }}
-                            onEmojiClick={onEmojiClick}
-                          ></Picker>
-                        </div>
-                      )}
-                      <img
-                        onClick={() => setShowEmoji((showEmoji) => !showEmoji)}
-                        src="./smile.png"
-                        className="w-[40px]"
-                        alt=""
+                <div className="h-[10%] p-3">
+                  <form onSubmit={createMessage} action="">
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        ref={input_value}
+                        onChange={(e) => setMessage(e.target.value)}
+                        name="message"
+                        className="w-full resize-none py-2 px-4 text-black outline-none bg-gray-200 rounded-full"
+                        placeholder="Aa"
+                        value={message}
                       />
+                      <div className="p-1 relative hover:bg-gray-300 rounded-full w-fit cursor-pointer">
+                        {showEmoji && (
+                          <div className="fixed  z-[100] top-[60%] right-[5%] -translate-y-1/2">
+                            <Picker
+                              pickerStyle={{ width: "100%" }}
+                              onEmojiClick={onEmojiClick}
+                            ></Picker>
+                          </div>
+                        )}
+                        <img
+                          onClick={() =>
+                            setShowEmoji((showEmoji) => !showEmoji)
+                          }
+                          src="./smile.png"
+                          className="w-[40px]"
+                          alt=""
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="p-2 hover:bg-gray-300 rounded-full transition-all"
+                      >
+                        <img src="../../send.png" className="w-[30px]" alt="" />
+                      </button>
                     </div>
-                    <button
-                      type="submit"
-                      className="p-2 hover:bg-gray-300 rounded-full transition-all"
-                    >
-                      <img src="../../send.png" className="w-[30px]" alt="" />
-                    </button>
-                  </div>
-                </form>
+                  </form>
+                </div>
               </div>
+              {showInfoRoom && (
+                <div className="p-3 col-span-4 right-0 top-0 bottom-0 w-[25vw] overflow-y-auto bg-white shadow_noti">
+                  <p className="w-full flex justify-center mb-1">
+                    <img
+                      className="w-24 object-cover h-24 rounded-full border"
+                      src={
+                        friend?.avatar ? friend.avatar : "../undraw_profile.svg"
+                      }
+                      alt=""
+                    />
+                  </p>
+                  <p className="text-center font-bold text-lg text-black">
+                    {friend.firstName + " " + friend.lastName}
+                  </p>
+                  <div className="flex justify-around items-center">
+                    <p className="flex flex-col items-center">
+                      <Link
+                        to={`/profile/${friend?.id}`}
+                        className="text-2xl cursor-pointer hover:scale-105 transition-all flex items-center justify-center p-2 rounded-full bg-gray-200 w-[40px] h-[40px] leading-none text-slate-700"
+                      >
+                        <i class="fa-brands fa-facebook"></i>
+                      </Link>
+                      <span className="text-sm text-black">Trang cá nhân</span>
+                    </p>
+                    <p className="flex flex-col items-center">
+                      <span className="text-2xl cursor-pointer hover:scale-105 transition-all flex items-center justify-center  p-2 rounded-full bg-gray-200 w-[40px] h-[40px] leading-none text-slate-700">
+                        <i class="fa-solid fa-bell"></i>
+                      </span>
+                      <span className="text-sm text-black">Tắt thông báo</span>
+                    </p>
+                    <p className="flex flex-col items-center">
+                      <span className="text-2xl cursor-pointer hover:scale-105 transition-all flex items-center justify-center  p-2 rounded-full bg-gray-200 w-[40px] h-[40px] leading-none text-slate-700">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                      </span>
+                      <span className="text-sm text-black">Tìm kiếm</span>
+                    </p>
+                  </div>
+                  <div
+                    onClick={() => setDropdowOne((dropdowOne) => !dropdowOne)}
+                    className="flex justify-between items-center mt-3 font-bold text-black p-2 transition-all hover:bg-gray-300 cursor-pointer rounded-lg"
+                  >
+                    <span>Tùy chỉnh đoạn chat</span>
+                    {dropdowOne ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M4.5 15.75l7.5-7.5 7.5 7.5"
+                        />
+                      </svg>
+                    ) : (
+                      <span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                          />
+                        </svg>
+                      </span>
+                    )}
+                  </div>
+                  {dropdowOne && (
+                    <ul className="px-2 text-black font-bold">
+                      <li className="flex gap-3 items-center p-2 hover:bg-gray-200 transition-all rounded-xl cursor-pointer">
+                        <span className="text-2xl text-blue-800">
+                          <i class="fa-brands fa-themeisle"></i>
+                        </span>
+                        <span>Thay đổi chủ đề</span>
+                      </li>
+                      <li className="flex gap-3 items-center p-2 hover:bg-gray-200 transition-all rounded-xl cursor-pointer">
+                        <span className="text-2xl text-blue-800">
+                          <i class="fa-solid fa-a"></i>
+                        </span>
+                        <span>Chỉnh sửa biệt danh</span>
+                      </li>
+                    </ul>
+                  )}
+                  <div
+                    onClick={() => setDropdowTwo((dropdowTwo) => !dropdowTwo)}
+                    className="flex justify-between items-center mt-3 font-bold text-black p-2 transition-all hover:bg-gray-300 cursor-pointer rounded-lg"
+                  >
+                    <span>File phương tiện, file liên kết</span>
+                    {dropdowTwo ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M4.5 15.75l7.5-7.5 7.5 7.5"
+                        />
+                      </svg>
+                    ) : (
+                      <span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                          />
+                        </svg>
+                      </span>
+                    )}
+                  </div>
+                  {dropdowTwo && (
+                    <ul className="px-2 text-black font-bold">
+                      <li className="flex gap-3 items-center p-2 hover:bg-gray-200 transition-all rounded-xl cursor-pointer">
+                        <span className="text-2xl text-blue-800">
+                          <i class="fa-solid fa-file"></i>
+                        </span>
+                        <span>File phương tiện</span>
+                      </li>
+                      <li className="flex gap-3 items-center p-2 hover:bg-gray-200 transition-all rounded-xl cursor-pointer">
+                        <span className="text-2xl text-blue-800">
+                          <i class="fa-regular fa-file-lines"></i>
+                        </span>
+                        <span>File</span>
+                      </li>
+                    </ul>
+                  )}
+                  <div
+                    onClick={() =>
+                      setDropdowThree((dropdowThree) => !dropdowThree)
+                    }
+                    className="flex justify-between items-center mt-3 font-bold text-black p-2 transition-all hover:bg-gray-300 cursor-pointer rounded-lg"
+                  >
+                    <span>Quyền riêng tư và hổ trợ</span>
+                    {dropdowThree ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M4.5 15.75l7.5-7.5 7.5 7.5"
+                        />
+                      </svg>
+                    ) : (
+                      <span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                          />
+                        </svg>
+                      </span>
+                    )}
+                  </div>
+                  {dropdowThree && (
+                    <ul className="px-2 text-black font-bold">
+                      <li className="flex gap-3 items-center p-2 hover:bg-gray-200 transition-all rounded-xl cursor-pointer">
+                        <span className="text-2xl text-blue-800">
+                          <i class="fa-regular fa-bell"></i>
+                        </span>
+                        <span>Tắt thông báo</span>
+                      </li>
+                      <li className="flex gap-3 items-center p-2 hover:bg-gray-200 transition-all rounded-xl cursor-pointer">
+                        <span className="text-2xl text-blue-800">
+                          <i class="fa-solid fa-user-slash"></i>
+                        </span>
+                        <span>Chặn</span>
+                      </li>
+                    </ul>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <>

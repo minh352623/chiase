@@ -15,6 +15,8 @@ import LayoutClient from "../../layouts/LayoutClient";
 import Swal from "sweetalert2";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import {
   handleAccept,
   handleFetchFriends,
@@ -432,7 +434,7 @@ const Profile = ({ socket }) => {
                       Tiểu sử
                     </span>
                     <div className="my-3 px-3">
-                      <CKEditor
+                      {/* <CKEditor
                         editor={ClassicEditor}
                         data={
                           profileUser?.description || "Cập nhật tiểu sử ngay"
@@ -453,6 +455,13 @@ const Profile = ({ socket }) => {
                         onFocus={(event, editor) => {
                           console.log("Focus.", editor);
                         }}
+                      /> */}
+                      <ReactQuill
+                        theme="snow"
+                        modules={modules}
+                        formats={formats}
+                        defaultValue={profileUser?.description}
+                        onChange={setDesc}
                       />
                     </div>
                     <div className="flex justify-end gap-3 px-3">
@@ -1141,5 +1150,52 @@ const Profile = ({ socket }) => {
     </LayoutClient>
   );
 };
+
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [
+      { align: "" },
+      { align: "center" },
+      { align: "right" },
+      { align: "justify" },
+    ],
+    [
+      { list: "ordered" },
+      { list: "bullet" },
+      { indent: "-1" },
+      { indent: "+1" },
+    ],
+    ["link", "image", "video"],
+    ["clean"],
+  ],
+  clipboard: {
+    // toggle to add extra line breaks when pasting HTML:
+    matchVisual: false,
+  },
+};
+/*
+ * Quill editor formats
+ * See https://quilljs.com/docs/formats/
+ */
+const formats = [
+  "header",
+  "font",
+  "size",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "blockquote",
+  "list",
+  "bullet",
+  "indent",
+  "link",
+  "image",
+  "video",
+  "align",
+];
 
 export default Profile;

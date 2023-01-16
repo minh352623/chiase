@@ -45,3 +45,10 @@ export const fetchRequestFriends = (id) => {
     url: "/auth/friend/" + id,
   });
 };
+
+export const fetchCoin = (id) => {
+  return axios({
+    method: "GET",
+    url: "auth/admin/user/getCoin/" + id,
+  });
+};

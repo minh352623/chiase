@@ -288,7 +288,7 @@ const Status = ({ user }) => {
                     <p className="font-bold m-0 text-black">
                       {user.firstName + " " + user.lastName}
                     </p>
-                    <p className="m-0 font-semibold text-black flex gap-1 bg-gray-300 rounded-full text-center justify-center items-center">
+                    <p className="m-0 font-semibold text-black px-2 flex gap-1 bg-gray-300 rounded-full text-center justify-center items-center">
                       <span>
                         <img
                           className="w-[15px]"
