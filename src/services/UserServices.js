@@ -473,8 +473,7 @@ const importExcelService = async (req, res, file) => {
         user.lastName &&
         user.email &&
         user.password &&
-        user.group_id &&
-        user.gender
+        user.group_id
       ) {
         userArr.push(user);
       }
@@ -695,7 +694,23 @@ const changePasswordService = async (req, res) => {
   }
 };
 
+const getCoinService = async (req, res) => {
+  try {
+    const coinUser = await db.User.findOne({
+      where: {
+        id: req.params.id,
+      },
+      attributes: ["coin"],
+    });
+    console.log(coinUser);
+    return res.status(200).json(coinUser);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
 module.exports = {
+  getCoinService,
   createUserService: createUserService,
   getPaginateUser: getPaginateUser,
   getUserService: getUserService,

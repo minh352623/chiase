@@ -20,6 +20,7 @@ const {
   getFriends,
   forgotPassword,
   changePassword,
+  getCoin,
 } = require("../controllers/userController");
 
 const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
@@ -27,6 +28,7 @@ const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
 let router = express.Router();
 router.get("/exportExcel", [isAuthentication], exportExcel);
 router.get("/getFriends/:id", [isAuthentication], getFriends);
+router.get("/getCoin/:id", [isAuthentication], getCoin);
 
 router.post("/importExcel", [isAuthentication], importExcel);
 router.post("/forgotPassword", forgotPassword);

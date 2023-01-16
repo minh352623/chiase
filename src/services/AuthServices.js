@@ -22,7 +22,7 @@ let loginAuthService = async (req, res) => {
     }
 
     const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
-      expiresIn: 3600,
+      expiresIn: 3600 * 24,
     });
     return res.status(200).send({
       accessToken: jwtToken,
@@ -57,7 +57,7 @@ const createTokenFacebookService = async (req, res) => {
     const user = await db.User.findByPk(req.params.id);
     if (!user) return res.status(404).send("USER NOT FOUND");
     const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
-      expiresIn: 3600,
+      expiresIn: 3600 * 24,
     });
     return res.status(200).send({
       accessToken: jwtToken,
@@ -71,7 +71,7 @@ const createTokenGithubService = async (req, res) => {
     const user = await db.User.findByPk(req.params.id);
     if (!user) return res.status(404).send("USER NOT FOUND");
     const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
-      expiresIn: 3600,
+      expiresIn: 3600 * 24,
     });
     return res.status(200).send({
       accessToken: jwtToken,
@@ -88,7 +88,7 @@ const loginWithFaceIDService = async (req, res) => {
     });
     if (!user) return res.status(404).send("USER NOT FOUND");
     const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
-      expiresIn: 3600,
+      expiresIn: 3600 * 24,
     });
     return res.status(200).send({
       accessToken: jwtToken,

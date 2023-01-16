@@ -166,7 +166,7 @@ const createReplyService = async (req, res) => {
         avatar: req.body?.avatar_comment || "",
       });
     }
-    return res.status(200).send("create reply successfully");
+    return res.status(200).send(reply);
   } catch (e) {
     console.log(e);
     return res.status(500).send(e);
