@@ -19,6 +19,7 @@ const {
   createTokenGoogleService,
   forgotPasswordService,
   changePasswordService,
+  getCoinService,
 } = require("../services/UserServices");
 const getListUser = async (req, res) => {
   try {
@@ -231,7 +232,16 @@ const changePassword = (req, res) => {
   }
 };
 
+const getCoin = (req, res) => {
+  try {
+    return getCoinService(req, res);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
 module.exports = {
+  getCoin,
   getListUser: getListUser,
   createUser: createUser,
   getUser: getUser,

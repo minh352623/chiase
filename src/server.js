@@ -17,6 +17,7 @@ const optionProfileRoute = require("./routers/optionProfileRoute");
 const profileRoute = require("./routers/profileRoute");
 const friendRoute = require("./routers/friendRoute");
 const historyRoute = require("./routers/historySearchRoute");
+const roomBcRoute = require("./routers/RoomBcRoute");
 let port = process.env.PORT;
 var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
@@ -159,7 +160,54 @@ io.on("connection", (socket) => {
     }
   });
   //end  addfriend
+  //join room
+  socket.on("joinRoom", (data) => {
+    console.log(data);
+    data?.receiverId.forEach((useRooom) => {
+      const user = getUser(useRooom?.user_id);
+      if (user?.socketId) {
+        io.to(user?.socketId).emit("userJoinRoom", data);
+      }
+    });
+  });
+  socket.on("exitRoom", (data) => {
+    console.log(data);
+    data?.receiverId.forEach((useRooom) => {
+      const user = getUser(useRooom?.user_id);
+      if (user?.socketId) {
+        io.to(user?.socketId).emit("userExitRoom", data);
+      }
+    });
+  });
+  socket.on("deleteRoom", (data) => {
+    console.log(data);
+    data?.receiverId.forEach((useRooom) => {
+      const user = getUser(useRooom?.user_id);
+      if (user?.socketId) {
+        io.to(user?.socketId).emit("deleteOwnRoom", data);
+      }
+    });
+  });
 
+  socket.on("statusReady", (data) => {
+    console.log(data);
+    data?.receiverId.forEach((useRooom) => {
+      const user = getUser(useRooom?.user_id);
+      if (user?.socketId) {
+        io.to(user?.socketId).emit("statusUserReady", data);
+      }
+    });
+  });
+  socket.on("startedGame", (data) => {
+    console.log(data);
+    data?.receiverId.forEach((useRooom) => {
+      const user = getUser(useRooom?.user_id);
+      if (user?.socketId) {
+        io.to(user?.socketId).emit("startedGameBc", data);
+      }
+    });
+  });
+  //end join  room
   //when disconnect
   socket.on("disconnect", () => {
     console.log("a user disconnected!");
@@ -199,6 +247,7 @@ app.use("/api/auth/admin/option-profile", optionProfileRoute);
 app.use("/api/auth/profile", profileRoute);
 app.use("/api/auth/friend", friendRoute);
 app.use("/api/auth/history", historyRoute);
+app.use("/api/auth/baucua", roomBcRoute);
 
 app.listen(port, function () {
   console.log(`khoi tao server hi ${process.env.PORT}`);
