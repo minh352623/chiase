@@ -16,6 +16,15 @@ const StartedGameBc = ({ socket }) => {
   const navigate = useNavigate();
   const [data, setData] = useState();
   const { coin } = useSelector((state) => state.user);
+  const [chip, setChip] = useState(0);
+  const [bets, setBets] = useState({
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  });
   useEffect(() => {
     socket.off("userExitRoom");
 
@@ -319,6 +328,31 @@ const StartedGameBc = ({ socket }) => {
       }
     });
   };
+
+  const datCuoc = (maItem) => {
+    console.log(maItem, chip);
+    if (chip == 0)
+      return toast.success(`bạn phải chọn chip trước!`, {
+        position: "center-center",
+        autoClose: 2000,
+      });
+    let newBets;
+    for (const i in bets) {
+      console.log(i);
+      if (+i === maItem) {
+        newBets = {
+          ...bets,
+        };
+        newBets[i] = bets[i] + chip;
+        break;
+      }
+    }
+    console.log(newBets);
+    setBets(newBets);
+  };
+  const handleBet = () => {
+    console.log(bets);
+  };
   return (
     <div className="h-screen relative overflow-hidden w-screen bg-[#111]">
       <canvas id="world"></canvas>
@@ -388,10 +422,101 @@ const StartedGameBc = ({ socket }) => {
                 <div className="grid grid-cols-12 gap-3 h-full">
                   <div className="col-span-9 h-full">
                     <div className="p-2 h-full flex items-center justify-center w-full">
-                      <div className="border-[16px] border-green-700 rounded-2xl p-5 bg-green-500 h-[85%] w-full">
+                      <div className="border-[16px] relative border-green-700 rounded-2xl p-5 bg-green-500 h-[85%] w-full">
+                        {data &&
+                          data?.user_room_data?.map((userRoom, index) => {
+                            let info = userRoom?.user_data;
+                            if (info?.id != user?.id) {
+                              if (index < 3) {
+                                return (
+                                  <div
+                                    key={userRoom.id}
+                                    className={`rounded-xl flex items-center gap-3 absolute z-[999] text-white font-bold -top-1/4 bg-[rgba(0,0,0,0.7)] px-3 py-2 ${
+                                      index == 0
+                                        ? "left-0"
+                                        : index == 1
+                                        ? `left-[40%]`
+                                        : `left-[80%]`
+                                    }`}
+                                  >
+                                    <p className="m-0 rounded-full p-1 border ">
+                                      <img
+                                        src={
+                                          info?.avatar
+                                            ? info.avatar
+                                            : "http://localhost:5173/undraw_profile.svg"
+                                        }
+                                        className="rounded-full w-[70px] h-[70px]"
+                                        alt=""
+                                      />
+                                    </p>
+                                    <p>
+                                      <span>
+                                        {info?.firstName + " " + info?.lastName}
+                                      </span>
+                                      <span className="flex gap-3 my-1">
+                                        <span>
+                                          <img
+                                            className="w-6 h-6"
+                                            src="https://shoppett-e7b06.firebaseapp.com/coin2.gif"
+                                            alt=""
+                                          />
+                                        </span>
+                                        <span>{info?.coin}</span>
+                                      </span>
+                                    </p>
+                                  </div>
+                                );
+                              }
+                              if (index >= 3) {
+                                return (
+                                  <div
+                                    key={userRoom.id}
+                                    className={`rounded-xl flex items-center gap-3 absolute z-[999] text-white font-bold -bottom-1/4 bg-[rgba(0,0,0,0.7)] px-3 py-2 ${
+                                      index == 3
+                                        ? "left-0"
+                                        : index == 4
+                                        ? `left-[40%]`
+                                        : `left-[80%]`
+                                    }`}
+                                  >
+                                    <p className="m-0 rounded-full p-1 border ">
+                                      <img
+                                        src={
+                                          info?.avatar
+                                            ? info.avatar
+                                            : "http://localhost:5173/undraw_profile.svg"
+                                        }
+                                        className="rounded-full w-[70px] h-[70px]"
+                                        alt=""
+                                      />
+                                    </p>
+                                    <p>
+                                      <span>
+                                        {info?.firstName + " " + info?.lastName}
+                                      </span>
+                                      <span className="flex gap-3 my-1">
+                                        <span>
+                                          <img
+                                            className="w-6 h-6"
+                                            src="https://shoppett-e7b06.firebaseapp.com/coin2.gif"
+                                            alt=""
+                                          />
+                                        </span>
+                                        <span>{info?.coin}</span>
+                                      </span>
+                                    </p>
+                                  </div>
+                                );
+                              }
+                            }
+                          })}
                         <div className="grid grid-cols-12 gap-3 ">
                           <div className="col-span-3 row-span-1 ">
-                            <div className="rounded-2xl p-3 flex justify-center items-center bg-white">
+                            <div
+                              onClick={() => datCuoc(0)}
+                              className="rounded-2xl hover:bg-[rgba(0,0,0,0.5)] cursor-pointer p-3 flex justify-center items-center bg-white"
+                            >
                               <img
                                 className="w-[100px] h-[100px] object-cover"
                                 src="http://localhost:5173/gourd.png"
@@ -400,16 +525,19 @@ const StartedGameBc = ({ socket }) => {
                             </div>
                           </div>
                           <div className="col-span-6 row-span-1 ">
-                            <div className="rounded-2xl relative p-3 flex justify-center items-center ">
+                            <div className="rounded-2xl  relative p-3 flex justify-center items-center ">
                               <img
-                                className="absolute  object-cover"
+                                className="absolute  h-[200px] object-cover"
                                 src="http://localhost:5173/box_xingau-removebg-preview.png"
                                 alt=""
                               />
                             </div>
                           </div>
                           <div className="col-span-3 row-span-1">
-                            <div className="rounded-2xl p-3 flex justify-center items-center bg-white">
+                            <div
+                              onClick={() => datCuoc(1)}
+                              className="rounded-2xl hover:bg-[rgba(0,0,0,0.5)] cursor-pointer p-3 flex justify-center items-center bg-white"
+                            >
                               <img
                                 className="w-[100px] h-[100px] object-cover"
                                 src="http://localhost:5173/crab.png"
@@ -418,7 +546,10 @@ const StartedGameBc = ({ socket }) => {
                             </div>
                           </div>
                           <div className="col-span-3 row-span-1">
-                            <div className="rounded-2xl p-3 flex justify-center items-center bg-white">
+                            <div
+                              onClick={() => datCuoc(2)}
+                              className="rounded-2xl hover:bg-[rgba(0,0,0,0.5)] cursor-pointer p-3 flex justify-center items-center bg-white"
+                            >
                               <img
                                 className="w-[100px] h-[100px] object-cover"
                                 src="http://localhost:5173/crayfish.png"
@@ -427,7 +558,10 @@ const StartedGameBc = ({ socket }) => {
                             </div>
                           </div>
                           <div className="col-span-3 row-span-1">
-                            <div className="rounded-2xl p-3 flex justify-center items-center bg-white ">
+                            <div
+                              onClick={() => datCuoc(3)}
+                              className="rounded-2xl hover:bg-[rgba(0,0,0,0.5)] cursor-pointer p-3 flex justify-center items-center bg-white "
+                            >
                               <img
                                 className="w-[100px] h-[100px] object-cover"
                                 src="http://localhost:5173/fish.png"
@@ -436,7 +570,10 @@ const StartedGameBc = ({ socket }) => {
                             </div>
                           </div>
                           <div className="col-span-3 row-span-1">
-                            <div className="rounded-2xl p-3 flex justify-center items-center bg-white">
+                            <div
+                              onClick={() => datCuoc(4)}
+                              className="rounded-2xl hover:bg-[rgba(0,0,0,0.5)] cursor-pointer p-3 flex justify-center items-center bg-white"
+                            >
                               <img
                                 className="w-[100px] h-[100px] object-cover"
                                 src="http://localhost:5173/reindeer.png"
@@ -445,7 +582,10 @@ const StartedGameBc = ({ socket }) => {
                             </div>
                           </div>
                           <div className="col-span-3">
-                            <div className="rounded-2xl p-3 flex justify-center items-center bg-white">
+                            <div
+                              onClick={() => datCuoc(5)}
+                              className="rounded-2xl p-3 hover:bg-[rgba(0,0,0,0.5)] cursor-pointer flex justify-center items-center bg-white"
+                            >
                               <img
                                 className="w-[100px] h-[100px] object-cover"
                                 src="http://localhost:5173/rooster.png"
@@ -492,7 +632,9 @@ const StartedGameBc = ({ socket }) => {
                         </p>
                       </div>
                       <div className="p-3  border-2 rounded-xl font-bold bg-white flex-1">
-                        <h5 className="text-black font-bold">Lịch sử</h5>
+                        <h5 className="text-black font-bold border-b border-black pb-1">
+                          Lịch sử
+                        </h5>
                       </div>
                     </div>
                   </div>
@@ -527,37 +669,60 @@ const StartedGameBc = ({ socket }) => {
                 </p>
               </div>
               <div className="flex gap-5 items-center bg-white rounded-2xl py-1 px-3">
-                <span className="rounded-full p-1 flex justify-center items-center border-2 border-red-500">
+                <span
+                  onClick={() => setChip(10)}
+                  className={`${
+                    chip === 10 ? "border-4 scale-110" : "border-2"
+                  } rounded-full p-1 hover:scale-110 transition-all cursor-pointer flex justify-center items-center border-2 border-red-500`}
+                >
                   <img
-                    className="w-[120px] flex justify-center items-center h-[120px] rounded-full object-cover"
+                    className="w-[100px] flex justify-center items-center h-[100px] rounded-full object-cover"
                     src="http://localhost:5173/chip_10-removebg-preview.png"
                     alt=""
                   />
                 </span>
-                <span className="rounded-full p-1 flex justify-center items-center border-2 border-red-500">
+                <span
+                  onClick={() => setChip(50)}
+                  className={`${
+                    chip === 50 ? "border-4 scale-110" : "border-2"
+                  } rounded-full p-1 hover:scale-110 transition-all cursor-pointer flex justify-center items-center border-2 border-red-500`}
+                >
                   <img
-                    className="w-[120px] flex justify-center items-center h-[120px] rounded-full object-cover"
+                    className="w-[100px] flex justify-center items-center h-[100px] rounded-full object-cover"
                     src="http://localhost:5173/chip_50-removebg-preview.png"
                     alt=""
                   />
                 </span>
-                <span className="rounded-full p-1 flex justify-center items-center border-2 border-red-500">
+                <span
+                  onClick={() => setChip(100)}
+                  className={`${
+                    chip === 100 ? "border-4 scale-110" : "border-2"
+                  } rounded-full p-1 hover:scale-110 transition-all cursor-pointer flex justify-center items-center border-2 border-red-500`}
+                >
                   <img
-                    className="w-[120px] flex justify-center items-center h-[120px] rounded-full object-cover"
+                    className="w-[100px] flex justify-center items-center h-[100px] rounded-full object-cover"
                     src="http://localhost:5173/chip_100-removebg-preview.png"
                     alt=""
                   />
                 </span>
-                <span className="rounded-full p-1 flex justify-center items-center border-2 border-red-500">
+                <span
+                  onClick={() => setChip(500)}
+                  className={`${
+                    chip === 500 ? "border-4 scale-110" : "border-2"
+                  } rounded-full p-1 hover:scale-110 transition-all cursor-pointer flex justify-center items-center border-2 border-red-500`}
+                >
                   <img
-                    className="w-[120px] flex justify-center items-center h-[120px] rounded-full object-cover"
+                    className="w-[100px] flex justify-center items-center h-[100px] rounded-full object-cover"
                     src="http://localhost:5173/chip_500-removebg-preview.png"
                     alt=""
                   />
                 </span>
               </div>
               <div className="flex  gap-3 flex-col">
-                <span className="px-4 py-2 w-[150px] text-center cursor-pointer hover:scale-110 transition-all text-white font-bold text-xl rounded-xl bg-green-500">
+                <span
+                  onClick={handleBet}
+                  className="px-4 py-2 w-[150px] text-center cursor-pointer hover:scale-110 transition-all text-white font-bold text-xl rounded-xl bg-green-500"
+                >
                   Chốt
                 </span>
                 <span className="px-4 py-2 w-[150px] text-center cursor-pointer hover:scale-110 transition-all text-white font-bold text-xl rounded-xl bg-green-500">

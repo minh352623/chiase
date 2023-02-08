@@ -23,6 +23,7 @@ import {
   handleRefuse,
 } from "../../store/reducers/userReducer";
 import ListFriend from "../../components/ListFriend";
+import LoadingAdmin from "../../components/LoadingAdmin";
 const Profile = ({ socket }) => {
   const { user } = useSelector((state) => state.auth);
   const { friends, faceioInstance } = useSelector((state) => state.user);
@@ -306,7 +307,12 @@ const Profile = ({ socket }) => {
   const [option, setOption] = useState(false);
 
   //đăng kí nhận dạng khuon mat
-
+  if (!profileUser)
+    return (
+      <div className="fixed inset-0 bg-[rgba(255,255,255,0.7)] flex justify-center items-center">
+        <LoadingAdmin></LoadingAdmin>
+      </div>
+    );
   return (
     <LayoutClient socket={socket}>
       {showChangeIamge && (

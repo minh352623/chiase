@@ -138,7 +138,7 @@ const ListPost = ({ socket }) => {
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell component="th" scope="row">
-                        {index + 1}
+                        {post?.id}
                       </TableCell>
                       <TableCell align="left">
                         <p className="text-sm">
@@ -183,7 +183,7 @@ const ListPost = ({ socket }) => {
                         <p className="hidden_show">{post.content}</p>
                       </TableCell>
                       <TableCell align="right">
-                        {post?.share_post_id ? "False" : "TRUE"}
+                        {post?.share_post_id ? post?.share_post_id : "FALSE"}
                       </TableCell>
                       <TableCell align="right">
                         <p className="grid grid-cols-12 gap-1">
