@@ -48,6 +48,12 @@ const getConversationService = async (req, res) => {
       where: {
         [Op.or]: [{ user_one: req.userId }, { user_second: req.userId }],
       },
+      include: [
+        {
+          model: db.Message,
+          as: "message_data",
+        },
+      ],
     });
     return res.status(200).send(conversations);
   } catch (e) {

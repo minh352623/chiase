@@ -1,5 +1,6 @@
 const express = require("express");
-const passportSetup = require("./passport");
+require("./passport");
+
 const connectDB = require("./config/connectDb");
 const userRouter = require("./routers/UserRoute");
 const groupRouter = require("./routers/groupRoute");
@@ -18,11 +19,11 @@ const profileRoute = require("./routers/profileRoute");
 const friendRoute = require("./routers/friendRoute");
 const historyRoute = require("./routers/historySearchRoute");
 const roomBcRoute = require("./routers/RoomBcRoute");
+const dashBoardRoute = require("./routers/DashBoardRoute");
 let port = process.env.PORT;
 var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
-// const cookieSession = require("cookie-session");
-// const passport = require("passport");
+
 const app = express();
 
 // socket
@@ -50,10 +51,12 @@ const getUser = (userId) => {
 io.on("connection", (socket) => {
   //when ceonnect
   console.log("a user connected.");
-
   //take userId and socketId from user
-  socket.on("addUser", (userId) => {
-    addUser(userId, socket.id);
+  socket.on("addUser", async (userId) => {
+    if (userId) {
+      addUser(userId, socket.id);
+    }
+
     io.emit("getUsers", users);
   });
 
@@ -209,8 +212,28 @@ io.on("connection", (socket) => {
   });
   //end join  room
   //when disconnect
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     console.log("a user disconnected!");
+    console.log(users);
+
+    const user = users.find((user) => user.socketId == socket.id);
+    console.log("logout", user);
+
+    if (user) {
+      const online_user = await db.User_Online.findOne({
+        where: {
+          user_id: user.userId,
+        },
+      });
+      console.log(online_user);
+      if (online_user) {
+        let now_date = new Date();
+        let time_old = new Date(online_user.updatedAt);
+        const minus = (now_date.getTime() - time_old.getTime()) / (1000 * 60);
+        online_user.total_time_online = online_user.total_time_online + minus;
+        await online_user.save();
+      }
+    }
     removeUser(socket.id);
     io.emit("getUsers", users);
   });
@@ -218,6 +241,7 @@ io.on("connection", (socket) => {
 
 //socket
 var cors = require("cors");
+const db = require("./models");
 app.use(cors());
 require("dotenv").config();
 // app.use(express.json());
@@ -248,6 +272,7 @@ app.use("/api/auth/profile", profileRoute);
 app.use("/api/auth/friend", friendRoute);
 app.use("/api/auth/history", historyRoute);
 app.use("/api/auth/baucua", roomBcRoute);
+app.use("/api/auth/dashboard", dashBoardRoute);
 
 app.listen(port, function () {
   console.log(`khoi tao server hi ${process.env.PORT}`);
