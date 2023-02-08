@@ -83,6 +83,10 @@ const ForgotPassword = () => {
         <p className="w-full bg-blue-500 px-3 py-2 text-white font-bold rounded-t-lg">
           Quên mật khẩu?
         </p>
+        <p className="text-red-500 px-3">
+          *Lưu ý: Link thay đổi mật khẩu chỉ có hiệu lực trong 2 phút kể từ khi
+          gửi thành công!!!
+        </p>
         <div className="px-3 py-2">
           <form onSubmit={handleSubmit(handleSendMail)} action="">
             <div>

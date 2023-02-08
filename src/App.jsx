@@ -26,7 +26,9 @@ import {
   handleFetchTokenCallVideo,
   setFaceioInstance,
 } from "./store/reducers/userReducer";
-import StartedGameBc from "./pages/client/StartedGameBc";
+const GameBanCa = lazy(() => import("./pages/client/GameBanCa"));
+const StartedGameBc = lazy(() => import("./pages/client/StartedGameBc"));
+const GameXepHinh = lazy(() => import("./pages/client/GameXepHinh"));
 const GameBauCua = lazy(() => import("./pages/client/GameBauCua"));
 
 const WaitingRoomBauCua = lazy(() =>
@@ -177,6 +179,14 @@ function App() {
               <Route
                 path="/game/play/baucua/started"
                 element={<StartedGameBc socket={socket} />}
+              />
+              <Route
+                path="/game/play/xephinh/started"
+                element={<GameXepHinh socket={socket} />}
+              />
+              <Route
+                path="/game/play/banca/started"
+                element={<GameBanCa socket={socket} />}
               />
             </>
           )}

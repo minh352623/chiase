@@ -106,14 +106,18 @@ const MiniGame = ({ socket }) => {
             <h3 className="font-bold text-black"> Tất cả game</h3>
             <div className="my-3">
               <p className="text-xl font-semibold text-black">Game phổ biến</p>
-              <div className="grid grid-cols-12 gap-2">
+              <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-3 ">
                   <Link
                     to="/game/play/baucua"
                     className="rounded-xl shadow_noti bg-white "
                   >
                     <div className="rounded-t-xl">
-                      <img src="./baucua.png" alt="" />
+                      <img
+                        className="rounded-xl h-[260px] w-full"
+                        src="./baucua.png"
+                        alt=""
+                      />
                     </div>
                     <div className="px-3 py-2">
                       <p className="font-bold m-0 text-black mb-1">Bầu cua</p>
@@ -123,6 +127,68 @@ const MiniGame = ({ socket }) => {
                     </div>
                   </Link>
                 </div>
+                <div className="col-span-3 ">
+                  <Link
+                    to="/game/play/xephinh/started"
+                    className="rounded-xl w-full shadow_noti bg-white "
+                  >
+                    <div className="rounded-t-xl">
+                      <img
+                        src="./tw_block.png"
+                        className="rounded-xl h-[260px] w-full"
+                        alt=""
+                      />
+                    </div>
+                    <div className="px-3 py-2">
+                      <p className="font-bold m-0 text-black mb-1">Xếp hình</p>
+                      <p className="px-2 py-1 bg-gray-300 rounded-2xl m-0 font-bold">
+                        100k người chơi
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+                <div className="col-span-3 ">
+                  <a
+                    href="/game/play/banca/started"
+                    className="rounded-xl w-full shadow_noti bg-white "
+                  >
+                    <div className="rounded-t-xl">
+                      <img
+                        src="./banca.jpg"
+                        className="rounded-xl h-[260px] w-full"
+                        alt=""
+                      />
+                    </div>
+                    <div className="px-3 py-2">
+                      <p className="font-bold m-0 text-black mb-1">Bắn cá</p>
+                      <p className="px-2 py-1 bg-gray-300 rounded-2xl m-0 font-bold">
+                        100k người chơi
+                      </p>
+                    </div>
+                  </a>
+                </div>
+                {/* <div className="col-span-3 ">
+                  <Link
+                    to="/game/play/chemhoaqua/started"
+                    className="rounded-xl w-full shadow_noti bg-white "
+                  >
+                    <div className="rounded-t-xl">
+                      <img
+                        src="./banca.jpg"
+                        className="rounded-xl h-[260px] w-full"
+                        alt=""
+                      />
+                    </div>
+                    <div className="px-3 py-2">
+                      <p className="font-bold m-0 text-black mb-1">
+                        Chém hoa quả
+                      </p>
+                      <p className="px-2 py-1 bg-gray-300 rounded-2xl m-0 font-bold">
+                        100k người chơi
+                      </p>
+                    </div>
+                  </Link>
+                </div> */}
               </div>
             </div>
           </div>
