@@ -14,6 +14,9 @@ const ItemConversationCurrent = ({
   const [friend, setFriend] = useState();
   const navigate = useNavigate();
   const [hightLight, setHightLight] = useState();
+  console.log(
+    conversation.message_data[conversation.message_data.length - 1].text
+  );
   useEffect(() => {
     const friend_id = [conversation.user_one, conversation.user_second].find(
       (u) => u !== currentUser.id
@@ -66,14 +69,31 @@ const ItemConversationCurrent = ({
             <span className="font-bold text-black">
               {friend.firstName + " " + friend.lastName}
             </span>
-            {friend.id == arrivalMessage?.sender && (
-              <p className="text-black font-bold m-0 flex justify-between">
-                <span>{arrivalMessage?.text}</span>
-                {hightLight && (
-                  <span className="w-[10px] h-[10px] rounded-full bg-blue-500 inline-block"></span>
-                )}
-              </p>
-            )}
+            {/* {friend.id == arrivalMessage?.sender && ( */}
+            <p className="text-black m-0 flex">
+              <span>
+                {conversation.message_data[conversation.message_data.length - 1]
+                  .sender === currentUser?.id
+                  ? "Bạn:  "
+                  : ""}
+              </span>
+
+              <span>
+                {arrivalMessage?.text
+                  ? arrivalMessage?.text
+                  : conversation.message_data[
+                      conversation.message_data.length - 1
+                    ].text
+                  ? conversation.message_data[
+                      conversation.message_data.length - 1
+                    ].text
+                  : ""}
+              </span>
+              {hightLight && (
+                <span className="w-[10px] h-[10px] rounded-full bg-blue-500 inline-block"></span>
+              )}
+            </p>
+            {/* )} */}
           </div>
         </div>
       )}
