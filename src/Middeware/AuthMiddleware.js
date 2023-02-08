@@ -39,8 +39,101 @@ const isAdmin = async (req, res, next) => {
     return res.status(401).send("Authentication not valid");
   }
 };
+const online_user_email = async (req, res, next) => {
+  try {
+    const user = await db.User.findOne({
+      where: { email: req.body.email },
+    });
 
+    if (user.id) {
+      try {
+        const user_online = await db.User_Online.findOne({
+          where: {
+            user_id: user.id,
+          },
+        });
+        const devices = [];
+        devices.push({
+          device: req.get("User-Agent"),
+          date_login: new Date(),
+        });
+        if (!user_online) {
+          const new_user_online = await db.User_Online.create({
+            user_id: user.id,
+            total_login: 1,
+            devices: JSON.stringify(devices),
+          });
+        } else {
+          console.log(user_online);
+          user_online.updatedAt = new Date();
+          user_online.total_login = user_online.total_login + 1;
+          user_online.devices = JSON.stringify([
+            ...JSON.parse(user_online.devices),
+            {
+              device: req.get("User-Agent"),
+              date_login: new Date(),
+            },
+          ]);
+
+          await user_online.save();
+          next();
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  } catch (e) {
+    console.log("loi check admin");
+  }
+};
+const online_user_id = async (req, res, next) => {
+  try {
+    const user = await db.User.findByPk(req.params.id);
+
+    if (user.id) {
+      try {
+        const user_online = await db.User_Online.findOne({
+          where: {
+            user_id: user.id,
+          },
+        });
+        const devices = [];
+        devices.push({
+          device: req.get("User-Agent"),
+          date_login: new Date(),
+        });
+        if (!user_online) {
+          const new_user_online = await db.User_Online.create({
+            user_id: user.id,
+            total_login: 1,
+            devices: JSON.stringify(devices),
+          });
+        } else {
+          console.log(user_online);
+          user_online.updatedAt = new Date();
+          user_online.total_login = user_online.total_login + 1;
+          user_online.devices = JSON.stringify([
+            ...JSON.parse(user_online.devices),
+            {
+              device: req.get("User-Agent"),
+              date_login: new Date(),
+            },
+          ]);
+
+          await user_online.save();
+        }
+        next();
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  } catch (e) {
+    console.log("loi check admin");
+  }
+};
 module.exports = {
   isAuthentication: isAuthentication,
   isAdmin: isAdmin,
+  online_user_email,
+  online_user_id,
 };

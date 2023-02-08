@@ -9,11 +9,15 @@ const {
 let router = express.Router();
 const passport = require("passport");
 const { createTokenGoogle, logout } = require("../controllers/userController");
-const { isAuthentication } = require("../Middeware/AuthMiddleware");
+const {
+  isAuthentication,
+  online_user_id,
+  online_user_email,
+} = require("../Middeware/AuthMiddleware");
 const CLIENT_URL = "http://localhost:5173";
 // router.get("/logout", [isAuthentication], logout);
 
-router.get("/login-google-success/:id", createTokenGoogle);
+router.get("/login-google-success/:id", [online_user_id], createTokenGoogle);
 router.get(
   "/google",
   passport.authenticate("google", {
@@ -25,6 +29,9 @@ router.get(
   "/google/callback",
   (req, res, next) => {
     passport.authenticate("google", (error, profile) => {
+      console.log("profile", profile);
+      console.log("error", error);
+
       req.user = profile;
       next();
     })(req, res, next);
@@ -34,7 +41,11 @@ router.get(
   }
 );
 
-router.get("/login-facebook-success/:id", createTokenFacebook);
+router.get(
+  "/login-facebook-success/:id",
+  [online_user_id],
+  createTokenFacebook
+);
 
 router.get(
   "/facebook",
@@ -47,6 +58,8 @@ router.get(
   "/facebook/callback",
   (req, res, next) => {
     passport.authenticate("facebook", (error, profile) => {
+      console.log("error", error);
+
       req.user = profile;
       next();
     })(req, res, next);
@@ -55,7 +68,7 @@ router.get(
     res.redirect(CLIENT_URL + "/login-facebook-success/" + req.user.id);
   }
 );
-router.get("/login-github-success/:id", createTokenGithub);
+router.get("/login-github-success/:id", [online_user_id], createTokenGithub);
 
 router.get(
   "/github",
@@ -77,7 +90,7 @@ router.get(
 );
 
 router.post("/faceIDLogin", loginWithFaceID);
-router.post("/login", login);
+router.post("/login", [online_user_email], login);
 
 router.post("/register", register);
 module.exports = router;

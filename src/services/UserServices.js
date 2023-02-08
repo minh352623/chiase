@@ -652,7 +652,10 @@ const forgotPasswordService = async (req, res) => {
       </a>
       </div>`
     );
-
+    const email_verify = await db.email_verify.create({
+      email: req.body.email,
+      token: hashEmail,
+    });
     return res.status(201).json({
       success: true,
       message: "Email sent successfully",
@@ -681,6 +684,23 @@ const changePasswordService = async (req, res) => {
       },
     });
     if (!user) return res.status(400).send("USER NOT FOUND");
+    const email_verify = await db.email_verify.findOne({
+      where: {
+        email: req.body.email,
+      },
+    });
+    if (!email_verify)
+      return res.status(400).json("Token hết hạn vui lòng gửi lại.");
+
+    let now_date = new Date();
+    let data_token = new Date(email_verify.createdAt);
+    const minus = (now_date.getTime() - data_token.getTime()) / (1000 * 60);
+    if (minus > 2) {
+      const status = await email_verify.destroy();
+      return res
+        .status(400)
+        .json("Đã quá thời gian 2 phút, mã đã hết hiệu lực");
+    }
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
     user.password = hash;

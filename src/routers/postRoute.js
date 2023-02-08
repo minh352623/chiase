@@ -15,12 +15,12 @@ const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
 let router = express.Router();
 router.post("/", [isAuthentication], createPost);
 
-router.get("/home", [isAuthentication], getPostHome);
+router.get("/home", getPostHome);
 // router.get("/searchGlobal", [isAuthentication], searchGlobal);
 
 router.get("/getNineImage", [isAuthentication], getNineImage);
 
-router.get("/detail/:id", [isAuthentication], getDetailPost);
+router.get("/detail/:id", getDetailPost);
 router.get("/", [isAuthentication, isAdmin], getPostAdmin);
 router.delete("/:id", [isAuthentication], deletePost);
 router.patch("/:id", [isAuthentication], UpdatePost);

@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 var GoogleStrategy = require("passport-google-oauth20").Strategy;
+
 var FacebookStrategy = require("passport-facebook").Strategy;
 var GitHubStrategy = require("passport-github2").Strategy;
 
@@ -12,17 +13,19 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/api/auth/google/callback",
+      callbackURL: "http://localhost:8080/api/auth/google/callback",
     },
     async function (accessToken, refreshToken, profile, done) {
-      console.log(profile.emails[0].value);
+      console.log("ádasdasdasdasdasdas");
+      console.log(profile);
+      // return done(null, profile);
       const user = await db.User.findOne({
         where: {
           email: profile.emails[0].value,
         },
       });
       if (user) {
-        done(null, user);
+        return done(null, user);
       } else {
         const user = await db.User.create({
           email: profile.emails[0].value,
@@ -43,11 +46,12 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_APP_ID,
       clientSecret: process.env.FACEBOOK_APP_SECRET,
-      callbackURL: "/api/auth/facebook/callback",
+      callbackURL: "http://localhost:8080/api/auth/facebook/callback",
       profileFields: ["id", "displayName", "name", "email", "photos"],
     },
     async function (accessToken, refreshToken, profile, done) {
       console.log(profile);
+      console.log("ádasdasd");
       console.log(accessToken);
 
       if (profile.emails[0].value) {
@@ -104,7 +108,7 @@ passport.use(
       callbackURL: "/api/auth/github/callback",
     },
     async function (accessToken, refreshToken, profile, done) {
-      // console.log(profile);
+      console.log(profile);
       // return done(null, profile);
       if (profile._json.email) {
         const user = await db.User.findOne({
