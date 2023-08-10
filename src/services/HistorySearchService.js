@@ -3,13 +3,13 @@ const db = require("../models");
 
 const createHistorySearchService = async (req, res) => {
   try {
-    const historyCount = await db.Search_History.count({
+    const historyCount = await db.search_history.count({
       where: {
         user_id: req.userId,
       },
     });
     if (historyCount >= 10) {
-      const history = await db.Search_History.findOne({
+      const history = await db.search_history.findOne({
         where: {
           user_id: req.userId,
         },
@@ -17,7 +17,7 @@ const createHistorySearchService = async (req, res) => {
       await history.destroy();
     }
 
-    const newHistory = await db.Search_History.create({
+    const newHistory = await db.search_history.create({
       user_id: req.userId,
       keyword: req.body.keyword,
     });
@@ -37,7 +37,7 @@ const getSuggestUserService = async (req, res) => {
   try {
     const keyword = req.query.keyword || "";
     // if(keyword)
-    const historys = await db.Search_History.findAll({
+    const historys = await db.search_history.findAll({
       where: {
         user_id: req.userId,
         keyword: {

@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 
 const createConversationService = async (req, res) => {
   try {
-    const conversationOld = await db.Conversation.findOne({
+    const conversationOld = await db.conversation.findOne({
       where: {
         [Op.or]: [
           {
@@ -32,7 +32,7 @@ const createConversationService = async (req, res) => {
     if (conversationOld) {
       return res.status(200).send("da co phong");
     } else {
-      const conversation = await db.Conversation.create({
+      const conversation = await db.conversation.create({
         user_one: req.body.user_one,
         user_second: req.body.user_second,
       });
@@ -44,7 +44,7 @@ const createConversationService = async (req, res) => {
 };
 const getConversationService = async (req, res) => {
   try {
-    const conversations = await db.Conversation.findAll({
+    const conversations = await db.conversation.findAll({
       where: {
         [Op.or]: [{ user_one: req.userId }, { user_second: req.userId }],
       },

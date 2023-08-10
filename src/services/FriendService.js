@@ -4,7 +4,7 @@ const db = require("../models");
 const addFriendService = async (req, res) => {
   try {
     console.log(req.body);
-    const refFriend = await db.Friend.findOne({
+    const refFriend = await db.friend.findOne({
       where: {
         [Op.or]: [
           {
@@ -24,12 +24,12 @@ const addFriendService = async (req, res) => {
         friend: refFriend,
       });
 
-    const newFriend = await db.Friend.create({
+    const newFriend = await db.friend.create({
       sender: req.body.sender,
       recie: req.body.recie,
       status: 1,
     });
-    const notifycationNew = await db.Notifycation.create({
+    const notifycationNew = await db.notifycation.create({
       user_id: req.body.recie,
       text: req.body.text,
       avatar: req.body.avatar,
@@ -45,11 +45,11 @@ const addFriendService = async (req, res) => {
 };
 const acceptFriendService = async (req, res) => {
   try {
-    const friend = await db.Friend.findByPk(req.params.id);
+    const friend = await db.friend.findByPk(req.params.id);
     if (!friend) return res.status(404).send("FRIEND NOT FOUND");
     friend.status = 2;
     await friend.save();
-    const notifycationNew = await db.Notifycation.create({
+    const notifycationNew = await db.notifycation.create({
       user_id: req.body.recie,
       text: req.body.text,
       avatar: req.body.avatar,
@@ -64,7 +64,7 @@ const acceptFriendService = async (req, res) => {
 };
 const refuseFriendService = async (req, res) => {
   try {
-    const friend = await db.Friend.findByPk(req.params.id);
+    const friend = await db.friend.findByPk(req.params.id);
     if (!friend) return res.status(200).send("DELETE FRIEND SUCCESSFUL");
     await friend.destroy();
     return res.status(200).json({
@@ -76,7 +76,7 @@ const refuseFriendService = async (req, res) => {
 };
 const getRequestFriendService = async (req, res) => {
   try {
-    const requestFriend = await db.Friend.findAll({
+    const requestFriend = await db.friend.findAll({
       where: {
         recie: req.params.id,
         status: 1,
@@ -94,7 +94,7 @@ const getAcceptFriendService = async (req, res) => {
   try {
     const keyword = req.query.keyword || "";
     console.log(keyword);
-    const friends = await db.Friend.findAll({
+    const friends = await db.friend.findAll({
       where: {
         status: 2,
         [Op.or]: [{ sender: req.params.id }, { recie: req.params.id }],

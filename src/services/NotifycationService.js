@@ -2,7 +2,7 @@ const db = require("../models");
 
 const getNotifycationUserService = async (req, res) => {
   try {
-    const notys = await db.Notifycation.findAll({
+    const notys = await db.notifycation.findAll({
       where: {
         user_id: req.params.id,
       },
@@ -27,7 +27,7 @@ const getNotifycationUserService = async (req, res) => {
 };
 const readNotisService = async (req, res) => {
   try {
-    const readNotis = await db.Notifycation.update(
+    const readNotis = await db.notifycation.update(
       { read: 1 },
       { where: { user_id: req.params.id } }
     );

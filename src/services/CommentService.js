@@ -30,7 +30,7 @@ const createCommentService = async (req, res, file) => {
       let update = await updatePost.save();
 
       if (req.body.ownPost != req.body.user_id) {
-        // const notifycation = await db.Notifycation.findOne({
+        // const notifycation = await db.notifycation.findOne({
         //   where: {
         //     [Op.and]: [
         //       {
@@ -46,7 +46,7 @@ const createCommentService = async (req, res, file) => {
         //   },
         // });
         // if (!notifycation) {
-        const notifycationNew = await db.Notifycation.create({
+        const notifycationNew = await db.notifycation.create({
           user_id: req.body.ownPost,
           text: req.body.text,
           post_id: req.body.post_id,
@@ -98,7 +98,7 @@ const createLikeCommentService = async (req, res) => {
         comment.like_count = +comment.like_count + 1;
         await comment.save();
         if (req.body.ownComment != req.body.user_id) {
-          const notifycation = await db.Notifycation.findOne({
+          const notifycation = await db.notifycation.findOne({
             where: {
               [Op.and]: [
                 {
@@ -114,7 +114,7 @@ const createLikeCommentService = async (req, res) => {
             },
           });
           if (!notifycation) {
-            const notifycationNew = await db.Notifycation.create({
+            const notifycationNew = await db.notifycation.create({
               user_id: req.body.ownComment,
               text: req.body.text,
               comment_id: req.body.comment_id,
@@ -149,7 +149,7 @@ const createReplyService = async (req, res) => {
     updatePost.comment_count = updatePost.comment_count + 1;
     let update = await updatePost.save();
     if (req.body.ownPost != req.body.user_id) {
-      const notifycationNew = await db.Notifycation.create({
+      const notifycationNew = await db.notifycation.create({
         user_id: req.body.ownPost,
         text: req.body.text,
         post_id: req.body.post_id,
@@ -158,7 +158,7 @@ const createReplyService = async (req, res) => {
       });
     }
     if (req.body.recie != req.body.user_id) {
-      const notifycationNew2 = await db.Notifycation.create({
+      const notifycationNew2 = await db.notifycation.create({
         user_id: req.body.recie,
         text: req.body.textReply,
         post_id: req.body.post_id,

@@ -601,7 +601,7 @@ const updateDescriptionService = async (req, res) => {
 
 const getFriendsService = async (req, res) => {
   try {
-    const friends = await db.Friend.findAll({
+    const friends = await db.friend.findAll({
       where: {
         [Op.or]: [{ sender: req.params.id }, { recie: req.params.id }],
       },

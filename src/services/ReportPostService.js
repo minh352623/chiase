@@ -158,7 +158,7 @@ const browserUpdateReportService = async (req, res) => {
           post_id: req.body.post_id,
         },
       });
-      const notifycationNew = await db.Notifycation.create({
+      const notifycationNew = await db.notifycation.create({
         user_id: req.body.user_id,
         text: "Admin: " + req.body.text,
         post_id: req.body.post_id,

@@ -35,7 +35,7 @@ const createLikeService = async (req, res) => {
       post.like_count = +post.like_count + 1;
       let postUpdate = await post.save();
       if (req.body.ownPost != req.body.user_id) {
-        const notifycation = await db.Notifycation.findOne({
+        const notifycation = await db.notifycation.findOne({
           where: {
             [Op.and]: [
               {
@@ -51,7 +51,7 @@ const createLikeService = async (req, res) => {
           },
         });
         if (!notifycation) {
-          const notifycationNew = await db.Notifycation.create({
+          const notifycationNew = await db.notifycation.create({
             user_id: req.body.ownPost,
             text: req.body.text,
             post_id: req.body.post_id,
