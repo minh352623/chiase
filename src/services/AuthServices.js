@@ -13,7 +13,7 @@ let loginAuthService = async (req, res) => {
     console.log("login admin", user);
 
     if (!user) {
-      return res.status(400).send("Invalid Email");
+       res.status(400).send("Invalid Email");
     }
     const id_user = user.id;
     //check password for password
@@ -21,20 +21,16 @@ let loginAuthService = async (req, res) => {
 
     if (!isPassvalid) {
       console.log("sai pass");
-      return res.status(400).send("Invalid Password");
+       res.status(400).send("Invalid Password");
     }
 
     const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
       expiresIn: 3600 * 24,
     });
     console.log("login success");
-    // return res.status(200).send({
-    //   accessToken: jwtToken,
-    // });
-
-    return {
-        accessToken: jwtToken,
-      };
+     res.status(200).send({
+      accessToken: jwtToken,
+    });
   } catch (e) {
     console.log(e);
   }

@@ -63,7 +63,6 @@ const online_user_email = async (req, res, next) => {
             total_login: 1,
             devices: JSON.stringify(devices),
           });
-          next();
 
         } else {
           console.log(user_online);
@@ -78,8 +77,8 @@ const online_user_email = async (req, res, next) => {
           ]);
 
           await user_online.save();
-          next();
         }
+
       } catch (e) {
         console.log(e);
       }
