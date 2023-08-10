@@ -27,7 +27,7 @@ let loginAuthService = async (req, res) => {
     const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
       expiresIn: 3600 * 24,
     });
-
+    console.log("login success");
     return res.status(200).send({
       accessToken: jwtToken,
     });
