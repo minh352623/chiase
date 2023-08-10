@@ -243,6 +243,14 @@ io.on("connection", (socket) => {
 var cors = require("cors");
 const db = require("./models");
 app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: ['GET, POST, OPTIONS, PUT, PATCH, DELETE'],
+    credentials: true,
+    maxAge: 86400,
+  })
+);
 require("dotenv").config();
 // app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
