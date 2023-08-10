@@ -11,7 +11,7 @@ const login = async (req, res) => {
     return loginAuthService(req, res);
   } catch (e) {
     console.log(e);
-    res.status(500).send("Lỗi server");
+    return res.status(500).send("Lỗi server");
   }
 };
 const register = async (req, res) => {
