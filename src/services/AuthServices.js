@@ -28,9 +28,13 @@ let loginAuthService = async (req, res) => {
       expiresIn: 3600 * 24,
     });
     console.log("login success");
-    return res.status(200).send({
-      accessToken: jwtToken,
-    });
+    // return res.status(200).send({
+    //   accessToken: jwtToken,
+    // });
+
+    return {
+        accessToken: jwtToken,
+      };
   } catch (e) {
     console.log(e);
   }
