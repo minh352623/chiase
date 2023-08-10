@@ -23,15 +23,20 @@ const dashBoardRoute = require("./routers/DashBoardRoute");
 let port = process.env.PORT;
 var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
-
+const http = require('http');
 const app = express();
 
 // socket
-const io = require("socket.io")(8900, {
-  cors: {
-    origin: "*",
-  },
-});
+// const io = require("socket.io")(8900, {
+//   cors: {
+//     origin: "*",
+//   },
+// });
+
+const server = http.createServer(app);
+const io = require("socket.io")(server);
+
+
 
 let users = [];
 
