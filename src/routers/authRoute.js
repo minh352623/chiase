@@ -14,7 +14,7 @@ const {
   online_user_id,
   online_user_email,
 } = require("../Middeware/AuthMiddleware");
-const CLIENT_URL = "https://lively-lamington-a39686.netlify.app/";
+const CLIENT_URL = "https://lively-lamington-a39686.netlify.app";
 // router.get("/logout", [isAuthentication], logout);
 
 router.get("/login-google-success/:id", [online_user_id], createTokenGoogle);
