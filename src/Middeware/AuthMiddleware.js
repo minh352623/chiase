@@ -63,6 +63,8 @@ const online_user_email = async (req, res, next) => {
             total_login: 1,
             devices: JSON.stringify(devices),
           });
+          next();
+
         } else {
           console.log(user_online);
           user_online.updatedAt = new Date();
@@ -82,6 +84,8 @@ const online_user_email = async (req, res, next) => {
         console.log(e);
       }
     }
+    next();
+
   } catch (e) {
     console.log("🚀 ~ file: AuthMiddleware.js:86 ~ constonline_user_email= ~ e:", e)
     console.log("loi check admin");
