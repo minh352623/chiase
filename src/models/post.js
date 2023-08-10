@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Post.hasMany(
-        models.Video_Image,
+        models.video_image,
         {
           foreignKey: "post_id",
           as: "file_data",
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         { onDelete: "cascade" }
       );
       Post.hasMany(
-        models.Report,
+        models.report,
         {
           foreignKey: "post_id",
           as: "report_post_data",
@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         { onDelete: "cascade" }
       );
       Post.hasMany(
-        models.Comment,
+        models.comment,
         {
           foreignKey: "post_id",
           as: "comment_data",
@@ -42,23 +42,23 @@ module.exports = (sequelize, DataTypes) => {
         { onDelete: "cascade" }
       );
       Post.hasMany(
-        models.Share_Post,
+        models.share_post,
         {
           foreignKey: "post_id",
           as: "user_share",
         },
         { onDelete: "cascade" }
       );
-      Post.belongsTo(models.User, {
+      Post.belongsTo(models.user, {
         foreignKey: "user_id",
         targetKey: "id",
         as: "user_data",
       });
-      Post.hasOne(models.Post, {
+      Post.hasOne(models.post, {
         foreignKey: "share_post_id",
         as: "post_data",
       });
-      Post.belongsTo(models.Post, {
+      Post.belongsTo(models.post, {
         foreignKey: "share_post_id",
         targetKey: "id",
         as: "post_data_two",
@@ -78,7 +78,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Post",
+      modelName: "post",
     }
   );
   return Post;

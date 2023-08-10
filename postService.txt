@@ -30,12 +30,12 @@ let createPostService = async (req, res, fileUpload) => {
         file_upload.push(info.url);
       }
     }
-    let post = await db.Post.create({
+    let post = await db.post.create({
       user_id: req.body.user_id,
       content: req.body.content,
     });
     file_upload.forEach(async (item, index) => {
-      let video_image = await db.Video_Image.create({
+      let video_image = await db.video_image.create({
         post_id: post.id,
         link: item,
         subvalue: req.body.sub_file ? req.body.sub_file[index] : "",
@@ -49,18 +49,18 @@ let createPostService = async (req, res, fileUpload) => {
 
 let getPostHomeService = async (req, res) => {
   try {
-    let Posts = await db.Post.findAll({
+    let Posts = await db.post.findAll({
       limit: 15,
       order: [["createdAt", "DESC"]],
 
       include: [
         {
-          model: db.User,
+          model: db.user,
           as: "user_data",
           attributes: ["firstName", "lastName", "id", "avatar"],
         },
         {
-          model: db.Video_Image,
+          model: db.video_image,
           as: "file_data",
         },
       ],

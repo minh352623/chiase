@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      RoomBauCua.hasMany(models.UserRoomBC, {
+      RoomBauCua.hasMany(models.userroombc, {
         foreignKey: "id_room",
         as: "user_room_data",
       });
-      RoomBauCua.belongsTo(models.User, {
+      RoomBauCua.belongsTo(models.user, {
         foreignKey: "own_room",
         targetKey: "id",
         as: "own_data",
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "RoomBauCua",
+      modelName: "roombaucua",
     }
   );
   return RoomBauCua;

@@ -27,16 +27,16 @@ let createPostService = async (req, res) => {
   try {
     // return res.status(200).send(req.body);
     if (req.body.share_post_id) {
-      const oldPost = await db.Post.findByPk(req.body?.share_post_id);
+      const oldPost = await db.post.findByPk(req.body?.share_post_id);
       if (!oldPost) return res.status(404).send("POST NOT FOUND");
       oldPost.share_count = +oldPost.share_count + 1;
       await oldPost.save();
-      const share_post = await db.Share_Post.create({
+      const share_post = await db.share_post.create({
         user_id: req.body.user_id,
         post_id: req.body.share_post_id,
       });
     }
-    let post = await db.Post.create({
+    let post = await db.post.create({
       user_id: req.body.user_id,
       content: req.body.content,
       share_post_id: req.body?.share_post_id || null,
@@ -45,14 +45,14 @@ let createPostService = async (req, res) => {
     if (file_upload) {
       if (Array.isArray(file_upload) && file_upload.length > 0) {
         file_upload.forEach(async (item, index) => {
-          let video_image = await db.Video_Image.create({
+          let video_image = await db.video_image.create({
             post_id: post.id,
             link: item,
             subvalue: req.body.sub_file ? req.body.sub_file[index] : "",
           });
         });
       } else {
-        let video_image = await db.Video_Image.create({
+        let video_image = await db.video_image.create({
           post_id: post.id,
           link: file_upload,
           subvalue: req.body.sub_file ? req.body.sub_file : "",
@@ -70,7 +70,7 @@ let getPostHomeService = async (req, res) => {
     let Posts;
     const keyword = req.query.q || "";
     if (req.query?.id_user) {
-      Posts = await db.Post.findAll({
+      Posts = await db.post.findAll({
         where: {
           user_id: req.query.id_user,
         },
@@ -79,28 +79,28 @@ let getPostHomeService = async (req, res) => {
 
         include: [
           {
-            model: db.User,
+            model: db.user,
             as: "user_data",
             attributes: ["firstName", "lastName", "id", "avatar"],
           },
 
           {
-            model: db.Post,
+            model: db.post,
             as: "post_data_two",
             include: [
               {
-                model: db.Video_Image,
+                model: db.video_image,
                 as: "file_data",
               },
               {
-                model: db.User,
+                model: db.user,
                 as: "user_data",
                 attributes: ["firstName", "lastName", "id", "avatar"],
               },
             ],
           },
           {
-            model: db.Video_Image,
+            model: db.video_image,
             as: "file_data",
           },
           {
@@ -109,35 +109,35 @@ let getPostHomeService = async (req, res) => {
             attributes: ["user_id"],
             include: [
               {
-                model: db.User,
+                model: db.user,
                 as: "user_data",
                 attributes: ["firstName", "lastName", "id"],
               },
             ],
           },
           {
-            model: db.Share_Post,
+            model: db.share_post,
             as: "user_share",
             attributes: ["user_id"],
             include: [
               {
-                model: db.User,
+                model: db.user,
                 as: "user_data",
                 attributes: ["firstName", "lastName", "id"],
               },
             ],
           },
           {
-            model: db.Comment,
+            model: db.comment,
             as: "comment_data",
             include: [
               {
-                model: db.User,
+                model: db.user,
                 as: "user_data",
                 attributes: ["firstName", "lastName", "avatar"],
               },
               {
-                model: db.Like_comment,
+                model: db.like_comment,
                 as: "like_comment_data",
               },
             ],
@@ -145,7 +145,7 @@ let getPostHomeService = async (req, res) => {
         ],
       });
     } else {
-      Posts = await db.Post.findAll({
+      Posts = await db.post.findAll({
         limit: 15,
         order: [["createdAt", "DESC"]],
         where: {
@@ -184,29 +184,29 @@ let getPostHomeService = async (req, res) => {
         },
         include: [
           {
-            model: db.User,
+            model: db.user,
             as: "user_data",
             attributes: ["firstName", "lastName", "id", "avatar"],
             required: true,
           },
 
           {
-            model: db.Post,
+            model: db.post,
             as: "post_data_two",
             include: [
               {
-                model: db.Video_Image,
+                model: db.video_image,
                 as: "file_data",
               },
               {
-                model: db.User,
+                model: db.user,
                 as: "user_data",
                 attributes: ["firstName", "lastName", "id", "avatar"],
               },
             ],
           },
           {
-            model: db.Video_Image,
+            model: db.video_image,
             as: "file_data",
           },
           {
@@ -215,35 +215,35 @@ let getPostHomeService = async (req, res) => {
             attributes: ["user_id"],
             include: [
               {
-                model: db.User,
+                model: db.user,
                 as: "user_data",
                 attributes: ["firstName", "lastName", "id"],
               },
             ],
           },
           {
-            model: db.Share_Post,
+            model: db.share_post,
             as: "user_share",
             attributes: ["user_id"],
             include: [
               {
-                model: db.User,
+                model: db.user,
                 as: "user_data",
                 attributes: ["firstName", "lastName", "id"],
               },
             ],
           },
           {
-            model: db.Comment,
+            model: db.comment,
             as: "comment_data",
             include: [
               {
-                model: db.User,
+                model: db.user,
                 as: "user_data",
                 attributes: ["firstName", "lastName", "avatar"],
               },
               {
-                model: db.Like_comment,
+                model: db.like_comment,
                 as: "like_comment_data",
               },
             ],
@@ -264,8 +264,8 @@ let getPostAdminService = async (req, res) => {
     let offset = (req.query.page - 1) * per_page;
     let keyword = req.query.keyword || "";
     let count = 0;
-    count = await db.Post.count();
-    let posts = await db.Post.findAll({
+    count = await db.post.count();
+    let posts = await db.post.findAll({
       limit: per_page,
       offset: offset,
       order: [["createdAt", "DESC"]],
@@ -308,9 +308,9 @@ let getPostAdminService = async (req, res) => {
         ],
       },
       include: [
-        { model: db.Video_Image, as: "file_data" },
+        { model: db.video_image, as: "file_data" },
         {
-          model: db.User,
+          model: db.user,
           as: "user_data",
           required: true,
           attributes: [
@@ -340,31 +340,31 @@ let getPostAdminService = async (req, res) => {
 
 const getDetailPostService = async (req, res) => {
   try {
-    const postOld = await db.Post.findByPk(req.params.id);
+    const postOld = await db.post.findByPk(req.params.id);
     if (!postOld) return res.status(404).send("POST NOT FOUND");
 
-    const post = await db.Post.findOne({
+    const post = await db.post.findOne({
       where: { id: req.params.id },
       include: [
         {
-          model: db.User,
+          model: db.user,
           as: "user_data",
           attributes: ["firstName", "lastName", "id", "avatar"],
         },
         {
-          model: db.Video_Image,
+          model: db.video_image,
           as: "file_data",
         },
         {
-          model: db.Post,
+          model: db.post,
           as: "post_data_two",
           include: [
             {
-              model: db.Video_Image,
+              model: db.video_image,
               as: "file_data",
             },
             {
-              model: db.User,
+              model: db.user,
               as: "user_data",
               attributes: ["firstName", "lastName", "id", "avatar"],
             },
@@ -380,24 +380,24 @@ const getDetailPostService = async (req, res) => {
 };
 const deletePostService = async (req, res, next) => {
   try {
-    const post = await db.Post.findByPk(req.params.id);
+    const post = await db.post.findByPk(req.params.id);
     if (post.share_post_id) {
-      const parentPost = await db.Post.findByPk(post.share_post_id);
+      const parentPost = await db.post.findByPk(post.share_post_id);
       if (!parentPost) return res.status(404).send("PARENT POST NOT FOUND");
       parentPost.share_count = +parentPost.share_count - 1;
       await parentPost.save();
-      const statusDelete = await db.Share_Post.destroy({
+      const statusDelete = await db.share_post.destroy({
         where: {
           post_id: post?.share_post_id,
         },
       });
     }
-    const statusDelete = await db.Post.destroy({
+    const statusDelete = await db.post.destroy({
       where: {
         id: req.params.id,
       },
     });
-    const statusDeleteComment = await db.Comment.destroy({
+    const statusDeleteComment = await db.comment.destroy({
       where: {
         post_id: req.params.id,
       },
@@ -415,7 +415,7 @@ const deletePostService = async (req, res, next) => {
 
 const updatePostService = async (req, res) => {
   try {
-    const post = await db.Post.findByPk(req.params.id);
+    const post = await db.post.findByPk(req.params.id);
     if (post) {
       post.content = req.body.content;
       await post.save();
@@ -430,7 +430,7 @@ const updatePostService = async (req, res) => {
 
 const getNineImageService = async (req, res) => {
   try {
-    const images = await db.Post.findAll({
+    const images = await db.post.findAll({
       where: {
         user_id: req.query.user_id,
         "$file_data.link$": {
@@ -440,7 +440,7 @@ const getNineImageService = async (req, res) => {
       },
       include: [
         {
-          model: db.Video_Image,
+          model: db.video_image,
           as: "file_data",
           attributes: ["link"],
           required: true,
@@ -464,7 +464,7 @@ const getNineImageService = async (req, res) => {
 // const searchGlobalService = async (req, res) => {
 //   try {
 //     const keyword = req.query.q || "";
-//     Posts = await db.Post.findAll({
+//     Posts = await db.post.findAll({
 //       order: [["createdAt", "DESC"]],
 //       where: {
 //         [Op.or]: [
@@ -502,27 +502,27 @@ const getNineImageService = async (req, res) => {
 //       },
 //       include: [
 //         {
-//           model: db.User,
+//           model: db.user,
 //           as: "user_data",
 //         },
 
 //         {
-//           model: db.Post,
+//           model: db.post,
 //           as: "post_data_two",
 //           include: [
 //             {
-//               model: db.Video_Image,
+//               model: db.video_image,
 //               as: "file_data",
 //             },
 //             {
-//               model: db.User,
+//               model: db.user,
 //               as: "user_data",
 //               attributes: ["firstName", "lastName", "id", "avatar"],
 //             },
 //           ],
 //         },
 //         {
-//           model: db.Video_Image,
+//           model: db.video_image,
 //           as: "file_data",
 //         },
 //         {
@@ -531,35 +531,35 @@ const getNineImageService = async (req, res) => {
 //           attributes: ["user_id"],
 //           include: [
 //             {
-//               model: db.User,
+//               model: db.user,
 //               as: "user_data",
 //               attributes: ["firstName", "lastName", "id"],
 //             },
 //           ],
 //         },
 //         {
-//           model: db.Share_Post,
+//           model: db.share_post,
 //           as: "user_share",
 //           attributes: ["user_id"],
 //           include: [
 //             {
-//               model: db.User,
+//               model: db.user,
 //               as: "user_data",
 //               attributes: ["firstName", "lastName", "id"],
 //             },
 //           ],
 //         },
 //         {
-//           model: db.Comment,
+//           model: db.comment,
 //           as: "comment_data",
 //           include: [
 //             {
-//               model: db.User,
+//               model: db.user,
 //               as: "user_data",
 //               attributes: ["firstName", "lastName", "avatar"],
 //             },
 //             {
-//               model: db.Like_comment,
+//               model: db.like_comment,
 //               as: "like_comment_data",
 //             },
 //           ],

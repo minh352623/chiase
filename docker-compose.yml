@@ -1,0 +1,94 @@
+networks:
+  traefik:
+volumes: 
+  db:
+services:
+  traefik:
+    image: "traefik"
+    container_name: "traefik"
+    restart: always
+    logging:
+      # Configure the logs retention according to your needs
+      options:
+        max-size: "10m"
+        max-file: "3"
+    env_file:
+      - ./.env
+    command:
+      - "--api.debug=true"
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      # Get Docker as the provider
+      - "--providers.docker=true"
+      # Avoid that all containers are exposed
+      - "--providers.docker.exposedbydefault=false"
+      # Settle the ports for the entry points
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt"
+      - "--entrypoints.websecure.http.tls.domains[0].main=${ROOT_DOMAIN}"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${ROOT_DOMAIN}"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${USER_MAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Store certificates in ./letsencrypt/acme.json
+      - "./letsencrypt:/letsencrypt"
+      # Connect to Doker socket
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - traefik
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+  app:
+    container_name: chiase
+    image: node:18
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./chiase:/app
+    environment:
+      NODE_ENV: production
+    working_dir: /app
+    command: bash -c "npm i && npm start"
+    networks: 
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.routers.chiase.rule: Host(`chiase.shoppet.site`)
+      traefik.http.routers.chiase.entrypoints: websecure
+      traefik.http.routers.chiase.tls.certresolver: letsencrypt
+      traefik.http.routers.chiase.service: chiase
+      traefik.http.services.chiase.loadbalancer.server.port: 8080
+  mysqldb:
+    # this is the database used by Wordpress
+    image: mysql:8.0
+    restart: always
+    container_name: mysql
+    logging:
+      # Configure the logs retention according to your needs
+      options:
+        max-size: "10m"
+        max-file: "3"
+    env_file:
+      - .env
+    environment:
+      # Connect WordPress to the database
+      MYSQL_DATABASE: ${MYSQL_DB_NAME}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: mysql
+    volumes:
+      # Here, the database files are linked into a directory for direct access
+      - db:/var/lib/mysql
+    networks:
+      - traefik
+  

@@ -220,7 +220,7 @@ io.on("connection", (socket) => {
     console.log("logout", user);
 
     if (user) {
-      const online_user = await db.User_Online.findOne({
+      const online_user = await db.user_online.findOne({
         where: {
           user_id: user.userId,
         },

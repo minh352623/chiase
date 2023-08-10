@@ -15,7 +15,7 @@ const createLikeService = async (req, res) => {
         ],
       },
     });
-    const post = await db.Post.findByPk(req.body.post_id);
+    const post = await db.post.findByPk(req.body.post_id);
     if (!post) return res.status(404).send("POST NOT FOUND");
 
     if (like) {

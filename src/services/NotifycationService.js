@@ -8,7 +8,7 @@ const getNotifycationUserService = async (req, res) => {
       },
       order: [["createdAt", "DESC"]],
 
-      include: [{ model: db.User, as: "user_data", attributes: ["avatar"] }],
+      include: [{ model: db.user, as: "user_data", attributes: ["avatar"] }],
     });
     let count = 0;
     if (notys.length > 0) {

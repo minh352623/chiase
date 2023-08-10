@@ -5,7 +5,7 @@ let ListGroup = async (req, res) => {
   try {
     let offset = (req.query.page - 1) * per_page;
     let keyword = req.query.keyword || "";
-    let Groups = await db.Group_User.findAndCountAll({
+    let Groups = await db.group_user.findAndCountAll({
       limit: per_page,
       offset: offset,
       order: [["id", "DESC"]],
@@ -26,13 +26,13 @@ let ListGroup = async (req, res) => {
 };
 
 let CreateNewGroup = async (req, res) => {
-  let Group = await db.Group_User.create(req.body);
+  let Group = await db.group_user.create(req.body);
   return res.status(200).send("Add group successfully");
 };
 let getDetailGroupService = async (req, res) => {
   try {
     const id = req.params.id;
-    const group = await db.Group_User.findByPk(id);
+    const group = await db.group_user.findByPk(id);
     return res.status(200).send(group);
   } catch (e) {
     console.log(e);
@@ -41,7 +41,7 @@ let getDetailGroupService = async (req, res) => {
 let UpdateGroupService = async (req, res) => {
   try {
     const id = req.params.id;
-    const group = await db.Group_User.findByPk(id);
+    const group = await db.group_user.findByPk(id);
     if (group) {
       group.name = req.body.name;
       await group.save();
@@ -56,9 +56,9 @@ let UpdateGroupService = async (req, res) => {
 let DeleteGroupService = async (req, res) => {
   try {
     const id = req.params.id;
-    const group = await db.Group_User.findByPk(id);
+    const group = await db.group_user.findByPk(id);
     if (group) {
-      let users = await db.User.findAll({
+      let users = await db.user.findAll({
         where: {
           group_id: id,
         },
@@ -83,7 +83,7 @@ let DeleteGroupService = async (req, res) => {
 
 let getAllService = async (req, res) => {
   try {
-    let Groups = await db.Group_User.findAll();
+    let Groups = await db.group_user.findAll();
     return res.status(200).json(Groups);
   } catch (e) {
     console.log(e);

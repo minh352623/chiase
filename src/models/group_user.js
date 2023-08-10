@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Group_User.hasMany(models.User, {
+      Group_User.hasMany(models.user, {
         foreignKey: "group_id",
         as: "user_data",
       });
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Group_User",
+      modelName: "group_user",
     }
   );
   return Group_User;

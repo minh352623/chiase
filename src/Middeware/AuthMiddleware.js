@@ -25,7 +25,7 @@ const isAuthentication = (req, res, next) => {
 const isAdmin = async (req, res, next) => {
   try {
     const userId = req.userId;
-    const user = await db.User.findByPk(userId);
+    const user = await db.user.findByPk(userId);
     if (+user?.group_id == 1) {
       console.log("check admin");
       next();
@@ -41,13 +41,13 @@ const isAdmin = async (req, res, next) => {
 };
 const online_user_email = async (req, res, next) => {
   try {
-    const user = await db.User.findOne({
+    const user = await db.user.findOne({
       where: { email: req.body.email },
     });
 
     if (user.id) {
       try {
-        const user_online = await db.User_Online.findOne({
+        const user_online = await db.user_online.findOne({
           where: {
             user_id: user.id,
           },
@@ -58,7 +58,7 @@ const online_user_email = async (req, res, next) => {
           date_login: new Date(),
         });
         if (!user_online) {
-          const new_user_online = await db.User_Online.create({
+          const new_user_online = await db.user_online.create({
             user_id: user.id,
             total_login: 1,
             devices: JSON.stringify(devices),
@@ -83,16 +83,17 @@ const online_user_email = async (req, res, next) => {
       }
     }
   } catch (e) {
+    console.log("🚀 ~ file: AuthMiddleware.js:86 ~ constonline_user_email= ~ e:", e)
     console.log("loi check admin");
   }
 };
 const online_user_id = async (req, res, next) => {
   try {
-    const user = await db.User.findByPk(req.params.id);
+    const user = await db.user.findByPk(req.params.id);
 
     if (user.id) {
       try {
-        const user_online = await db.User_Online.findOne({
+        const user_online = await db.user_online.findOne({
           where: {
             user_id: user.id,
           },
@@ -103,7 +104,7 @@ const online_user_id = async (req, res, next) => {
           date_login: new Date(),
         });
         if (!user_online) {
-          const new_user_online = await db.User_Online.create({
+          const new_user_online = await db.user_online.create({
             user_id: user.id,
             total_login: 1,
             devices: JSON.stringify(devices),
@@ -128,6 +129,7 @@ const online_user_id = async (req, res, next) => {
       }
     }
   } catch (e) {
+    console.log("🚀 ~ file: AuthMiddleware.js:131 ~ constonline_user_id= ~ e:", e)
     console.log("loi check admin");
   }
 };

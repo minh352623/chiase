@@ -3,10 +3,10 @@ const db = require("../models");
 
 const flexHeaderService = async (req, res) => {
   try {
-    const totalAccount = await db.User.count();
-    const totalPost = await db.Post.count();
-    const totalReport = await db.Report.count();
-    const totalGroup = await db.Group_User.count();
+    const totalAccount = await db.user.count();
+    const totalPost = await db.post.count();
+    const totalReport = await db.report.count();
+    const totalGroup = await db.group_user.count();
     return res.status(200).json({
       totalAccount: totalAccount,
       totalGroup: totalGroup,
@@ -24,8 +24,8 @@ const manager_online_user_service = async (req, res) => {
     let offset = (req.query.page - 1) * per_page;
     let count = 0;
     const keyword = req.query.keyword;
-    count = await db.User_Online.count();
-    const info = await db.User_Online.findAll({
+    count = await db.user_online.count();
+    const info = await db.user_online.findAll({
       limit: per_page,
       offset: offset,
       order: [["createdAt", "DESC"]],
@@ -64,11 +64,11 @@ const manager_online_user_service = async (req, res) => {
       },
       include: [
         {
-          model: db.User,
+          model: db.user,
           as: "user_data",
           include: [
             {
-              model: db.Group_User,
+              model: db.group_user,
               as: "group_data",
               attributes: ["name", "id"],
 
@@ -96,7 +96,7 @@ const exportExcelInfoOnline_service = async (req, res) => {
   try {
     const keyword = req.query.keyword;
 
-    const info = await db.User_Online.findAll({
+    const info = await db.user_online.findAll({
       order: [["createdAt", "DESC"]],
       where: {
         [Op.and]: [
@@ -133,11 +133,11 @@ const exportExcelInfoOnline_service = async (req, res) => {
       },
       include: [
         {
-          model: db.User,
+          model: db.user,
           as: "user_data",
           include: [
             {
-              model: db.Group_User,
+              model: db.group_user,
               as: "group_data",
               attributes: ["name", "id"],
 

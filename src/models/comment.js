@@ -9,18 +9,18 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Comment.belongsTo(models.User, {
+      Comment.belongsTo(models.user, {
         foreignKey: "user_id",
         targetKey: "id",
         as: "user_data",
       });
-      Comment.belongsTo(models.Post, {
+      Comment.belongsTo(models.post, {
         foreignKey: "post_id",
         targetKey: "id",
         as: "post_data",
       });
       Comment.hasMany(
-        models.Like_comment,
+        models.like_comment,
         {
           foreignKey: "comment_id",
           as: "like_comment_data",
@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Comment",
+      modelName: "comment",
     }
   );
   return Comment;

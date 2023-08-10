@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 let loginAuthService = async (req, res) => {
   try {
     //get info client
-    const user = await db.User.findOne({
+    const user = await db.user.findOne({
       where: { email: req.body.email },
     });
 
@@ -40,7 +40,7 @@ let registerService = async (req, res) => {
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
-    const newUser = await db.User.create({
+    const newUser = await db.user.create({
       firstName,
       lastName,
       email,
@@ -55,7 +55,7 @@ let registerService = async (req, res) => {
 
 const createTokenFacebookService = async (req, res) => {
   try {
-    const user = await db.User.findByPk(req.params.id);
+    const user = await db.user.findByPk(req.params.id);
     if (!user) return res.status(404).send("USER NOT FOUND");
     const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
       expiresIn: 3600 * 24,
@@ -69,7 +69,7 @@ const createTokenFacebookService = async (req, res) => {
 };
 const createTokenGithubService = async (req, res) => {
   try {
-    const user = await db.User.findByPk(req.params.id);
+    const user = await db.user.findByPk(req.params.id);
     if (!user) return res.status(404).send("USER NOT FOUND");
     const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
       expiresIn: 3600 * 24,
@@ -84,7 +84,7 @@ const createTokenGithubService = async (req, res) => {
 
 const loginWithFaceIDService = async (req, res) => {
   try {
-    const user = await db.User.findOne({
+    const user = await db.user.findOne({
       where: { email: req.body.email },
     });
     if (!user) return res.status(404).send("USER NOT FOUND");

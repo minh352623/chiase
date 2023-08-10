@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Video_Image",
+      modelName: "video_image",
     }
   );
   return Video_Image;

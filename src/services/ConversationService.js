@@ -50,7 +50,7 @@ const getConversationService = async (req, res) => {
       },
       include: [
         {
-          model: db.Message,
+          model: db.message,
           as: "message_data",
         },
       ],

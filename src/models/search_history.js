@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     keyword: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'Search_History',
+    modelName: 'search_history',
   });
   return Search_History;
 };

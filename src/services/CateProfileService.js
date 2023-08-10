@@ -3,7 +3,7 @@ const db = require("../models");
 const per_page = 2;
 const addCateProfileService = async (req, res) => {
   try {
-    const cateProfile = await db.Cate_Profile.create({
+    const cateProfile = await db.cate_profile.create({
       name: req.body?.name,
     });
     return res.status(200).json(cateProfile);
@@ -13,7 +13,7 @@ const addCateProfileService = async (req, res) => {
 };
 const getAllService = async (req, res) => {
   try {
-    const cates = await db.Cate_Profile.findAll();
+    const cates = await db.cate_profile.findAll();
     return res.status(200).json(cates);
   } catch (e) {
     console.log(e);
@@ -26,8 +26,8 @@ const getCateProfileService = async (req, res) => {
     let offset = (req.query.page - 1) * per_page;
     let keyword = req.query.keyword || "";
     let count = 0;
-    count = await db.Cate_Profile.count();
-    let cateProfile = await db.Cate_Profile.findAll({
+    count = await db.cate_profile.count();
+    let cateProfile = await db.cate_profile.findAll({
       limit: per_page,
       offset: offset,
       where: {
@@ -52,7 +52,7 @@ const getCateProfileService = async (req, res) => {
 
 const deleteCateService = async (req, res) => {
   try {
-    const cateProfile = await db.Cate_Profile.findByPk(req.params.id);
+    const cateProfile = await db.cate_profile.findByPk(req.params.id);
     if (!cateProfile) return res.status(404).send("CATE NOT FOUND");
     await cateProfile.destroy({});
     return res.status(200).send(cateProfile);
@@ -64,7 +64,7 @@ const deleteCateService = async (req, res) => {
 
 const getDetailCateService = async (req, res) => {
   try {
-    const cateProdile = await db.Cate_Profile.findByPk(req.params.id);
+    const cateProdile = await db.cate_profile.findByPk(req.params.id);
     if (!cateProdile) return res.status(404).send("CATE PROFILE NOT FOUND");
     return res.status(200).send(cateProdile);
   } catch (e) {
@@ -73,7 +73,7 @@ const getDetailCateService = async (req, res) => {
 };
 const updateCateProfileService = async (req, res) => {
   try {
-    const Cate = await db.Cate_Profile.findByPk(req.params.id);
+    const Cate = await db.cate_profile.findByPk(req.params.id);
     if (Cate) {
       Cate.name = req.body.name;
       await Cate.save();

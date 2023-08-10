@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     token: DataTypes.TEXT
   }, {
     sequelize,
-    modelName: 'Token_Video',
+    modelName: 'token_video',
   });
   return Token_Video;
 };

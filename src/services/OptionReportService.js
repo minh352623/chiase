@@ -15,7 +15,7 @@ const getOptionAdminService = async (req, res) => {
     let offset = (req.query.page - 1) * per_page;
     let keyword = req.query.keyword || "";
 
-    let options = await db.Option_Report.findAndCountAll({
+    let options = await db.option_report.findAndCountAll({
       limit: per_page,
       offset: offset,
       order: [["id", "DESC"]],
@@ -50,7 +50,7 @@ const createOptionService = async (req, res, img) => {
       link = info.url;
     }
     console.log("ava " + link);
-    const option = await db.Option_Report.create({
+    const option = await db.option_report.create({
       img: link,
       text: req.body.text,
     });
@@ -62,7 +62,7 @@ const createOptionService = async (req, res, img) => {
 };
 const deleteOptionService = async (req, res) => {
   try {
-    const option = await db.Option_Report.findByPk(req.params.id);
+    const option = await db.option_report.findByPk(req.params.id);
     if (option) {
       await option.destroy({
         force: true,
@@ -78,7 +78,7 @@ const deleteOptionService = async (req, res) => {
 
 const getAllOptionService = async (req, res) => {
   try {
-    const options = await db.Option_Report.findAll();
+    const options = await db.option_report.findAll();
     return res.status(200).send(options);
   } catch (e) {
     console.log(e);
@@ -88,7 +88,7 @@ const getAllOptionService = async (req, res) => {
 
 const getDetailService = async (req, res) => {
   try {
-    const option = await db.Option_Report.findByPk(req.params.id);
+    const option = await db.option_report.findByPk(req.params.id);
     if (!option) {
       return res.status(404).send("Option not found");
     }
@@ -108,7 +108,7 @@ const UpdateOptionService = async (req, res, img) => {
       link = info.url;
     }
     console.log("ava " + link);
-    const option = await db.Option_Report.findByPk(req.params.id);
+    const option = await db.option_report.findByPk(req.params.id);
     if (!option) return res.status(404).send("option not found");
 
     if (link) {

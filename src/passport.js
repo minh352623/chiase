@@ -19,7 +19,7 @@ passport.use(
       console.log("ádasdasdasdasdasdas");
       console.log(profile);
       // return done(null, profile);
-      const user = await db.User.findOne({
+      const user = await db.user.findOne({
         where: {
           email: profile.emails[0].value,
         },
@@ -27,7 +27,7 @@ passport.use(
       if (user) {
         return done(null, user);
       } else {
-        const user = await db.User.create({
+        const user = await db.user.create({
           email: profile.emails[0].value,
           firstName: profile.name.familyName,
           lastName: profile.name.givenName,
@@ -55,7 +55,7 @@ passport.use(
       console.log(accessToken);
 
       if (profile.emails[0].value) {
-        const user = await db.User.findOne({
+        const user = await db.user.findOne({
           where: {
             email: profile.emails[0].value,
           },
@@ -63,7 +63,7 @@ passport.use(
         if (user) {
           done(null, user);
         } else {
-          const user = await db.User.create({
+          const user = await db.user.create({
             email: profile.emails[0].value,
             firstName: profile.name.familyName,
             id_facebook: profile.id,
@@ -76,7 +76,7 @@ passport.use(
           return done(null, user);
         }
       } else {
-        const user = await db.User.findOne({
+        const user = await db.user.findOne({
           where: {
             id_facebook: profile.id,
           },
@@ -84,7 +84,7 @@ passport.use(
         if (user) {
           done(null, user);
         } else {
-          const user = await db.User.create({
+          const user = await db.user.create({
             email: profile.emails[0].value,
             id_facebook: profile.id,
             firstName: profile.name.familyName,
@@ -111,7 +111,7 @@ passport.use(
       console.log(profile);
       // return done(null, profile);
       if (profile._json.email) {
-        const user = await db.User.findOne({
+        const user = await db.user.findOne({
           where: {
             email: profile.emails[0].value,
           },
@@ -119,7 +119,7 @@ passport.use(
         if (user) {
           done(null, user);
         } else {
-          const user = await db.User.create({
+          const user = await db.user.create({
             email: profile.emails[0].value,
             firstName: profile.name.familyName,
             lastName: profile.name.givenName,
@@ -130,7 +130,7 @@ passport.use(
           return done(null, user);
         }
       } else {
-        const user = await db.User.findOne({
+        const user = await db.user.findOne({
           where: {
             email: profile.username + "@gmail.com",
           },
@@ -138,7 +138,7 @@ passport.use(
         if (user) {
           done(null, user);
         } else {
-          const user = await db.User.create({
+          const user = await db.user.create({
             email: profile.username + "@gmail.com",
             firstName: "",
             lastName: profile.username,
@@ -157,7 +157,7 @@ passport.use(
 //   done(null, user.id);
 // });
 // passport.deserializeUser((user, done) => {
-//   db.User.findByPk(user.id).then((user) => {
+//   db.user.findByPk(user.id).then((user) => {
 //     done(null, user);
 //   });
 // });

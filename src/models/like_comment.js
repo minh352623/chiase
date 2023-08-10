@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     user_id: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'Like_comment',
+    modelName: 'like_comment',
   });
   return Like_comment;
 };

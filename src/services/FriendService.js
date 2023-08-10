@@ -81,7 +81,7 @@ const getRequestFriendService = async (req, res) => {
         recie: req.params.id,
         status: 1,
       },
-      include: [{ model: db.User, as: "sender_data" }],
+      include: [{ model: db.user, as: "sender_data" }],
     });
 
     return res.status(200).json(requestFriend);
@@ -156,8 +156,8 @@ const getAcceptFriendService = async (req, res) => {
         ],
       },
       include: [
-        { model: db.User, as: "sender_data" },
-        { model: db.User, as: "recie_data" },
+        { model: db.user, as: "sender_data" },
+        { model: db.user, as: "recie_data" },
       ],
     });
 
@@ -172,7 +172,7 @@ const getFriendSearchService = async (req, res) => {
   try {
     const keyword = req.query.q || "";
 
-    const users = await db.User.findAll({
+    const users = await db.user.findAll({
       where: {
         id: {
           [Op.ne]: req.userId,
@@ -209,7 +209,7 @@ const getFriendSearchService = async (req, res) => {
           },
         ],
       },
-      include: [{ model: db.Profile_User, as: "profile_data" }],
+      include: [{ model: db.profile_user, as: "profile_data" }],
     });
     return res.status(200).json(users);
   } catch (e) {

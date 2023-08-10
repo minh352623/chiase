@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Share_Post.belongsTo(models.User, {
+      Share_Post.belongsTo(models.user, {
         foreignKey: "user_id",
         targetKey: "id",
         as: "user_data",
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Share_Post",
+      modelName: "share_post",
     }
   );
   return Share_Post;

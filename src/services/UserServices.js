@@ -20,7 +20,7 @@ let getPaginateUser = async (req, res) => {
     let genderSearch = +req.query?.gender?.trim() || null;
     let Users;
     if (req.query.group) {
-      Users = await db.User.findAndCountAll({
+      Users = await db.user.findAndCountAll({
         limit: per_page,
         offset: offset,
         order: [["id", "DESC"]],
@@ -62,7 +62,7 @@ let getPaginateUser = async (req, res) => {
         },
         include: [
           {
-            model: db.Group_User,
+            model: db.group_user,
             as: "group_data",
             attributes: ["name", "id"],
 
@@ -71,7 +71,7 @@ let getPaginateUser = async (req, res) => {
         ],
       });
     } else {
-      Users = await db.User.findAndCountAll({
+      Users = await db.user.findAndCountAll({
         limit: per_page,
         offset: offset,
         order: [["id", "DESC"]],
@@ -110,7 +110,7 @@ let getPaginateUser = async (req, res) => {
         },
         include: [
           {
-            model: db.Group_User,
+            model: db.group_user,
             as: "group_data",
             attributes: ["name", "id"],
 
@@ -132,7 +132,7 @@ const getUserTrashService = async (req, res) => {
     let offset = (req.query.page - 1) * per_page;
     let keyword = req.query.keyword || "";
     let genderSearch = +req.query?.gender?.trim() || null;
-    const count = await db.User.count({
+    const count = await db.user.count({
       where: {
         deletedAt: {
           [Op.ne]: null,
@@ -142,7 +142,7 @@ const getUserTrashService = async (req, res) => {
     });
     let users;
     if (!req.query.group) {
-      users = await db.User.findAll({
+      users = await db.user.findAll({
         limit: per_page,
         offset: offset,
         where: {
@@ -186,7 +186,7 @@ const getUserTrashService = async (req, res) => {
         },
         include: [
           {
-            model: db.Group_User,
+            model: db.group_user,
             as: "group_data",
             attributes: ["name", "id"],
 
@@ -196,7 +196,7 @@ const getUserTrashService = async (req, res) => {
         paranoid: false,
       });
     } else {
-      users = await db.User.findAll({
+      users = await db.user.findAll({
         limit: per_page,
         offset: offset,
         where: {
@@ -240,7 +240,7 @@ const getUserTrashService = async (req, res) => {
         },
         include: [
           {
-            model: db.Group_User,
+            model: db.group_user,
             as: "group_data",
             attributes: ["name", "id"],
 
@@ -276,7 +276,7 @@ let createUserService = async (req, res, avatar) => {
     // return res.status(200).send(avatarnew);
 
     let passwordHash = hashPassword(req.body.password);
-    let user = await db.User.create({
+    let user = await db.user.create({
       firstName: req.body.firstname,
       lastName: req.body.lastname,
       gender: req.body.gender == 1 ? true : false,
@@ -309,7 +309,7 @@ let getUserService = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const user = await db.User.findByPk(id);
+    const user = await db.user.findByPk(id);
     return res.status(200).json(user);
   } catch (e) {
     console.log(e);
@@ -327,7 +327,7 @@ let updateUserService = async (req, res, avatar) => {
       avatarnew = info.url;
     }
     const id = req.params.id;
-    const user = await db.User.findByPk(id);
+    const user = await db.user.findByPk(id);
     if (user) {
       if (avatarnew) {
         user.avatar = avatarnew;
@@ -373,7 +373,7 @@ let updateUserService = async (req, res, avatar) => {
 let deleteUserService = async (req, res) => {
   try {
     const id = req.params.id;
-    const user = await db.User.findByPk(id);
+    const user = await db.user.findByPk(id);
     if (user) {
       await user.destroy({});
       return res.status(200).json("Delete user successful");
@@ -388,7 +388,7 @@ const DeleteUserForceService = async (req, res) => {
   try {
     const id = req.params.id;
     console.log(id);
-    const user = await db.User.findOne({
+    const user = await db.user.findOne({
       where: {
         id: id,
       },
@@ -409,7 +409,7 @@ const DeleteUserForceService = async (req, res) => {
 };
 const getUserHomeService = async (req, res) => {
   try {
-    const users = await db.User.findAll({
+    const users = await db.user.findAll({
       where: {
         id: {
           [Op.ne]: req.userId,
@@ -423,7 +423,7 @@ const getUserHomeService = async (req, res) => {
 };
 const restoreUserService = async (req, res, next) => {
   try {
-    const user = await db.User.findOne({
+    const user = await db.user.findOne({
       where: {
         id: req.params.id,
       },
@@ -440,7 +440,7 @@ const restoreUserService = async (req, res, next) => {
 };
 const exportExcelService = async (req, res) => {
   try {
-    const users = await db.User.findAll({
+    const users = await db.user.findAll({
       paranoid: false,
     });
     return res.status(200).send(users);
@@ -481,7 +481,7 @@ const importExcelService = async (req, res, file) => {
 
     if (userArr.length > 0) {
       console.log(userArr);
-      const importUsers = await db.User.bulkCreate(userArr, {
+      const importUsers = await db.user.bulkCreate(userArr, {
         ignoreDuplicates: true,
       });
       return res.status(200).send("import excel successfully imported");
@@ -495,7 +495,7 @@ const importExcelService = async (req, res, file) => {
 
 const getUserSuggestService = async (req, res) => {
   try {
-    const users = await db.User.findAll({
+    const users = await db.user.findAll({
       limit: 4,
       where: {
         group_id: 1,
@@ -514,7 +514,7 @@ const getUserSuggestService = async (req, res) => {
 };
 const getProfileUserService = async (req, res) => {
   try {
-    const profile = await db.User.findOne({
+    const profile = await db.user.findOne({
       where: {
         id: req.params.id,
       },
@@ -533,7 +533,7 @@ const changeAvatarService = async (req, res, avatar) => {
   try {
     const id = req.params.id;
 
-    const user = await db.User.findByPk(id);
+    const user = await db.user.findByPk(id);
     if (!user) return res.status(404).send("USER NOT FOUND");
     let avatarnew = "";
     if (avatar.tempFilePath) {
@@ -559,7 +559,7 @@ const changeBackgroundService = async (req, res, bg_img) => {
   try {
     const id = req.params.id;
 
-    const user = await db.User.findByPk(id);
+    const user = await db.user.findByPk(id);
     if (!user) return res.status(404).send("USER NOT FOUND");
     let bg_imgNew = "";
     if (bg_img.tempFilePath) {
@@ -584,7 +584,7 @@ const changeBackgroundService = async (req, res, bg_img) => {
 
 const updateDescriptionService = async (req, res) => {
   try {
-    const user = await db.User.findByPk(req.params.id);
+    const user = await db.user.findByPk(req.params.id);
     if (!user) return res.status(404).send("USER NOT FOUND");
     if (!req.body.desc) return res.status(404).send("DESCRIPTION NOT FOUND");
     user.description = req.body.desc;
@@ -614,7 +614,7 @@ const getFriendsService = async (req, res) => {
 
 const createTokenGoogleService = async (req, res) => {
   try {
-    const user = await db.User.findByPk(req.params.id);
+    const user = await db.user.findByPk(req.params.id);
     if (!user) return res.status(404).send("USER NOT FOUND");
     const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
       expiresIn: 3600,
@@ -678,7 +678,7 @@ const changePasswordService = async (req, res) => {
       return res.status(400).send("Email và mã kèm theo không khớp");
     }
 
-    const user = await db.User.findOne({
+    const user = await db.user.findOne({
       where: {
         email: req.body.email,
       },
@@ -716,7 +716,7 @@ const changePasswordService = async (req, res) => {
 
 const getCoinService = async (req, res) => {
   try {
-    const coinUser = await db.User.findOne({
+    const coinUser = await db.user.findOne({
       where: {
         id: req.params.id,
       },

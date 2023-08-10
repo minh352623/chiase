@@ -7,8 +7,8 @@ const getOptionProfileService = async (req, res) => {
     let offset = (req.query.page - 1) * per_page;
     let keyword = req.query.keyword || "";
     let count = 0;
-    count = await db.Option_Profile.count();
-    let optionProfile = await db.Option_Profile.findAll({
+    count = await db.option_profile.count();
+    let optionProfile = await db.option_profile.findAll({
       limit: per_page,
       offset: offset,
       where: {
@@ -16,7 +16,7 @@ const getOptionProfileService = async (req, res) => {
           [Op.substring]: keyword,
         },
       },
-      include: [{ model: db.Cate_Profile, as: "cate_data" }],
+      include: [{ model: db.cate_profile, as: "cate_data" }],
       order: [["createdAt", "DESC"]],
     });
     optionProfile.per_page = per_page;
@@ -35,7 +35,7 @@ const getOptionProfileService = async (req, res) => {
 
 const addOptionProfileService = async (req, res, next) => {
   try {
-    const optionCate = await db.Option_Profile.create({
+    const optionCate = await db.option_profile.create({
       key: req.body?.key,
       cate_id: req.body?.cate,
     });
@@ -47,7 +47,7 @@ const addOptionProfileService = async (req, res, next) => {
 };
 const deleteOptionService = async (req, res) => {
   try {
-    const optionProfile = await db.Option_Profile.findByPk(req.params.id);
+    const optionProfile = await db.option_profile.findByPk(req.params.id);
     if (!optionProfile) return res.status(404).send("OPTION NOT FOUND");
     await optionProfile.destroy({});
     return res.status(200).send(optionProfile);
@@ -58,7 +58,7 @@ const deleteOptionService = async (req, res) => {
 
 const getDetailOptionService = async (req, res, next) => {
   try {
-    const optionProfile = await db.Option_Profile.findByPk(req.params.id);
+    const optionProfile = await db.option_profile.findByPk(req.params.id);
     if (!optionProfile) return res.status(404).send("OPTION PROFILE NOT FOUND");
     return res.status(200).send(optionProfile);
   } catch (e) {
@@ -67,7 +67,7 @@ const getDetailOptionService = async (req, res, next) => {
 };
 const UpdateOptionService = async (req, res) => {
   try {
-    const option = await db.Option_Profile.findByPk(req.params.id);
+    const option = await db.option_profile.findByPk(req.params.id);
     if (option) {
       if (req.body.key) {
         option.key = req.body.key;
@@ -86,11 +86,11 @@ const UpdateOptionService = async (req, res) => {
 };
 const getOptionProfileCateService = async (req, res) => {
   try {
-    const options = await db.Option_Profile.findAll({
+    const options = await db.option_profile.findAll({
       where: {
         cate_id: req.params.id,
       },
-      include: [{ model: db.Profile_User, as: "profile_data" }],
+      include: [{ model: db.profile_user, as: "profile_data" }],
     });
     return res.status(200).json(options);
   } catch (e) {

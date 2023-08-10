@@ -18,13 +18,13 @@ const createCommentService = async (req, res, file) => {
       fileNew = info.url;
     }
     if (file || req.body.content) {
-      const comment = await db.Comment.create({
+      const comment = await db.comment.create({
         post_id: req.body.post_id,
         user_id: req.body.user_id,
         text: req.body.content,
         file: fileNew,
       });
-      const updatePost = await db.Post.findByPk(req.body.post_id);
+      const updatePost = await db.post.findByPk(req.body.post_id);
       if (!updatePost) return res.status(404).send("POST NOT FOUND");
       updatePost.comment_count = updatePost.comment_count + 1;
       let update = await updatePost.save();
@@ -68,7 +68,7 @@ const createCommentService = async (req, res, file) => {
 const createLikeCommentService = async (req, res) => {
   try {
     if (req.body.user_id && req.body.comment_id) {
-      const like_comment_own = await db.Like_comment.findOne({
+      const like_comment_own = await db.like_comment.findOne({
         where: {
           [Op.and]: [
             {
@@ -80,7 +80,7 @@ const createLikeCommentService = async (req, res) => {
           ],
         },
       });
-      const comment = await db.Comment.findByPk(req.body.comment_id);
+      const comment = await db.comment.findByPk(req.body.comment_id);
       if (!comment) return res.status(404).send("COMMENT NOT FOUND");
 
       if (like_comment_own) {
@@ -91,7 +91,7 @@ const createLikeCommentService = async (req, res) => {
         let commentUpdate = await comment.save();
         return res.status(200).send("delete like comment");
       } else {
-        const like_comment = await db.Like_comment.create({
+        const like_comment = await db.like_comment.create({
           user_id: req.body.user_id,
           comment_id: req.body.comment_id,
         });
@@ -137,14 +137,14 @@ const createLikeCommentService = async (req, res) => {
 const createReplyService = async (req, res) => {
   try {
     if (!req.body.content) return res.status(400).send("Content not found");
-    const reply = await db.Comment.create({
+    const reply = await db.comment.create({
       post_id: req.body.post_id,
       user_id: req.body.user_id,
       text: req.body.content,
       parent_id: req.body.parent_id,
     });
     if (!reply) return res.status(500).send("DATABSE ERRROR");
-    const updatePost = await db.Post.findByPk(req.body.post_id);
+    const updatePost = await db.post.findByPk(req.body.post_id);
     if (!updatePost) return res.status(404).send("POST NOT FOUND");
     updatePost.comment_count = updatePost.comment_count + 1;
     let update = await updatePost.save();

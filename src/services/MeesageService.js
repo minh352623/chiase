@@ -3,9 +3,9 @@ const { Op } = require("sequelize");
 
 const getMessagesService = async (req, res) => {
   try {
-    const messages = await db.Message.findAll({
+    const messages = await db.message.findAll({
       where: { id_conversation: req.params.idConversation },
-      include: [{ model: db.User, as: "user_data" }],
+      include: [{ model: db.user, as: "user_data" }],
     });
     return res.status(200).send(messages);
   } catch (e) {
@@ -15,7 +15,7 @@ const getMessagesService = async (req, res) => {
 };
 const createMessageService = async (req, res) => {
   try {
-    const message = await db.Message.create(req.body);
+    const message = await db.message.create(req.body);
     return res.status(200).send(message);
   } catch (e) {
     return res.status(500).send(e);

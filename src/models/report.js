@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Report.belongsTo(models.User, {
+      Report.belongsTo(models.user, {
         foreignKey: "user_id_report",
         targetKey: "id",
         as: "user_data",
       });
-      Report.belongsTo(models.Option_Report, {
+      Report.belongsTo(models.option_report, {
         foreignKey: "option_id_report",
         targetKey: "id",
         as: "option_data",
@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Report",
+      modelName: "report",
     }
   );
   return Report;

@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      UserRoomBC.belongsTo(models.User, {
+      UserRoomBC.belongsTo(models.user, {
         foreignKey: "user_id",
         targetKey: "id",
         as: "user_data",
       });
-      UserRoomBC.belongsTo(models.RoomBauCua, {
+      UserRoomBC.belongsTo(models.roombaucua, {
         foreignKey: "id_room",
         targetKey: "id",
         as: "room_data",
@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "UserRoomBC",
+      modelName: "userroombc",
     }
   );
   return UserRoomBC;

@@ -2,7 +2,7 @@ const db = require("../models");
 
 const createPofileUserService = async (req, res) => {
   try {
-    const profile = await db.Profile_User.create({
+    const profile = await db.profile_user.create({
       user_id: req.body.user_id,
       option_profile_id: req.body.option_profile_id,
       value: req.body.value,
@@ -20,11 +20,11 @@ const createPofileUserService = async (req, res) => {
 
 const fetchAllProfileService = async (req, res) => {
   try {
-    const profile = await db.Profile_User.findAll({
+    const profile = await db.profile_user.findAll({
       where: {
         user_id: req.query.user_id,
       },
-      include: [{ model: db.Option_Profile, as: "option_data" }],
+      include: [{ model: db.option_profile, as: "option_data" }],
     });
     return res.status(200).json({
       success: true,
@@ -39,7 +39,7 @@ const fetchAllProfileService = async (req, res) => {
 
 const updateProfileService = async (req, res) => {
   try {
-    const option = await db.Profile_User.findByPk(req.params.id);
+    const option = await db.profile_user.findByPk(req.params.id);
     if (!option) return res.status(404).send("OPTION NOT FOUND");
     if (req.body.value) {
       option.value = req.body.value;
@@ -57,7 +57,7 @@ const updateProfileService = async (req, res) => {
 };
 const deleteOptionService = async (req, res) => {
   try {
-    const option = await db.Profile_User.findByPk(req.params.id);
+    const option = await db.profile_user.findByPk(req.params.id);
     if (!option) return res.status(404).send("OPTION NOT FOUND");
     await option.destroy();
     return res.status(200).json({

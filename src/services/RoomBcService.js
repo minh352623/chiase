@@ -7,20 +7,20 @@ const { response } = require("express");
 
 const createRoomService = async (req, res) => {
   try {
-    const roomOld = await db.RoomBauCua.findOne({
+    const roomOld = await db.roombaucua.findOne({
       where: {
         own_room: req.userId,
       },
     });
     if (roomOld) {
-      await db.UserRoomBC.destroy({
+      await db.userroombc.destroy({
         where: {
           id_room: roomOld.id,
         },
       });
       await roomOld.destroy({});
     }
-    const room = await db.RoomBauCua.create({
+    const room = await db.roombaucua.create({
       own_room: req.userId,
       name: req.body.nameRoom,
       password: req.body.passRoom,
@@ -30,7 +30,7 @@ const createRoomService = async (req, res) => {
       code_room: v4(),
     });
     if (!room) return res.status(500).send("DATABASE ERROR");
-    const user_room = await db.UserRoomBC.create({
+    const user_room = await db.userroombc.create({
       user_id: req.userId,
       id_room: room.id,
       ready: 1,
@@ -51,8 +51,8 @@ const getAllService = async (req, res) => {
     let offset = (req.query.page - 1) * per_page;
     let keyword = req.query.keyword || "";
     let count = 0;
-    count = await db.RoomBauCua.count();
-    let rooms = await db.RoomBauCua.findAll({
+    count = await db.roombaucua.count();
+    let rooms = await db.roombaucua.findAll({
       limit: per_page,
       offset: offset,
       order: [["createdAt", "DESC"]],
@@ -71,11 +71,11 @@ const getAllService = async (req, res) => {
       },
       include: [
         {
-          model: db.UserRoomBC,
+          model: db.userroombc,
           as: "user_room_data",
           include: [
             {
-              model: db.User,
+              model: db.user,
               as: "user_data",
               attributes: ["firstName", "lastName", "id", "avatar"],
             },
@@ -100,24 +100,24 @@ const getAllService = async (req, res) => {
 
 const getDetailRoomService = async (req, res) => {
   try {
-    const room = await db.RoomBauCua.findOne({
+    const room = await db.roombaucua.findOne({
       where: {
         code_room: req.params.code_room,
       },
       include: [
         {
-          model: db.UserRoomBC,
+          model: db.userroombc,
           as: "user_room_data",
           include: [
             {
-              model: db.User,
+              model: db.user,
               as: "user_data",
               attributes: ["firstName", "lastName", "id", "avatar", "coin"],
             },
           ],
         },
         {
-          model: db.User,
+          model: db.user,
           as: "own_data",
         },
       ],
@@ -132,7 +132,7 @@ const getDetailRoomService = async (req, res) => {
 
 const changeStatusBlockRoomService = async (req, res) => {
   try {
-    const room = await db.RoomBauCua.findOne({
+    const room = await db.roombaucua.findOne({
       where: {
         code_room: req.params.code_room,
       },
@@ -141,24 +141,24 @@ const changeStatusBlockRoomService = async (req, res) => {
 
     room.blocked = req.body.blocked;
     await room.save();
-    const roomNew = await db.RoomBauCua.findOne({
+    const roomNew = await db.roombaucua.findOne({
       where: {
         code_room: req.params.code_room,
       },
       include: [
         {
-          model: db.UserRoomBC,
+          model: db.userroombc,
           as: "user_room_data",
           include: [
             {
-              model: db.User,
+              model: db.user,
               as: "user_data",
               attributes: ["firstName", "lastName", "id", "avatar", "coin"],
             },
           ],
         },
         {
-          model: db.User,
+          model: db.user,
           as: "own_data",
         },
       ],
@@ -171,19 +171,19 @@ const changeStatusBlockRoomService = async (req, res) => {
 
 const deleteRoomService = async (req, res) => {
   try {
-    const room = await db.RoomBauCua.findOne({
+    const room = await db.roombaucua.findOne({
       where: {
         code_room: req.params.code_room,
       },
       include: [
         {
-          model: db.UserRoomBC,
+          model: db.userroombc,
           as: "user_room_data",
         },
       ],
     });
     if (!room) return res.status(400).json("ROOM NOT FOUND");
-    await db.UserRoomBC.destroy({
+    await db.userroombc.destroy({
       where: {
         id_room: room?.id,
       },
@@ -197,13 +197,13 @@ const deleteRoomService = async (req, res) => {
 
 const joinRoomService = async (req, res) => {
   try {
-    const room = await db.RoomBauCua.findOne({
+    const room = await db.roombaucua.findOne({
       where: {
         id: req.params.id_room,
       },
       include: [
         {
-          model: db.UserRoomBC,
+          model: db.userroombc,
           as: "user_room_data",
         },
       ],
@@ -218,7 +218,7 @@ const joinRoomService = async (req, res) => {
       return res.status(400).json("Mật khẩu không đúng!");
     room.count_user = +room.count_user + 1;
     await room.save();
-    await db.UserRoomBC.create({
+    await db.userroombc.create({
       user_id: req.userId,
       id_room: room.id,
     });
@@ -232,19 +232,19 @@ const joinRoomService = async (req, res) => {
 
 const exitRoomService = async (req, res) => {
   try {
-    const room = await db.RoomBauCua.findOne({
+    const room = await db.roombaucua.findOne({
       where: {
         code_room: req.params.code_room,
       },
       include: [
         {
-          model: db.UserRoomBC,
+          model: db.userroombc,
           as: "user_room_data",
         },
       ],
     });
     if (!room) return res.status(400).json("ROOM NOT FOUND");
-    await db.UserRoomBC.destroy({
+    await db.userroombc.destroy({
       where: {
         user_id: req.userId,
         id_room: room.id,
@@ -260,13 +260,13 @@ const exitRoomService = async (req, res) => {
 
 const readyStartService = async (req, res) => {
   try {
-    const room = await db.RoomBauCua.findOne({
+    const room = await db.roombaucua.findOne({
       where: {
         code_room: req.params.code_room,
       },
     });
     if (!room) return res.status(400).json("ROOM NOT FOUND");
-    const user_room = await db.UserRoomBC.findOne({
+    const user_room = await db.userroombc.findOne({
       where: {
         user_id: req.userId,
         id_room: room.id,
@@ -275,24 +275,24 @@ const readyStartService = async (req, res) => {
     if (!user_room) return res.status(400).json("USER NOT FOUND");
     user_room.ready = req.query.status;
     await user_room.save();
-    const newRoom = await db.RoomBauCua.findOne({
+    const newRoom = await db.roombaucua.findOne({
       where: {
         code_room: req.params.code_room,
       },
       include: [
         {
-          model: db.UserRoomBC,
+          model: db.userroombc,
           as: "user_room_data",
           include: [
             {
-              model: db.User,
+              model: db.user,
               as: "user_data",
               attributes: ["firstName", "lastName", "id", "avatar", "coin"],
             },
           ],
         },
         {
-          model: db.User,
+          model: db.user,
           as: "own_data",
         },
       ],
@@ -306,24 +306,24 @@ const readyStartService = async (req, res) => {
 
 const startGameService = async (req, res) => {
   try {
-    const room = await db.RoomBauCua.findOne({
+    const room = await db.roombaucua.findOne({
       where: {
         code_room: req.params.code_room,
       },
       include: [
         {
-          model: db.UserRoomBC,
+          model: db.userroombc,
           as: "user_room_data",
           include: [
             {
-              model: db.User,
+              model: db.user,
               as: "user_data",
               attributes: ["firstName", "lastName", "id", "avatar", "coin"],
             },
           ],
         },
         {
-          model: db.User,
+          model: db.user,
           as: "own_data",
         },
       ],
@@ -333,7 +333,7 @@ const startGameService = async (req, res) => {
       return res
         .status(400)
         .json("Số lượng bắt buộc là 2 người chơi vui lòng mời thêm bạn bè!");
-    const userNotReady = await db.UserRoomBC.findOne({
+    const userNotReady = await db.userroombc.findOne({
       where: {
         id_room: room.id,
         ready: 0,

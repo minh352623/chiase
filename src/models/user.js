@@ -10,12 +10,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       //định nghĩa quan hệ với các bảng chổ này...
-      User.belongsTo(models.Group_User, {
+      User.belongsTo(models.group_user, {
         foreignKey: "group_id",
         targetKey: "id",
         as: "group_data",
       });
-      User.hasMany(models.Profile_User, {
+      User.hasMany(models.profile_user, {
         foreignKey: "user_id",
         as: "profile_data",
       });
@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       paranoid: true,
       deletedAt: "deletedAt",
-      modelName: "User",
+      modelName: "user",
     }
   );
   return User;
