@@ -104,7 +104,7 @@ const getTokenVideo = async (req, res) => {
     header: header,
   });
   console.log(token);
-  const tokenOld = await db.Token_Video.findOne({
+  const tokenOld = await db.token_video.findOne({
     where: {
       user_id: req.params.id,
     },
@@ -114,7 +114,7 @@ const getTokenVideo = async (req, res) => {
       force: true,
     });
   }
-  const tokenVideo = await db.Token_Video.create({
+  const tokenVideo = await db.token_video.create({
     user_id: req.params.id,
     token: token,
   });
