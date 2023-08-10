@@ -33,7 +33,6 @@ let loginAuthService = async (req, res) => {
     });
   } catch (e) {
     console.log(e);
-    return res.status(500).send(e.message);
   }
 };
 let registerService = async (req, res) => {
