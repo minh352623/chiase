@@ -20,6 +20,7 @@ let loginAuthService = async (req, res) => {
     const isPassvalid = bcrypt.compareSync(req.body.password, user.password);
 
     if (!isPassvalid) {
+      console.log("sai pass");
       return res.status(400).send("Invalid Password");
     }
 
