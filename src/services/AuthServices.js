@@ -10,8 +10,10 @@ let loginAuthService = async (req, res) => {
       where: { email: req.body.email },
     });
 
+    console.log("login admin", user);
+
     if (!user) {
-      return res.status(404).send("Invalid Email");
+      return res.status(400).send("Invalid Email");
     }
     const id_user = user.id;
     //check password for password
