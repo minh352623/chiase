@@ -23,7 +23,7 @@ const dashBoardRoute = require("./routers/DashBoardRoute");
 let port = process.env.PORT;
 var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
-const http = require('http');
+const https = require('https');
 const app = express();
 
 // socket
@@ -33,7 +33,7 @@ const app = express();
 //   },
 // });
 
-const server = http.createServer(app);
+const server = https.createServer(app);
 const io = require("socket.io")(server);
 
 
