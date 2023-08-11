@@ -23,7 +23,7 @@ const dashBoardRoute = require("./routers/DashBoardRoute");
 let port = process.env.PORT;
 var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
-const https = require('https');
+const http = require('http');
 const app = express();
 
 // socket
@@ -33,8 +33,17 @@ const app = express();
 //   },
 // });
 
-const server = https.createServer(app);
-const io = require("socket.io")(server);
+const server = http.createServer(app);
+console.log("🚀 ~ file: server.js:37 ~ server:", server)
+
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["content-type"],
+    credentials: true,
+  },
+});
 
 
 
@@ -287,6 +296,6 @@ app.use("/api/auth/history", historyRoute);
 app.use("/api/auth/baucua", roomBcRoute);
 app.use("/api/auth/dashboard", dashBoardRoute);
 
-app.listen(port, function () {
+server.listen(port, function () {
   console.log(`khoi tao server hi ${process.env.PORT}`);
 });
