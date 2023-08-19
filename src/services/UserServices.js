@@ -540,7 +540,17 @@ const getProfileUserService = async (req, res) => {
     return res.status(500).send(e);
   }
 };
-
+function convertToHttps(url) {
+  // Check if the URL starts with "http://"
+  if (url.startsWith("http://")) {
+    // Replace "http://" with "https://"
+    var newUrl = url.replace("http://", "https://");
+    return newUrl;
+  }
+  
+  // If the URL doesn't start with "http://", return it as is
+  return url;
+}
 const changeAvatarService = async (req, res, avatar) => {
   try {
     const id = req.params.id;
@@ -555,7 +565,7 @@ const changeAvatarService = async (req, res, avatar) => {
       avatarnew = info.url;
     }
     if (avatarnew) {
-      user.avatar = avatarnew;
+      user.avatar = convertToHttps(avatarnew);
       await user.save();
     }
 
