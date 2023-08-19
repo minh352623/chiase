@@ -3,7 +3,7 @@
     "username": "root",
     "password": "mysql",
     "database": "nl_tram",
-    "host": "127.0.0.1",
+    "host": "mysqldb",
     "dialect": "mysql",
     "logging": true,
     "dialectOptions": {
@@ -15,9 +15,9 @@
   },
   "test": {
     "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
+    "password": "mysql",
+    "database": "mysqldb",
+    "host": "mysqldb",
     "dialect": "mysql",
     "dialectOptions": {
       "useUTC": false,
@@ -28,9 +28,9 @@
   },
   "production": {
     "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "password": "mysql",
+    "database": "nl_tram",
+    "host": "mysqldb",
     "dialect": "mysql",
     "dialectOptions": {
       "useUTC": false,

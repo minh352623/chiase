@@ -12,7 +12,7 @@ const { Sequelize } = require("sequelize");
 
 // Option 3: Passing parameters separately (other dialects)
 const sequelize = new Sequelize("nl_tram", "root", "mysql", {
-  host: "localhost",
+  host: "mysqldb",
   //| 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */
   dialect: "mysql",
   logging: false,

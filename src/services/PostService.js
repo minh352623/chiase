@@ -23,6 +23,19 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET,
 });
 let per_page = 10;
+
+function convertToHttps(url) {
+  // Check if the URL starts with "http://"
+  if (url.startsWith("http://")) {
+    // Replace "http://" with "https://"
+    var newUrl = url.replace("http://", "https://");
+    return newUrl;
+  }
+  
+  // If the URL doesn't start with "http://", return it as is
+  return url;
+}
+
 let createPostService = async (req, res) => {
   try {
     // return res.status(200).send(req.body);
@@ -47,14 +60,14 @@ let createPostService = async (req, res) => {
         file_upload.forEach(async (item, index) => {
           let video_image = await db.video_image.create({
             post_id: post.id,
-            link: item,
+            link: convertToHttps(item),
             subvalue: req.body.sub_file ? req.body.sub_file[index] : "",
           });
         });
       } else {
         let video_image = await db.video_image.create({
           post_id: post.id,
-          link: file_upload,
+          link: convertToHttps(file_upload),
           subvalue: req.body.sub_file ? req.body.sub_file : "",
         });
       }
