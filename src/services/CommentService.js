@@ -8,6 +8,19 @@ cloudinary.config({
   api_key: process.env.CLOUD_API_KEY,
   api_secret: process.env.CLOUD_API_SECRET,
 });
+
+function convertToHttps(url) {
+  // Check if the URL starts with "http://"
+  if (url.startsWith("http://")) {
+    // Replace "http://" with "https://"
+    var newUrl = url.replace("http://", "https://");
+    return newUrl;
+  }
+  
+  // If the URL doesn't start with "http://", return it as is
+  return url;
+}
+
 const createCommentService = async (req, res, file) => {
   try {
     let fileNew = "";
@@ -22,7 +35,7 @@ const createCommentService = async (req, res, file) => {
         post_id: req.body.post_id,
         user_id: req.body.user_id,
         text: req.body.content,
-        file: fileNew,
+        file: convertToHttps(fileNew),
       });
       const updatePost = await db.post.findByPk(req.body.post_id);
       if (!updatePost) return res.status(404).send("POST NOT FOUND");

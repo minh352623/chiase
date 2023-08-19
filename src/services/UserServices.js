@@ -13,6 +13,18 @@ const jwt = require("jsonwebtoken");
 const { sendMail } = require("../utils/mailer");
 
 let per_page = 3;
+function convertToHttps(url) {
+  // Check if the URL starts with "http://"
+  if (url.startsWith("http://")) {
+    // Replace "http://" with "https://"
+    var newUrl = url.replace("http://", "https://");
+    return newUrl;
+  }
+  
+  // If the URL doesn't start with "http://", return it as is
+  return url;
+}
+
 let getPaginateUser = async (req, res) => {
   try {
     let offset = (req.query.page - 1) * per_page;
@@ -281,7 +293,7 @@ let createUserService = async (req, res, avatar) => {
       lastName: req.body.lastname,
       gender: req.body.gender == 1 ? true : false,
       email: req.body.email,
-      avatar: avatarnew,
+      avatar: convertToHttps(avatarnew),
       password: passwordHash,
       phone: req.body.phone,
       address: req.body.address,
@@ -330,7 +342,7 @@ let updateUserService = async (req, res, avatar) => {
     const user = await db.user.findByPk(id);
     if (user) {
       if (avatarnew) {
-        user.avatar = avatarnew;
+        user.avatar = convertToHttps(avatarnew);
       }
       if (req.body.password) {
         let hash = hashPassword(req.body.password);
