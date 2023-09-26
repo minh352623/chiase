@@ -8,7 +8,7 @@ const {
 } = require("../controllers/AuthController");
 let router = express.Router();
 const passport = require("passport");
-const { createTokenGoogle, logout } = require("../controllers/userController");
+const { createTokenGoogle, logout } = require("../controllers/UserController");
 const {
   isAuthentication,
   online_user_id,

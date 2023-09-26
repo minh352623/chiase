@@ -75,3 +75,12 @@ module.exports = {
   createPostService,
   getPostHomeService,
 };
+ab -n 100 -c 10 -p post_data.json -T application/json -H "Authorization: Bearer 890|NmrmSkscaYojXBcQvQGiKijWXcIdjWhM9bSBvsKG54960167" -H "Content-Type: application/json" http://127.0.0.1:8000/api/coupon/user_coupon
+
+
+DB_CLIENT="mysql"
+DB_HOST="103.195.238.32"
+DB_PORT="3306"
+DB_DATABASE="nl_tram"
+DB_USER="congminh"
+DB_PASSWORD="mysql"

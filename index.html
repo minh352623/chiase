@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"
+      integrity="sha512-aoTNnqZcT8B4AmeCFmiSnDlc4Nj/KPaZyB5G7JnOnUEkdNpCZs1LCankiYi01sLTyWy+m2P+W4XM+BuQ3Q4/Dg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+      const socket = io("http://localhost:8080");
+
+      // Event handler for when the connection is established
+      socket.on("connect", () => {
+        console.log("Connected to Socket.IO server");
+      });
+
+      // Event handler for custom events sent by the server
+      socket.on("event_user", (data) => {
+        console.log("Received custom event:", data);
+      });
+
+      // You can also emit events to the server
+      socket.emit("test_aaa", { message: "Hello, Server!" });
+    </script>
+    <script>
+      const urls = [
+        "https://example.com",
+        "https://google.com",
+        "https://openai.com" /* Add more URLs here */,
+      ];
+
+      // Number of concurrent requests
+      const concurrentRequests = 100;
+
+      // Function to make a single HTTP request
+      async function makeRequest(token,user_id) {
+        try {
+          const formData = new FormData();
+
+            formData.append("coin", 0);
+          formData.append("user_id", user_id);
+          formData.append("coupon_id", 14);
+          const response = await axios({
+            method: "POST",
+            url: "http://localhost:8000/api/coupon/user_coupon",
+            data: formData,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          // Process the response as needed
+          if (response.status === 200) {
+          console.log("🚀 ~ file: index.html:61 ~ makeRequest ~ response:", response)
+          } else {
+          console.log("🚀 ~ file: index.html:61 ~ makeRequest ~ response:", response)
+
+          }
+        } catch (error) {
+          console.log("🚀 ~ file: index.html:67 ~ makeRequest ~ error:", error)
+          
+        }
+      }
+
+      const promises = [];
+      const tokens = [
+        "891|xF9GRXdxrYs8EkE1NnE5FApCAUlkpxS9VlJwDPwq0ea2b0ee",
+        "890|NmrmSkscaYojXBcQvQGiKijWXcIdjWhM9bSBvsKG54960167",
+      ];
+      const time1 = new Date();
+
+      const user_ids = [26,11]
+      // for (let i = 0; i < 1000; i++) {
+      //   const randomIndex = Math.floor(Math.random() * tokens.length); // Randomly select a URL
+      //   const token = tokens[randomIndex];
+      //   const user = user_ids[randomIndex]
+      //   promises.push(makeRequest(token,user));
+      // }
+       const time2 = new Date();
+            console.log('Send Success: ', time2.getTime() - time1.getTime(), 'ms');
+    </script>
+  </body>
+</html>

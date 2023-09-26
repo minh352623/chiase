@@ -82,6 +82,7 @@ const getUserHome = (req, res) => {
 const jwt = require("jsonwebtoken");
 const db = require("../models");
 const { Op } = require("sequelize");
+const { io } = require("../server");
 const getTokenVideo = async (req, res) => {
   // console.log("token video ");
 

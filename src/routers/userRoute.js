@@ -21,7 +21,7 @@ const {
   forgotPassword,
   changePassword,
   getCoin,
-} = require("../controllers/userController");
+} = require("../controllers/UserController");
 
 const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
 
