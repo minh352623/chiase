@@ -329,7 +329,8 @@ let renderQRService = async (req, res) => {
       "🚀 ~ file: UserServices.js:324 ~ renderQRService ~ user:",
       user
     );
-    QRCode.toDataURL(JSON.stringify(user), (err, code) => {
+    const {password,qr_code,...data} = user; 
+    QRCode.toDataURL(JSON.stringify(data), (err, code) => {
       if (err)
         return console.log(
           "🚀 ~ file: UserServices.js:324 ~ QRCode.toDataURL ~ err:",
