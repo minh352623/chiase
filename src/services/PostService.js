@@ -33,6 +33,15 @@ function uploadImage(file){
   });
 }
 
+async function uploadOneImageService(req, res, file) {
+  const image = file;
+  console.log("🚀 ~ file: PostService.js:38 ~ uploadOneImage ~ image:", image)
+  const img_upload = await uploadImage(image);
+  return res.status(200).json({
+    img:img_upload.url
+  })
+}
+
 
 async function uploadMultiImage(req,res,files){
   const images = files;
@@ -620,5 +629,6 @@ module.exports = {
   updatePostService,
   getNineImageService,
   // searchGlobalService,
-  uploadMultiImage
+  uploadMultiImage,
+  uploadOneImageService
 };

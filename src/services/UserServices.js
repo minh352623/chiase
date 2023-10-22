@@ -325,6 +325,7 @@ let hashPassword = (password) => {
 let renderQRService = async (req, res) => {
   try {
     const user = await db.user.findByPk(req.userId);
+    console.log("🚀 ~ file: UserServices.js:328 ~ renderQRService ~ req.userId:", req.userId)
     console.log(
       "🚀 ~ file: UserServices.js:324 ~ renderQRService ~ user:",
       user

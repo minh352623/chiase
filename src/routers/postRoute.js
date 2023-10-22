@@ -9,6 +9,7 @@ const {
   getNineImage,
   searchGlobal,
   uploadImage,
+  uploadOneImage,
 } = require("../controllers/PostController");
 
 const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
@@ -16,6 +17,8 @@ const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
 let router = express.Router();
 router.post("/", [isAuthentication], createPost);
 router.post("/upload_images", uploadImage);
+router.post("/upload_one_image", uploadOneImage);
+
 
 router.get("/home", getPostHome);
 // router.get("/searchGlobal", [isAuthentication], searchGlobal);
