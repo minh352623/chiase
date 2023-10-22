@@ -8,7 +8,7 @@ const isAuthentication = (req, res, next) => {
     const decodeJwt = jwt.verify(
       access_token,
       process.env.SECRET_JWT
-    ).dataValues;
+    );
     console.log("🚀 ~ file: AuthMiddleware.js:12 ~ isAuthentication ~ decodeJwt:", decodeJwt)
     console.log("check auth");
     req.userId = decodeJwt.id; //gán id cho req sau
