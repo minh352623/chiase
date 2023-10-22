@@ -23,8 +23,9 @@ let loginAuthService = async (req, res) => {
       console.log("sai pass");
        res.status(400).send("Invalid Password");
     }
-
-    const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
+    const {qr_code,password,...data} = user.dataValues;
+    
+    const jwtToken = jwt.sign({ ...data }, process.env.SECRET_JWT, {
       expiresIn: 3600 * 24,
     });
     console.log("login success");
@@ -59,7 +60,9 @@ const createTokenFacebookService = async (req, res) => {
   try {
     const user = await db.user.findByPk(req.params.id);
     if (!user) return res.status(404).send("USER NOT FOUND");
-    const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
+    const {qr_code,password,...data} = user.dataValues;
+
+    const jwtToken = jwt.sign({ ...data }, process.env.SECRET_JWT, {
       expiresIn: 3600 * 24,
     });
     return res.status(200).send({
@@ -73,7 +76,8 @@ const createTokenGithubService = async (req, res) => {
   try {
     const user = await db.user.findByPk(req.params.id);
     if (!user) return res.status(404).send("USER NOT FOUND");
-    const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
+    const {qr_code,password,...data} = user.dataValues;
+    const jwtToken = jwt.sign({ ...data }, process.env.SECRET_JWT, {
       expiresIn: 3600 * 24,
     });
     return res.status(200).send({
@@ -90,7 +94,9 @@ const loginWithFaceIDService = async (req, res) => {
       where: { email: req.body.email },
     });
     if (!user) return res.status(404).send("USER NOT FOUND");
-    const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
+    const {qr_code,password,...data} = user.dataValues;
+
+    const jwtToken = jwt.sign({ ...data }, process.env.SECRET_JWT, {
       expiresIn: 3600 * 24,
     });
     return res.status(200).send({
