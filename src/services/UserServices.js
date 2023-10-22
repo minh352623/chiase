@@ -2,6 +2,10 @@ const db = require("../models");
 const { Op } = require("sequelize");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
+var QRCode = require("qrcode");
+const Jimp = require("jimp");
+const fs = require("fs");
+const qrCodeReader = require("qrcode-reader");
 require("dotenv").config();
 const XLSX = require("xlsx");
 cloudinary.config({
@@ -11,6 +15,7 @@ cloudinary.config({
 });
 const jwt = require("jsonwebtoken");
 const { sendMail } = require("../utils/mailer");
+const { addFriendService } = require("./FriendService");
 
 let per_page = 3;
 function convertToHttps(url) {
@@ -20,7 +25,7 @@ function convertToHttps(url) {
     var newUrl = url.replace("http://", "https://");
     return newUrl;
   }
-  
+
   // If the URL doesn't start with "http://", return it as is
   return url;
 }
@@ -317,9 +322,69 @@ let hashPassword = (password) => {
   }
 };
 
+let renderQRService = async (req, res) => {
+  try {
+    const user = await db.user.findByPk(req.userId);
+    console.log(
+      "🚀 ~ file: UserServices.js:324 ~ renderQRService ~ user:",
+      user
+    );
+    QRCode.toDataURL(JSON.stringify(user), (err, code) => {
+      if (err)
+        return console.log(
+          "🚀 ~ file: UserServices.js:324 ~ QRCode.toDataURL ~ err:",
+          err
+        );
+        user.qr_code = code;
+        user.save();
+      return res.status(200).json({
+        image_code: code,
+      });
+    });
+  } catch (e) {
+    console.log("🚀 ~ file: UserServices.js:324 ~ renderQR ~ e:", e);
+  }
+};
+
+let readQRService = async (req, res,qr_code) => {
+  try {
+    const buffer = fs.readFileSync(qr_code.tempFilePath);
+    let result;
+    // __ Parse the image using Jimp.read() __ \\
+    Jimp.read(buffer, function (err, image) {
+      if (err) {
+        console.error(err);
+      }
+      // __ Creating an instance of qrcode-reader __ \\
+
+      const qrCodeInstance = new qrCodeReader();
+
+      qrCodeInstance.callback = async function (err, value) {
+        if (err) {
+          console.error(err);
+        }
+        // __ Printing the decrypted value __ \\
+        console.log("🚀 ~ file: UserServices.js:360 ~ value:", value.result)
+        const friend = JSON.parse(value.result);
+        req.body.sender = req.userId;
+        req.body.recie = friend.id;
+        req.body.text = "Bạn có lời mời kết bạn từ "+ req.email;
+        req.body.avatar = friend?.avatar || "";
+        return await addFriendService(req,res);
+
+      };
+
+      // __ Decoding the QR code __ \\
+      result = qrCodeInstance.decode(image.bitmap);
+    });
+  } catch (e) {
+    console.log("🚀 ~ file: UserServices.js:342 ~ readQRService ~ e:", e);
+  }
+};
+
 let getUserService = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.id ?? req.userId;
 
     const user = await db.user.findByPk(id);
     return res.status(200).json(user);
@@ -547,7 +612,7 @@ function convertToHttps(url) {
     var newUrl = url.replace("http://", "https://");
     return newUrl;
   }
-  
+
   // If the URL doesn't start with "http://", return it as is
   return url;
 }
@@ -773,4 +838,6 @@ module.exports = {
   createTokenGoogleService,
   forgotPasswordService,
   changePasswordService,
+  renderQRService,
+  readQRService
 };

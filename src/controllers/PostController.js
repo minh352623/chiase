@@ -7,7 +7,19 @@ const {
   updatePostService,
   getNineImageService,
   searchGlobalService,
+  uploadMultiImage,
 } = require("../services/PostService");
+
+const uploadImage = async (req, res) => {
+  try{
+    const images = req.files.images;
+    console.log("🚀 ~ file: PostController.js:16 ~ uploadImage ~ images:",images)
+    return uploadMultiImage(req, res,images);
+  }catch(err){
+    console.log("🚀 ~ file: PostController.js:16 ~ uploadImage ~ err:", err)
+    
+  }
+}
 
 const createPost = async (req, res) => {
   try {
@@ -79,5 +91,6 @@ module.exports = {
   getDetailPost,
   deletePost,
   getNineImage,
+  uploadImage
   // searchGlobal,
 };

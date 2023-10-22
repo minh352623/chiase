@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       description: DataTypes.TEXT,
       id_facebook: DataTypes.STRING,
       coin: DataTypes.INTEGER,
+      qr_code: DataTypes.TEXT,
     },
     {
       sequelize,

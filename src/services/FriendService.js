@@ -93,7 +93,7 @@ const getRequestFriendService = async (req, res) => {
 const getAcceptFriendService = async (req, res) => {
   try {
     const keyword = req.query.keyword || "";
-    console.log(keyword);
+    const user_call = req.userId;
     const friends = await db.friend.findAll({
       where: {
         status: 2,
@@ -161,7 +161,23 @@ const getAcceptFriendService = async (req, res) => {
       ],
     });
 
-    return res.status(200).json(friends);
+    const convert_friends = [];
+
+    friends.forEach((friend) => {
+      friend_user =
+        friend.sender_data?.id != user_call
+          ? friend.sender_data
+          : friend.recie_data;
+      friend.dataValues.friend_user = friend_user;
+      console.log(
+        "🚀 ~ file: FriendService.js:173 ~ friends.forEach ~ friend:",
+        friend
+      );
+
+      convert_friends.push(friend);
+    });
+
+    return res.status(200).json(convert_friends);
   } catch (e) {
     console.log(e);
     return res.status(500).send(e);

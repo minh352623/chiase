@@ -16,7 +16,7 @@ function convertToHttps(url) {
     var newUrl = url.replace("http://", "https://");
     return newUrl;
   }
-  
+
   // If the URL doesn't start with "http://", return it as is
   return url;
 }
@@ -68,8 +68,23 @@ const createCommentService = async (req, res, file) => {
         });
         // }
       }
-
-      return res.status(200).send(comment);
+      const oneComment = await db.comment.findOne({
+        where: {
+          id: comment.id,
+        },
+        include: [
+          {
+            model: db.user,
+            as: "user_data",
+            attributes: ["firstName", "lastName", "avatar"],
+          },
+          {
+            model: db.like_comment,
+            as: "like_comment_data",
+          },
+        ],
+      });
+      return res.status(200).send(oneComment);
     }
     return res.status(500).send("data not empty");
   } catch (e) {

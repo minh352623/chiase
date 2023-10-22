@@ -24,6 +24,29 @@ cloudinary.config({
 });
 let per_page = 10;
 
+function uploadImage(file){
+  return new Promise((resolve, reject) => {
+    const upload = cloudinary.v2.uploader.upload(file.tempFilePath);
+    //   toStream(file.buffer).pipe(upload);
+    if (!upload) reject('loi');
+    resolve(upload);
+  });
+}
+
+
+async function uploadMultiImage(req,res,files){
+  const images = files;
+  console.log("🚀 ~ file: PostService.js:39 ~ uploadMultiImage ~ images:", images)
+  const arrImgs = await Promise.all(
+    images.map((image) => {
+      return uploadImage(image).then((res) => res.url);
+    }),
+  );
+
+  return res.status(200).json({arrImgs})
+}
+
+
 function convertToHttps(url) {
   // Check if the URL starts with "http://"
   if (url.startsWith("http://")) {
@@ -54,7 +77,10 @@ let createPostService = async (req, res) => {
       content: req.body.content,
       share_post_id: req.body?.share_post_id || null,
     });
-    let file_upload = req.body?.urls || "";
+    let file_upload = req.body?.urls || JSON.parse(JSON.stringify(req.body?.images)) || "";
+    console.log("🚀 ~ file: PostService.js:81 ~ createPostService ~ req.body?.images:", req.body?.images)
+    console.log("🚀 ~ file: PostService.js:81 ~ createPostService ~ req.body?.images:",typeof Array.from(req.body?.images))
+
     if (file_upload) {
       if (Array.isArray(file_upload) && file_upload.length > 0) {
         file_upload.forEach(async (item, index) => {
@@ -594,4 +620,5 @@ module.exports = {
   updatePostService,
   getNineImageService,
   // searchGlobalService,
+  uploadMultiImage
 };

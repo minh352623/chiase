@@ -21,12 +21,18 @@ const {
   forgotPassword,
   changePassword,
   getCoin,
+  renderQR,
+  readQR,
 } = require("../controllers/UserController");
 
 const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
 
 let router = express.Router();
 router.get("/exportExcel", [isAuthentication], exportExcel);
+router.get("/renderQR", [isAuthentication], renderQR);
+router.post("/readQRAndAddFriend", [isAuthentication], readQR);
+
+
 router.get("/getFriends/:id", [isAuthentication], getFriends);
 router.get("/getCoin/:id", [isAuthentication], getCoin);
 

@@ -9,8 +9,11 @@ const isAuthentication = (req, res, next) => {
       access_token,
       process.env.SECRET_JWT
     ).dataValues;
+    console.log("🚀 ~ file: AuthMiddleware.js:12 ~ isAuthentication ~ decodeJwt:", decodeJwt)
     console.log("check auth");
     req.userId = decodeJwt.id; //gán id cho req sau
+    req.email = decodeJwt.email; //gán id cho req sau
+
     next();
   } catch (e) {
     if (e instanceof jwt.TokenExpiredError) {

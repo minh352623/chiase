@@ -2,7 +2,7 @@ const express = require("express");
 require("./passport");
 
 const connectDB = require("./config/connectDb");
-const userRouter = require("./routers/UserRoute");
+const userRouter = require("./routers/userRoute");
 const groupRouter = require("./routers/groupRoute");
 const authRouter = require("./routers/authRoute");
 const postRouter = require("./routers/postRoute");
@@ -19,7 +19,7 @@ const profileRoute = require("./routers/profileRoute");
 const friendRoute = require("./routers/friendRoute");
 const historyRoute = require("./routers/historySearchRoute");
 const roomBcRoute = require("./routers/RoomBcRoute");
-const dashBoardRoute = require("./routers/DashBoardRoute");
+const dashBoardRoute = require("./routers/dashBoardRoute");
 let port = process.env.PORT;
 var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
@@ -34,7 +34,6 @@ const app = express();
 // });
 
 const server = http.createServer(app);
-console.log("🚀 ~ file: server.js:37 ~ server:", server);
 
 const io = require("socket.io")(server, {
   cors: {
@@ -48,17 +47,14 @@ const io = require("socket.io")(server, {
 let users = [];
 
 const addUser = (userId, socketId) => {
-  if(users.some((user) => user.userId === userId)){
-      users.filter(user => user.userId != userId);
-      users.push({ userId, socketId });
-
-  }else{
+  if (users.some((user) => user.userId === userId)) {
+    users.filter((user) => user.userId != userId);
     users.push({ userId, socketId });
-
+  } else {
+    users.push({ userId, socketId });
   }
 
-console.log("🚀 ~ file: server.js:49 ~ users:", users)
-
+  console.log("🚀 ~ file: server.js:49 ~ users:", users);
 };
 
 const removeUser = (socketId) => {
@@ -66,9 +62,13 @@ const removeUser = (socketId) => {
 };
 
 const getUser = (userId) => {
-  console.log("🚀 ~ file: server.js:69 ~ getUser ~ userId:", userId)
-  console.log("🚀 ~ file: server.js:70 ~ getUser ~ users:", users)
+  console.log("🚀 ~ file: server.js:69 ~ getUser ~ userId:", userId);
+  console.log("🚀 ~ file: server.js:70 ~ getUser ~ users:", users);
   return users.find((user) => user.userId == userId);
+};
+
+getAllSocketId = (userId) => {
+  return users.filter((user) => user.userId == userId);
 };
 
 io.on("connection", (socket) => {
@@ -85,17 +85,21 @@ io.on("connection", (socket) => {
 
   //send and get message
   socket.on("sendMessage", ({ senderId, receiverId, text, nameSender }) => {
-    const user = getUser(receiverId);
-    if (user && user.socketId) {
-      io.to(user?.socketId).emit("getMessage", {
-        senderId,
-        text,
-      });
-      io.to(user?.socketId).emit("alertMessage", {
-        nameSender: nameSender,
-        text: text,
-      });
-    }
+    // const user = getUser(receiverId);
+
+    const users = getAllSocketId(receiverId);
+    users.forEach((user) => {
+      if (user && user.socketId) {
+        io.to(user?.socketId).emit("getMessage", {
+          senderId,
+          text,
+        });
+        io.to(user?.socketId).emit("alertMessage", {
+          nameSender: nameSender,
+          text: text,
+        });
+      }
+    });
   });
   //like post
 
@@ -291,22 +295,30 @@ app.use(
 connectDB();
 
 app.use("/socket_laravel_order", (req, res) => {
-  console.log("🚀 ~ file: server.js:285 ~ app.use ~ req:", req.query.data)
-  console.log("🚀 ~ file: server.js:285 ~ app.use ~ req:", req.query.id_bill)
+  console.log("🚀 ~ file: server.js:285 ~ app.use ~ req:", req.query.data);
+  console.log("🚀 ~ file: server.js:285 ~ app.use ~ req:", req.query.id_bill);
   const user = getUser(req.query?.user_id);
-  console.log("🚀 ~ file: server.js:292 ~ app.use ~ user:", user)
-  console.log("🚀 ~ file: server.js:292 ~ app.use ~ eq.query?.user_id:", req.query?.user_id)
-  io.to(user?.socketId).emit("socket_laravel_order", { message:req.query.data,id_bill:req.query.id_bill ?? null });
+  console.log("🚀 ~ file: server.js:292 ~ app.use ~ user:", user);
+  console.log(
+    "🚀 ~ file: server.js:292 ~ app.use ~ eq.query?.user_id:",
+    req.query?.user_id
+  );
+  io.to(user?.socketId).emit("socket_laravel_order", {
+    message: req.query.data,
+    id_bill: req.query.id_bill ?? null,
+  });
 
-  res.status(200).json({"message":"sucess"})
+  res.status(200).json({ message: "sucess" });
 });
 
 app.use("/socket_laravel_user_coupon", (req, res) => {
-  console.log("🚀 ~ file: server.js:290 ~ app.use ~ req:", req.query.data)
+  console.log("🚀 ~ file: server.js:290 ~ app.use ~ req:", req.query.data);
   const user = getUser(req.query?.user_id);
-  io.to(user?.socketId).emit("socket_laravel_user_coupon", { message: req.query.data });
+  io.to(user?.socketId).emit("socket_laravel_user_coupon", {
+    message: req.query.data,
+  });
 
-  res.status(200).json({"message":"sucess"})
+  res.status(200).json({ message: "sucess" });
 });
 app.use("/api/auth/admin/user", userRouter);
 app.use("/api/auth/admin/group", groupRouter);

@@ -20,6 +20,8 @@ const {
   forgotPasswordService,
   changePasswordService,
   getCoinService,
+  renderQRService,
+  readQRService,
 } = require("../services/UserServices");
 const getListUser = async (req, res) => {
   try {
@@ -40,6 +42,27 @@ const createUser = (req, res) => {
   }
 };
 
+const renderQR = (req, res) => {
+  try{
+    return renderQRService(req, res);
+
+  }catch (e) {
+    console.log("🚀 ~ file: UserController.js:47 ~ renderQR ~ e:", e)
+    
+  }
+}
+const readQR = (req, res) => {
+  try{
+    const qr_code = req?.files?.qr_code || "";
+    console.log("🚀 ~ file: UserController.js:57 ~ readQR ~ qr_code:", qr_code)
+
+    return readQRService(req, res,qr_code);
+
+  }catch (e) {
+    console.log("🚀 ~ file: UserController.js:47 ~ renderQR ~ e:", e)
+    
+  }
+}
 const getUser = (req, res) => {
   try {
     return getUserService(req, res);
@@ -264,5 +287,7 @@ module.exports = {
   createTokenGoogle,
   forgotPassword,
   changePassword,
+  renderQR,
+  readQR
   // logout,
 };
