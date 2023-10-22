@@ -705,7 +705,9 @@ const createTokenGoogleService = async (req, res) => {
   try {
     const user = await db.user.findByPk(req.params.id);
     if (!user) return res.status(404).send("USER NOT FOUND");
-    const jwtToken = jwt.sign({ ...user }, process.env.SECRET_JWT, {
+    const {qr_code,password,...data} = user.dataValues;
+
+    const jwtToken = jwt.sign({ ...data }, process.env.SECRET_JWT, {
       expiresIn: 3600,
     });
     return res.status(200).send({
