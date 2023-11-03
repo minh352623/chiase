@@ -339,10 +339,11 @@ let renderQRService = async (req, res) => {
           err
         );
         const data = await uploadImageBase64(code);
-        user.qr_code = data;
+        const url = convertToHttps(data);
+        user.qr_code = url;
         user.save();
       return res.status(200).json({
-        image_code: data,
+        image_code: url,
       });
     });
   } catch (e) {
