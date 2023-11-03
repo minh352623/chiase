@@ -24,37 +24,50 @@ cloudinary.config({
 });
 let per_page = 10;
 
-function uploadImage(file){
+function uploadImage(file) {
   return new Promise((resolve, reject) => {
     const upload = cloudinary.v2.uploader.upload(file.tempFilePath);
     //   toStream(file.buffer).pipe(upload);
-    if (!upload) reject('loi');
+    if (!upload) reject("loi");
     resolve(upload);
   });
 }
 
 async function uploadOneImageService(req, res, file) {
   const image = file;
-  console.log("🚀 ~ file: PostService.js:38 ~ uploadOneImage ~ image:", image)
   const img_upload = await uploadImage(image);
   return res.status(200).json({
-    img:img_upload.url
-  })
+    img: img_upload.url,
+  });
+}
+async function uploadImageBase64(base64Image) {
+  try {
+    // Upload the base64 image to Cloudinary
+    const result = await cloudinary.uploader.upload(base64Image, {
+      resource_type: "image",
+    });
+
+    // The result.url contains the public URL of the uploaded image
+    return result.url;
+  } catch (error) {
+    throw new Error("Failed to upload image to Cloudinary");
+  }
 }
 
-
-async function uploadMultiImage(req,res,files){
+async function uploadMultiImage(req, res, files) {
   const images = files;
-  console.log("🚀 ~ file: PostService.js:39 ~ uploadMultiImage ~ images:", images)
+  console.log(
+    "🚀 ~ file: PostService.js:39 ~ uploadMultiImage ~ images:",
+    images
+  );
   const arrImgs = await Promise.all(
     images.map((image) => {
       return uploadImage(image).then((res) => res.url);
-    }),
+    })
   );
 
-  return res.status(200).json({arrImgs})
+  return res.status(200).json({ arrImgs });
 }
-
 
 function convertToHttps(url) {
   // Check if the URL starts with "http://"
@@ -63,7 +76,7 @@ function convertToHttps(url) {
     var newUrl = url.replace("http://", "https://");
     return newUrl;
   }
-  
+
   // If the URL doesn't start with "http://", return it as is
   return url;
 }
@@ -86,9 +99,16 @@ let createPostService = async (req, res) => {
       content: req.body.content,
       share_post_id: req.body?.share_post_id || null,
     });
-    let file_upload = req.body?.urls || JSON.parse(JSON.stringify(req.body?.images)) || "";
-    console.log("🚀 ~ file: PostService.js:81 ~ createPostService ~ req.body?.images:", req.body?.images)
-    console.log("🚀 ~ file: PostService.js:81 ~ createPostService ~ req.body?.images:",typeof Array.from(req.body?.images))
+    let file_upload =
+      req.body?.urls || JSON.parse(JSON.stringify(req.body?.images)) || "";
+    console.log(
+      "🚀 ~ file: PostService.js:81 ~ createPostService ~ req.body?.images:",
+      req.body?.images
+    );
+    console.log(
+      "🚀 ~ file: PostService.js:81 ~ createPostService ~ req.body?.images:",
+      typeof Array.from(req.body?.images)
+    );
 
     if (file_upload) {
       if (Array.isArray(file_upload) && file_upload.length > 0) {
@@ -630,5 +650,6 @@ module.exports = {
   getNineImageService,
   // searchGlobalService,
   uploadMultiImage,
-  uploadOneImageService
+  uploadOneImageService,
+  uploadImageBase64
 };

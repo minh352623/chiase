@@ -16,6 +16,7 @@ cloudinary.config({
 const jwt = require("jsonwebtoken");
 const { sendMail } = require("../utils/mailer");
 const { addFriendService } = require("./FriendService");
+const { uploadOneImageService, uploadImageBase64 } = require("./PostService");
 
 let per_page = 3;
 function convertToHttps(url) {
@@ -331,17 +332,17 @@ let renderQRService = async (req, res) => {
       user
     );
     const {password,qr_code,...data} = user.dataValues; 
-    console.log("🚀 ~ file: UserServices.js:333 ~ renderQRService ~ data:", data)
-    QRCode.toDataURL(JSON.stringify(data), (err, code) => {
+    QRCode.toDataURL(JSON.stringify(data), async (err, code) => {
       if (err)
         return console.log(
           "🚀 ~ file: UserServices.js:324 ~ QRCode.toDataURL ~ err:",
           err
         );
-        user.qr_code = code;
+        const data = await uploadImageBase64(code);
+        user.qr_code = data;
         user.save();
       return res.status(200).json({
-        image_code: code,
+        image_code: data,
       });
     });
   } catch (e) {
