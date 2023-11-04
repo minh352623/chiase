@@ -88,6 +88,7 @@ io.on("connection", (socket) => {
     // const user = getUser(receiverId);
 
     const users = getAllSocketId(receiverId);
+    console.log("🚀 ~ file: server.js:91 ~ socket.on ~ users:", users)
     users.forEach((user) => {
       if (user && user.socketId) {
         io.to(user?.socketId).emit("getMessage", {
