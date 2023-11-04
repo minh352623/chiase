@@ -33,7 +33,7 @@
     "qrcode": "^1.5.3",
     "qrcode-reader": "^1.0.4",
     "sequelize": "^6.25.7",
-    "socket.io": "^4.5.4",
+    "socket.io": "^2.5.0",
     "uuid": "^9.0.0",
     "xlsx": "^0.18.5"
   },
