@@ -100,15 +100,7 @@ let createPostService = async (req, res) => {
       share_post_id: req.body?.share_post_id || null,
     });
     let file_upload =
-      req.body?.urls || JSON.parse(JSON.stringify(req.body?.images)) || "";
-    console.log(
-      "🚀 ~ file: PostService.js:81 ~ createPostService ~ req.body?.images:",
-      req.body?.images
-    );
-    console.log(
-      "🚀 ~ file: PostService.js:81 ~ createPostService ~ req.body?.images:",
-      typeof Array.from(req.body?.images)
-    );
+      req.body?.urls ?? null;
 
     if (file_upload) {
       if (Array.isArray(file_upload) && file_upload.length > 0) {
@@ -129,6 +121,7 @@ let createPostService = async (req, res) => {
     }
     return res.status(200).send("create post successfully");
   } catch (e) {
+    console.log("🚀 ~ file: PostService.js:132 ~ createPostService ~ e:", e)
     res.status(500).send(e);
   }
 };
