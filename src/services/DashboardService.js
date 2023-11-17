@@ -162,8 +162,31 @@ const exportExcelInfoOnline_service = async (req, res) => {
   }
 };
 
+const addInfoDeviceUser = async (req,res) => {
+  try{
+    const infoUserOnline  = await db.user_online.findOne({
+      where:{
+        user_id: req?.userId
+      }
+    });
+    if(!infoUserOnline) return res.status(404).json({"message" : "User not found"});
+    const listDevice = JSON.parse(infoUserOnline.devices);
+    console.log("🚀 ~ file: DashboardService.js:174 ~ addInfoDeviceUser ~ listDevice:", listDevice)
+    listDevice.push(req.body.device);
+    infoUserOnline.devices = JSON.stringify(listDevice);
+    await infoUserOnline.save();
+    return res.status(200).json({
+      "message":"Save device successfully"
+    });
+  }catch (e) {
+    console.log("🚀 ~ file: DashboardService.js:169 ~ addInfoDeviceUser ~ e:", e)
+    
+  }
+}
+
 module.exports = {
   flexHeaderService,
   manager_online_user_service,
   exportExcelInfoOnline_service,
+  addInfoDeviceUser
 };

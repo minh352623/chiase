@@ -34,11 +34,15 @@ function uploadImage(file) {
 }
 
 async function uploadOneImageService(req, res, file) {
-  const image = file;
-  const img_upload = await uploadImage(image);
-  return res.status(200).json({
-    img: img_upload.url,
-  });
+  try {
+    const image = file;
+    const img_upload = await uploadImage(image);
+    return res.status(200).json({
+      img: img_upload.url,
+    });
+  } catch (e) {
+    console.log("🚀 ~ file: PostService.js:44 ~ uploadOneImageService ~ e:", e);
+  }
 }
 async function uploadImageBase64(base64Image) {
   try {
@@ -99,8 +103,7 @@ let createPostService = async (req, res) => {
       content: req.body.content,
       share_post_id: req.body?.share_post_id || null,
     });
-    let file_upload =
-      req.body?.urls ?? null;
+    let file_upload = req.body?.urls ?? null;
 
     if (file_upload) {
       if (Array.isArray(file_upload) && file_upload.length > 0) {
@@ -121,7 +124,7 @@ let createPostService = async (req, res) => {
     }
     return res.status(200).send("create post successfully");
   } catch (e) {
-    console.log("🚀 ~ file: PostService.js:132 ~ createPostService ~ e:", e)
+    console.log("🚀 ~ file: PostService.js:132 ~ createPostService ~ e:", e);
     res.status(500).send(e);
   }
 };
@@ -644,5 +647,5 @@ module.exports = {
   // searchGlobalService,
   uploadMultiImage,
   uploadOneImageService,
-  uploadImageBase64
+  uploadImageBase64,
 };

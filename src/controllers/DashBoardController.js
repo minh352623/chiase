@@ -2,6 +2,7 @@ const {
   flexHeaderService,
   manager_online_user_service,
   exportExcelInfoOnline_service,
+  addInfoDeviceUser,
 } = require("../services/DashboardService");
 
 const flexHeader = (req, res) => {
@@ -26,8 +27,17 @@ const exportExcelInfoOnline = (req, res) => {
     return res.status(500).json(e);
   }
 };
+const addInfoDeviceUserController = (req, res) => {
+  try{
+    return addInfoDeviceUser(req,res);
+  }catch (e) {
+    console.log("🚀 ~ file: DashBoardController.js:33 ~ addInfoDeviceUser ~ e:", e)
+    
+  }
+}
 module.exports = {
   flexHeader,
   manager_online_user,
   exportExcelInfoOnline,
+  addInfoDeviceUserController
 };
