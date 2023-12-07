@@ -18,7 +18,7 @@ const flexHeaderService = async (req, res) => {
     return res.status(500).json(e);
   }
 };
-const per_page = 2;
+const per_page = 10;
 const manager_online_user_service = async (req, res) => {
   try {
     let offset = (req.query.page - 1) * per_page;

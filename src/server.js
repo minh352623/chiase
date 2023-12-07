@@ -24,14 +24,178 @@ let port = process.env.PORT;
 var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const http = require("http");
+const { Web3 } = require("web3");
+
 const app = express();
 
-// socket
-// const io = require("socket.io")(8900, {
-//   cors: {
-//     origin: "*",
-//   },
-// });
+const  ABI = [
+  {
+    constant: true,
+    inputs: [],
+    name: "orderCount",
+    outputs: [{ name: "", type: "uint256" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [{ name: "index", type: "uint256" }],
+    name: "getOrderById",
+    outputs: [
+      { name: "", type: "string" },
+      { name: "", type: "string" },
+      { name: "", type: "string" },
+      { name: "", type: "string" },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "manager",
+    outputs: [{ name: "", type: "address" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [],
+    name: "pickWinner",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "getTestsCount",
+    outputs: [{ name: "", type: "uint256" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "getPlayers",
+    outputs: [{ name: "", type: "address[]" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [{ name: "", type: "uint256" }],
+    name: "orders",
+    outputs: [
+      { name: "id", type: "string" },
+      { name: "email", type: "string" },
+      { name: "pr", type: "string" },
+      { name: "date", type: "string" },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: "_id", type: "string" },
+      { name: "_email", type: "string" },
+      { name: "_pr", type: "string" },
+      { name: "_date", type: "string" },
+    ],
+    name: "addOrder",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [],
+    name: "enter",
+    outputs: [],
+    payable: true,
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [{ name: "", type: "uint256" }],
+    name: "players",
+    outputs: [{ name: "", type: "address" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+];
+
+const address = "0x7eC2C2edB0a9D75D763DE3c68a32EdC81a648fE3";
+
+var contractABI = ABI;
+var contractAddress = address;
+
+const web3 = new Web3("https://rpc2.sepolia.org");
+const contract = new web3.eth.Contract(contractABI, contractAddress);
+const privateKeyString =
+  "2122304d4ccce4de9882e2d60adb384f71e8accc0f888841e7062e79e1b20812";
+const privateKeyBuffer = Buffer.from(privateKeyString, "hex");
+const account = web3.eth.accounts.privateKeyToAccount(privateKeyBuffer);
+const getOrderById = async (contract,index) => {
+  try {
+    const data = await contract.methods
+      .getOrderById(index)
+      .call({ from: "0x4b2804CD7221a5d072049358C2837E7554Ea5F3A" });
+      return data;
+  } catch (e) {
+    console.log("🚀 ~ file: index.js:129 ~ getData ~ e:", e);
+  }
+};
+
+const addOrder = async (_id, _email, _pr, _date) => {
+  try {
+    const gasPrice = await web3.eth.getGasPrice();
+    console.log("Gas Price:", gasPrice);
+
+    const accountBalance = await web3.eth.getBalance(account.address);
+    console.log(
+      "Account Balance:",
+      web3.utils.fromWei(accountBalance, "ether"),
+      "ETH"
+    );
+
+    const nonce = await web3.eth.getTransactionCount(account.address);
+    const gasLimit = 2000000; // Set an appropriate gas limit
+
+    const rawTransaction = {
+      nonce: web3.utils.toHex(nonce),
+      gasPrice: web3.utils.toHex(gasPrice),
+      gasLimit: web3.utils.toHex(gasLimit),
+      to: contract.options.address,
+      value: "0x0",
+      data: contract.methods.addOrder(_id, _email, _pr, _date).encodeABI(),
+    };
+
+    const signedTransaction = await web3.eth.accounts.signTransaction(
+      rawTransaction,
+      privateKeyString
+    );
+    const result = await web3.eth.sendSignedTransaction(
+      signedTransaction.rawTransaction
+    );
+
+    console.log("Transaction Receipt:", result);
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+};
+
 
 const server = http.createServer(app);
 
@@ -88,7 +252,7 @@ io.on("connection", (socket) => {
     // const user = getUser(receiverId);
 
     const users = getAllSocketId(receiverId);
-    console.log("🚀 ~ file: server.js:91 ~ socket.on ~ users:", users)
+    console.log("🚀 ~ file: server.js:91 ~ socket.on ~ users:", users);
     users.forEach((user) => {
       if (user && user.socketId) {
         io.to(user?.socketId).emit("getMessage", {
@@ -339,6 +503,28 @@ app.use("/api/auth/friend", friendRoute);
 app.use("/api/auth/history", historyRoute);
 app.use("/api/auth/baucua", roomBcRoute);
 app.use("/api/auth/dashboard", dashBoardRoute);
+
+app.get("/api/blockchain/getOrderById/:id",async(req,res)=>{
+  try{
+    const id = req.params.id;
+    const data =  await getOrderById(contract,id)
+    return res.status(200).json(data);
+  }catch(e){
+    console.log("🚀 ~ file: server.js:512 ~ app.get ~ e:", e)
+    
+  }
+})
+app.post("/api/blockchain/addOrder",(req,res)=>{
+  try{
+    const {idOrder,email,price,date} = req.body;
+    console.log("🚀 ~ file: server.js:519 ~ app.post ~ req.body:", req.body)
+    addOrder(idOrder,email,price,date);
+    return res.status(200).json({idOrder,email,price,date})
+  }catch(e){
+    console.log("🚀 ~ file: server.js:512 ~ app.get ~ e:", e)
+    
+  }
+})
 
 server.listen(port, function () {
   console.log(`khoi tao server hi ${process.env.PORT}`);
