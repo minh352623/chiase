@@ -636,6 +636,77 @@ const getNineImageService = async (req, res) => {
 //   }
 // };
 
+const requestUsefulService = async (req, res) => {
+  try {
+    const type = req.query.type;
+    const client_check = req.query.client_check == "true" ? true : false;
+    const post = await db.post.findByPk(req.params.id);
+    if (post) {
+      if (type) {
+        post.useful = 1;
+      } else {
+        let req_useful = post.request_useful
+          ? JSON.parse(post.request_useful)
+          : [];
+        console.log(
+          "🚀 ~ file: PostService.js:646 ~ requestUsefulService ~ req_useful:",
+          typeof req_useful
+        );
+        if (client_check) {
+          console.log(
+            "🚀 ~ file: PostService.js:653 ~ requestUsefulService ~ client_check:",
+            typeof client_check
+          );
+          if (req_useful.includes(req.userId))
+            return res.status(404).send("You updated status");
+          req_useful.push(req.userId);
+        } else {
+          req_useful = req_useful.filter((user) => user != req.userId);
+          console.log(
+            "🚀 ~ file: PostService.js:657 ~ requestUsefulService ~ req_useful:",
+            req_useful
+          );
+        }
+        post.request_useful =
+          req_useful.length > 0 ? JSON.stringify(req_useful) : null;
+      }
+      await post.save();
+      return res.status(200).send("Update post successfully");
+    } else {
+      return res.status(404).send("Post not found");
+    }
+  } catch (e) {
+    console.log("🚀 ~ file: PostService.js:644 ~ requestUsefulService ~ e:", e);
+  }
+};
+
+const getListPostUsefulService = async (req, res) => {
+  try{
+    const posts = await db.post.findAll({
+      limit: +req.query.limit ?? 15,
+      order: [["createdAt", "ASC"]],
+      where: {
+        [Op.and]: [
+          {
+            request_useful: {
+              [Op.not]: null,
+            },
+          },
+          {
+            useful: {
+              [Op.ne]: 1,
+            },
+          }
+        ],
+      }
+    });
+    return res.status(200).json(posts);
+
+  }catch (e) {
+    console.log("🚀 ~ file: PostService.js:687 ~ getListPostUsefulService ~ e:", e)
+    
+  }
+}
 module.exports = {
   createPostService,
   getPostHomeService,
@@ -648,4 +719,6 @@ module.exports = {
   uploadMultiImage,
   uploadOneImageService,
   uploadImageBase64,
+  requestUsefulService,
+  getListPostUsefulService
 };

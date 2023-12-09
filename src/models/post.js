@@ -75,6 +75,9 @@ module.exports = (sequelize, DataTypes) => {
       comment_count: DataTypes.INTEGER,
       share_count: DataTypes.INTEGER,
       share_post_id: DataTypes.INTEGER,
+      request_useful: DataTypes.TEXT,
+      useful: DataTypes.INTEGER,
+
     },
     {
       sequelize,

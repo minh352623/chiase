@@ -9,6 +9,8 @@ const {
   searchGlobalService,
   uploadMultiImage,
   uploadOneImageService,
+  requestUsefulService,
+  getListPostUsefulService,
 } = require("../services/PostService");
 
 const uploadImage = async (req, res) => {
@@ -93,6 +95,27 @@ const getNineImage = (req, res) => {
 //     return res.status(500).send(e);
 //   }
 // };
+
+const requestUseful = (req, res) => {
+  try{
+    return requestUsefulService(req, res);
+
+  }catch (e) {
+    console.log("🚀 ~ file: PostController.js:101 ~ requestUseful ~ e:", e)
+    
+  }
+}
+
+const getListPostUseful = (req, res) => {
+  try{
+    return getListPostUsefulService(req, res);
+
+  }catch (e) {
+    console.log("🚀 ~ file: PostController.js:101 ~ requestUseful ~ e:", e)
+    
+  }
+}
+
 module.exports = {
   createPost,
   getPostHome,
@@ -102,6 +125,7 @@ module.exports = {
   deletePost,
   getNineImage,
   uploadImage,
-  uploadOneImage
-  // searchGlobal,
+  uploadOneImage,
+  requestUseful,
+  getListPostUseful
 };
