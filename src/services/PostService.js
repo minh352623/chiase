@@ -698,7 +698,74 @@ const getListPostUsefulService = async (req, res) => {
             },
           }
         ],
-      }
+      },
+      include: [
+        {
+          model: db.user,
+          as: "user_data",
+          attributes: ["firstName", "lastName", "id", "avatar"],
+          required: true,
+        },
+
+        {
+          model: db.post,
+          as: "post_data_two",
+          include: [
+            {
+              model: db.video_image,
+              as: "file_data",
+            },
+            {
+              model: db.user,
+              as: "user_data",
+              attributes: ["firstName", "lastName", "id", "avatar"],
+            },
+          ],
+        },
+        {
+          model: db.video_image,
+          as: "file_data",
+        },
+        {
+          model: db.likes,
+          as: "like_data",
+          attributes: ["user_id"],
+          include: [
+            {
+              model: db.user,
+              as: "user_data",
+              attributes: ["firstName", "lastName", "id"],
+            },
+          ],
+        },
+        {
+          model: db.share_post,
+          as: "user_share",
+          attributes: ["user_id"],
+          include: [
+            {
+              model: db.user,
+              as: "user_data",
+              attributes: ["firstName", "lastName", "id"],
+            },
+          ],
+        },
+        {
+          model: db.comment,
+          as: "comment_data",
+          include: [
+            {
+              model: db.user,
+              as: "user_data",
+              attributes: ["firstName", "lastName", "avatar"],
+            },
+            {
+              model: db.like_comment,
+              as: "like_comment_data",
+            },
+          ],
+        },
+      ],
     });
     return res.status(200).json(posts);
 
