@@ -132,7 +132,10 @@ let createPostService = async (req, res) => {
 let getPostHomeService = async (req, res) => {
   try {
     let Posts;
+    let offset = (req.query.page - 1) * +req.query.limit;
+
     const keyword = req.query.q || "";
+    let post_useful = [];
     if (req.query?.id_user) {
       Posts = await db.post.findAll({
         where: {
@@ -209,8 +212,117 @@ let getPostHomeService = async (req, res) => {
         ],
       });
     } else {
+      if(req.query.page == 1){
+        post_useful =  await db.post.findAll({
+          limit: 5,
+          order: [["createdAt", "DESC"]],
+          where: {
+            [Op.or]: [
+              {
+                content: {
+                  [Op.substring]: keyword,
+                },
+              },
+              {
+                "$user_data.firstName$": {
+                  [Op.substring]: keyword,
+                },
+              },
+              {
+                "$user_data.lastName$": {
+                  [Op.substring]: keyword,
+                },
+              },
+              {
+                "$user_data.email$": {
+                  [Op.substring]: keyword,
+                },
+              },
+              {
+                "$user_data.address$": {
+                  [Op.substring]: keyword,
+                },
+              },
+              {
+                "$user_data.phone$": {
+                  [Op.substring]: keyword,
+                },
+              },
+            ],
+            useful: 1
+          },
+          include: [
+            {
+              model: db.user,
+              as: "user_data",
+              attributes: ["firstName", "lastName", "id", "avatar"],
+              required: true,
+            },
+  
+            {
+              model: db.post,
+              as: "post_data_two",
+              include: [
+                {
+                  model: db.video_image,
+                  as: "file_data",
+                },
+                {
+                  model: db.user,
+                  as: "user_data",
+                  attributes: ["firstName", "lastName", "id", "avatar"],
+                },
+              ],
+            },
+            {
+              model: db.video_image,
+              as: "file_data",
+            },
+            {
+              model: db.likes,
+              as: "like_data",
+              attributes: ["user_id"],
+              include: [
+                {
+                  model: db.user,
+                  as: "user_data",
+                  attributes: ["firstName", "lastName", "id"],
+                },
+              ],
+            },
+            {
+              model: db.share_post,
+              as: "user_share",
+              attributes: ["user_id"],
+              include: [
+                {
+                  model: db.user,
+                  as: "user_data",
+                  attributes: ["firstName", "lastName", "id"],
+                },
+              ],
+            },
+            {
+              model: db.comment,
+              as: "comment_data",
+              include: [
+                {
+                  model: db.user,
+                  as: "user_data",
+                  attributes: ["firstName", "lastName", "avatar"],
+                },
+                {
+                  model: db.like_comment,
+                  as: "like_comment_data",
+                },
+              ],
+            },
+          ],
+        });
+      }
       Posts = await db.post.findAll({
-        limit: 15,
+        limit: +req.query.limit,
+        offset: offset,
         order: [["createdAt", "DESC"]],
         where: {
           [Op.or]: [
@@ -245,6 +357,9 @@ let getPostHomeService = async (req, res) => {
               },
             },
           ],
+          useful: {
+            [Op.ne]: 1,
+          }
         },
         include: [
           {
@@ -315,7 +430,7 @@ let getPostHomeService = async (req, res) => {
         ],
       });
     }
-    return res.status(200).send(Posts);
+    return res.status(200).send([...post_useful,...Posts]);
   } catch (e) {
     console.log(e);
     return res.status(500).send(e);
