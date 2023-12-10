@@ -639,11 +639,21 @@ const getNineImageService = async (req, res) => {
 const requestUsefulService = async (req, res) => {
   try {
     const type = req.query.type;
+    const browser = req.query.browser;
     const client_check = req.query.client_check == "true" ? true : false;
     const post = await db.post.findByPk(req.params.id);
     if (post) {
       if (type) {
-        post.useful = 1;
+        if (browser == "true") {
+          post.useful = 1;
+        } else {
+          console.log(
+            "🚀 ~ file: PostService.js:643 ~ requestUsefulService ~ browser:",
+            browser
+          );
+
+          post.request_useful = null;
+        }
       } else {
         let req_useful = post.request_useful
           ? JSON.parse(post.request_useful)
@@ -681,7 +691,7 @@ const requestUsefulService = async (req, res) => {
 };
 
 const getListPostUsefulService = async (req, res) => {
-  try{
+  try {
     const posts = await db.post.findAll({
       limit: +req.query.limit ?? 15,
       order: [["createdAt", "ASC"]],
@@ -696,7 +706,7 @@ const getListPostUsefulService = async (req, res) => {
             useful: {
               [Op.ne]: 1,
             },
-          }
+          },
         ],
       },
       include: [
@@ -768,12 +778,13 @@ const getListPostUsefulService = async (req, res) => {
       ],
     });
     return res.status(200).json(posts);
-
-  }catch (e) {
-    console.log("🚀 ~ file: PostService.js:687 ~ getListPostUsefulService ~ e:", e)
-    
+  } catch (e) {
+    console.log(
+      "🚀 ~ file: PostService.js:687 ~ getListPostUsefulService ~ e:",
+      e
+    );
   }
-}
+};
 module.exports = {
   createPostService,
   getPostHomeService,
@@ -787,5 +798,5 @@ module.exports = {
   uploadOneImageService,
   uploadImageBase64,
   requestUsefulService,
-  getListPostUsefulService
+  getListPostUsefulService,
 };
