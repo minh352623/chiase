@@ -3,6 +3,8 @@ const { Op } = require("sequelize");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
 const { response } = require("express");
+const OpenAI = require("openai");
+
 require("dotenv").config();
 // let file_upload = [];
 // for (const property in fileUpload) {
@@ -23,6 +25,10 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET,
 });
 let per_page = 10;
+
+const openai = new OpenAI({
+  apiKey: process.env.API_KEY_OPENAI, // defaults to process.env["OPENAI_API_KEY"]
+});
 
 function uploadImage(file) {
   return new Promise((resolve, reject) => {
@@ -212,8 +218,8 @@ let getPostHomeService = async (req, res) => {
         ],
       });
     } else {
-      if(req.query.page == 1){
-        post_useful =  await db.post.findAll({
+      if (req.query.page == 1) {
+        post_useful = await db.post.findAll({
           limit: 5,
           order: [["createdAt", "DESC"]],
           where: {
@@ -249,7 +255,7 @@ let getPostHomeService = async (req, res) => {
                 },
               },
             ],
-            useful: 1
+            useful: 1,
           },
           include: [
             {
@@ -258,7 +264,7 @@ let getPostHomeService = async (req, res) => {
               attributes: ["firstName", "lastName", "id", "avatar"],
               required: true,
             },
-  
+
             {
               model: db.post,
               as: "post_data_two",
@@ -359,7 +365,7 @@ let getPostHomeService = async (req, res) => {
           ],
           useful: {
             [Op.ne]: 1,
-          }
+          },
         },
         include: [
           {
@@ -430,7 +436,7 @@ let getPostHomeService = async (req, res) => {
         ],
       });
     }
-    return res.status(200).send([...post_useful,...Posts]);
+    return res.status(200).send([...post_useful, ...Posts]);
   } catch (e) {
     console.log(e);
     return res.status(500).send(e);
@@ -900,6 +906,51 @@ const getListPostUsefulService = async (req, res) => {
     );
   }
 };
+
+const generateImage = async (numberImage, des) => {
+  const image = await openai.images.generate({
+    n: numberImage,
+    size: "512x512",
+    prompt: des,
+  });
+  return image.data;
+};
+
+const generateText = async (des) => {
+  const params = {
+    messages: [{ role: "user", content: des }],
+    model: "gpt-3.5-turbo",
+  };
+  const chatCompletion = await openai.chat.completions.create(params);
+
+  console.log(
+    "🚀 ~ file: index.js:24 ~ main ~ chatCompletion:",
+    chatCompletion.choices[0].message.content
+  );
+  return chatCompletion.choices[0].message.content;
+};
+
+const AiGeneratePostService = async (req,res)=>{
+  try{
+    const {req_content, req_image, numberImage} = req.body;
+    let images =[];
+    let content = "";
+
+    if(req_content){
+      content = await generateText(req_content)
+    }
+
+    if(req_image){
+      images = await generateImage(numberImage,req_image)
+    }
+
+    return res.status(201).json({images,content})
+  }catch(err){
+    console.log("🚀 ~ file: PostService.js:937 ~ AiGeneratePostService ~ err:", err)
+    
+  }
+}
+
 module.exports = {
   createPostService,
   getPostHomeService,
@@ -914,4 +965,5 @@ module.exports = {
   uploadImageBase64,
   requestUsefulService,
   getListPostUsefulService,
+  AiGeneratePostService
 };

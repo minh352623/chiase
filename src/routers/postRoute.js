@@ -12,12 +12,15 @@ const {
   uploadOneImage,
   requestUseful,
   getListPostUseful,
+  AiGeneratePost,
 } = require("../controllers/PostController");
 
 const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
 
 let router = express.Router();
 router.post("/", [isAuthentication], createPost);
+router.post("/ai-generate-post", [isAuthentication], AiGeneratePost);
+
 router.post("/upload_images", uploadImage);
 router.post("/upload_one_image", uploadOneImage);
 router.patch("/request-useful/:id", [isAuthentication], requestUseful);
