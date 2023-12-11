@@ -94,6 +94,7 @@ function convertToHttps(url) {
 let createPostService = async (req, res) => {
   try {
     // return res.status(200).send(req.body);
+    const {images_ai} = req.body; 
     if (req.body.share_post_id) {
       const oldPost = await db.post.findByPk(req.body?.share_post_id);
       if (!oldPost) return res.status(404).send("POST NOT FOUND");
@@ -111,7 +112,7 @@ let createPostService = async (req, res) => {
     });
     let file_upload = req.body?.urls ?? null;
 
-    if (file_upload) {
+    if (file_upload && !images_ai) {
       if (Array.isArray(file_upload) && file_upload.length > 0) {
         file_upload.forEach(async (item, index) => {
           let video_image = await db.video_image.create({
@@ -124,6 +125,26 @@ let createPostService = async (req, res) => {
         let video_image = await db.video_image.create({
           post_id: post.id,
           link: convertToHttps(file_upload),
+          subvalue: req.body.sub_file ? req.body.sub_file : "",
+        });
+      }
+    }
+
+    if (!file_upload && images_ai) {
+      if (Array.isArray(images_ai) && images_ai.length > 0) {
+        images_ai.forEach(async (item, index) => {
+          const image = await uploadImageBase64(item);
+          console.log("🚀 ~ file: PostService.js:137 ~ images_ai.forEach ~ image:", image)
+          let video_image = await db.video_image.create({
+            post_id: post.id,
+            link: convertToHttps(image),
+            subvalue: req.body.sub_file ? req.body.sub_file[index] : "",
+          });
+        });
+      } else {
+        let video_image = await db.video_image.create({
+          post_id: post.id,
+          link: convertToHttps(images_ai),
           subvalue: req.body.sub_file ? req.body.sub_file : "",
         });
       }
@@ -912,6 +933,7 @@ const generateImage = async (numberImage, des) => {
     n: numberImage,
     size: "512x512",
     prompt: des,
+
   });
   return image.data;
 };
@@ -941,7 +963,7 @@ const AiGeneratePostService = async (req,res)=>{
     }
 
     if(req_image){
-      images = await generateImage(numberImage,req_image)
+      images = await generateImage(+numberImage,req_image)
     }
 
     return res.status(201).json({images,content})
