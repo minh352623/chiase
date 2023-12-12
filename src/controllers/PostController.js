@@ -12,6 +12,7 @@ const {
   requestUsefulService,
   getListPostUsefulService,
   AiGeneratePostService,
+  convertImageTo2DService,
 } = require("../services/PostService");
 
 const uploadImage = async (req, res) => {
@@ -128,6 +129,17 @@ const AiGeneratePost = (req, res) => {
   }
 }
 
+const convertImageTo2D = (req, res) => {
+  try{
+    const image = req.files.image;
+    return convertImageTo2DService(req, res,image);
+
+  }catch(e) {
+    console.log("🚀 ~ file: PostController.js:124 ~ AiGeneratePost ~ e:", e)
+    
+  }
+}
+
 
 module.exports = {
   createPost,
@@ -141,5 +153,6 @@ module.exports = {
   uploadOneImage,
   requestUseful,
   getListPostUseful,
-  AiGeneratePost
+  AiGeneratePost,
+  convertImageTo2D
 };

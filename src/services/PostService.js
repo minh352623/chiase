@@ -4,7 +4,9 @@ const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
 const { response } = require("express");
 const OpenAI = require("openai");
-
+const axios = require("axios");
+const sharp = require("sharp");
+var fs = require("fs");
 require("dotenv").config();
 // let file_upload = [];
 // for (const property in fileUpload) {
@@ -94,7 +96,7 @@ function convertToHttps(url) {
 let createPostService = async (req, res) => {
   try {
     // return res.status(200).send(req.body);
-    const {images_ai} = req.body; 
+    const { images_ai } = req.body;
     if (req.body.share_post_id) {
       const oldPost = await db.post.findByPk(req.body?.share_post_id);
       if (!oldPost) return res.status(404).send("POST NOT FOUND");
@@ -134,7 +136,10 @@ let createPostService = async (req, res) => {
       if (Array.isArray(images_ai) && images_ai.length > 0) {
         images_ai.forEach(async (item, index) => {
           const image = await uploadImageBase64(item);
-          console.log("🚀 ~ file: PostService.js:137 ~ images_ai.forEach ~ image:", image)
+          console.log(
+            "🚀 ~ file: PostService.js:137 ~ images_ai.forEach ~ image:",
+            image
+          );
           let video_image = await db.video_image.create({
             post_id: post.id,
             link: convertToHttps(image),
@@ -168,7 +173,8 @@ let getPostHomeService = async (req, res) => {
         where: {
           user_id: req.query.id_user,
         },
-        limit: 15,
+        limit: 5,
+        offset: offset,
         order: [["createdAt", "DESC"]],
 
         include: [
@@ -933,9 +939,32 @@ const generateImage = async (numberImage, des) => {
     n: numberImage,
     size: "512x512",
     prompt: des,
-
   });
   return image.data;
+};
+
+const editImage = async (numberImage, des, url) => {
+  const response = await axios.get(
+    url,
+    { responseType: "arraybuffer" }
+  );
+
+  // Save the downloaded image to a local file
+  const imagePath = "downloaded_image.png";
+  fs.writeFileSync(imagePath, Buffer.from(response.data));
+  const image_new = await openai.images.edit({
+    n: numberImage,
+    size: "512x512",
+    prompt: des,
+    image: fs.createReadStream(imagePath),
+  });
+
+  console.log(
+    "🚀 ~ file: PostService.js:950 ~ compressAndEditImage ~ image_new:",
+    image_new
+  );
+
+  return image_new.data;
 };
 
 const generateText = async (des) => {
@@ -952,26 +981,46 @@ const generateText = async (des) => {
   return chatCompletion.choices[0].message.content;
 };
 
-const AiGeneratePostService = async (req,res)=>{
-  try{
-    const {req_content, req_image, numberImage} = req.body;
-    let images =[];
+const AiGeneratePostService = async (req, res) => {
+  try {
+    const { req_content, req_image, numberImage } = req.body;
+    let images = [];
     let content = "";
 
-    if(req_content){
-      content = await generateText(req_content)
+    if (req_content) {
+      content = await generateText(req_content);
     }
 
-    if(req_image){
-      images = await generateImage(+numberImage,req_image)
+    if (req_image) {
+      images = await generateImage(+numberImage, req_image);
     }
 
-    return res.status(201).json({images,content})
-  }catch(err){
-    console.log("🚀 ~ file: PostService.js:937 ~ AiGeneratePostService ~ err:", err)
-    
+    return res.status(201).json({ images, content });
+  } catch (err) {
+    console.log(
+      "🚀 ~ file: PostService.js:937 ~ AiGeneratePostService ~ err:",
+      err
+    );
   }
-}
+};
+
+const convertImageTo2DService = async (req, res, imageTemp) => {
+  try {
+    const { des, number } = req.body;
+    const cl_img = await uploadImage(imageTemp);
+    console.log(
+      "🚀 ~ file: PostService.js:1012 ~ convertImageTo2DService ~ cl_img:",
+      cl_img
+    );
+    const image = await editImage(number, des, cl_img.url);
+    return res.status(200).json(image);
+  } catch (err) {
+    console.log(
+      "🚀 ~ file: PostService.js:998 ~ convertImageTo2DService ~ err:",
+      err
+    );
+  }
+};
 
 module.exports = {
   createPostService,
@@ -987,5 +1036,6 @@ module.exports = {
   uploadImageBase64,
   requestUsefulService,
   getListPostUsefulService,
-  AiGeneratePostService
+  AiGeneratePostService,
+  convertImageTo2DService,
 };

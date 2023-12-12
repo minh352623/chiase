@@ -13,6 +13,7 @@ const {
   requestUseful,
   getListPostUseful,
   AiGeneratePost,
+  convertImageTo2D,
 } = require("../controllers/PostController");
 
 const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
@@ -20,6 +21,8 @@ const { isAuthentication, isAdmin } = require("../Middeware/AuthMiddleware");
 let router = express.Router();
 router.post("/", [isAuthentication], createPost);
 router.post("/ai-generate-post", [isAuthentication], AiGeneratePost);
+router.post("/convert-image-to-2d", [isAuthentication], convertImageTo2D);
+
 
 router.post("/upload_images", uploadImage);
 router.post("/upload_one_image", uploadOneImage);
