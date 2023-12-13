@@ -369,8 +369,10 @@ let readQRService = async (req, res,qr_code) => {
           console.error(err);
         }
         // __ Printing the decrypted value __ \\
-        console.log("🚀 ~ file: UserServices.js:360 ~ value:", value.result)
-        const friend = JSON.parse(value.result);
+        console.log("🚀 ~ file: UserServices.js:360 ~ value:", value)
+        console.log("🚀 ~ file: UserServices.js:360 ~ value:", value?.result)
+
+        const friend = JSON.parse(value?.result);
         req.body.sender = req.userId;
         req.body.recie = friend.id;
         req.body.text = "Bạn có lời mời kết bạn từ "+ req.email;
