@@ -164,7 +164,9 @@ let createPostService = async (req, res) => {
 let getPostHomeService = async (req, res) => {
   try {
     let Posts;
-    let offset = (req.query.page - 1) * +req.query.limit;
+    const limit = req.query.limit ?? 15;
+    const page = req.query.page ?? 1;
+    let offset = (page - 1) * +limit;
 
     const keyword = req.query.q || "";
     let post_useful = [];
@@ -245,7 +247,7 @@ let getPostHomeService = async (req, res) => {
         ],
       });
     } else {
-      if (req.query.page == 1) {
+      if (page == 1) {
         post_useful = await db.post.findAll({
           limit: 5,
           order: [["createdAt", "DESC"]],
@@ -354,7 +356,7 @@ let getPostHomeService = async (req, res) => {
         });
       }
       Posts = await db.post.findAll({
-        limit: +req.query.limit,
+        limit: +limit,
         offset: offset,
         order: [["createdAt", "DESC"]],
         where: {
