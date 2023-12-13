@@ -28,7 +28,7 @@ const { Web3 } = require("web3");
 
 const app = express();
 
-const  ABI = [
+const ABI = [
   {
     constant: true,
     inputs: [],
@@ -147,12 +147,12 @@ const privateKeyString =
   "2122304d4ccce4de9882e2d60adb384f71e8accc0f888841e7062e79e1b20812";
 const privateKeyBuffer = Buffer.from(privateKeyString, "hex");
 const account = web3.eth.accounts.privateKeyToAccount(privateKeyBuffer);
-const getOrderById = async (contract,index) => {
+const getOrderById = async (contract, index) => {
   try {
     const data = await contract.methods
       .getOrderById(index)
       .call({ from: "0x4b2804CD7221a5d072049358C2837E7554Ea5F3A" });
-      return data;
+    return data;
   } catch (e) {
     console.log("🚀 ~ file: index.js:129 ~ getData ~ e:", e);
   }
@@ -195,7 +195,6 @@ const addOrder = async (_id, _email, _pr, _date) => {
     console.error("Error:", error.message);
   }
 };
-
 
 const server = http.createServer(app);
 
@@ -269,17 +268,19 @@ io.on("connection", (socket) => {
   //like post
 
   socket.on("likePost", ({ likerId, nameLiker, ownPost, status, text }) => {
-    const user = getUser(ownPost);
-    if (user && user.socketId) {
-      io.to(user.socketId).emit("getLike", {
-        likerId,
-        nameLiker,
-        status,
-        ownPost,
-        text,
-      });
-      io.to(user.socketId).emit("fetchNoti", {});
-    }
+    const users = getAllSocketId(ownPost);
+    users.forEach((user) => {
+      if (user && user.socketId) {
+        io.to(user.socketId).emit("getLike", {
+          likerId,
+          nameLiker,
+          status,
+          ownPost,
+          text,
+        });
+        io.to(user.socketId).emit("fetchNoti", {});
+      }
+    });
   });
   socket.on("commentPost", ({ commenter, nameCommenter, ownPost, text }) => {
     const user = getUser(ownPost);
@@ -504,27 +505,25 @@ app.use("/api/auth/history", historyRoute);
 app.use("/api/auth/baucua", roomBcRoute);
 app.use("/api/auth/dashboard", dashBoardRoute);
 
-app.get("/api/blockchain/getOrderById/:id",async(req,res)=>{
-  try{
+app.get("/api/blockchain/getOrderById/:id", async (req, res) => {
+  try {
     const id = req.params.id;
-    const data =  await getOrderById(contract,id)
+    const data = await getOrderById(contract, id);
     return res.status(200).json(data);
-  }catch(e){
-    console.log("🚀 ~ file: server.js:512 ~ app.get ~ e:", e)
-    
+  } catch (e) {
+    console.log("🚀 ~ file: server.js:512 ~ app.get ~ e:", e);
   }
-})
-app.post("/api/blockchain/addOrder",(req,res)=>{
-  try{
-    const {idOrder,email,price,date} = req.body;
-    console.log("🚀 ~ file: server.js:519 ~ app.post ~ req.body:", req.body)
-    addOrder(idOrder,email,price,date);
-    return res.status(200).json({idOrder,email,price,date})
-  }catch(e){
-    console.log("🚀 ~ file: server.js:512 ~ app.get ~ e:", e)
-    
+});
+app.post("/api/blockchain/addOrder", (req, res) => {
+  try {
+    const { idOrder, email, price, date } = req.body;
+    console.log("🚀 ~ file: server.js:519 ~ app.post ~ req.body:", req.body);
+    addOrder(idOrder, email, price, date);
+    return res.status(200).json({ idOrder, email, price, date });
+  } catch (e) {
+    console.log("🚀 ~ file: server.js:512 ~ app.get ~ e:", e);
   }
-})
+});
 
 server.listen(port, function () {
   console.log(`khoi tao server hi ${process.env.PORT}`);
