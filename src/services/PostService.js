@@ -170,7 +170,7 @@ let getPostHomeService = async (req, res) => {
 
     const keyword = req.query.q || "";
     let post_useful = [];
-    if (req.query?.id_user) {
+    if (req.query?.id_user != null && req.query.id_user != "null") {
       Posts = await db.post.findAll({
         where: {
           user_id: req.query.id_user,
