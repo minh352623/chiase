@@ -283,16 +283,18 @@ io.on("connection", (socket) => {
     });
   });
   socket.on("commentPost", ({ commenter, nameCommenter, ownPost, text }) => {
-    const user = getUser(ownPost);
-    if (user && user.socketId) {
-      io.to(user.socketId).emit("getComment", {
-        commenter,
-        nameCommenter,
-        ownPost,
-        text,
-      });
-      io.to(user.socketId).emit("fetchNoti", {});
-    }
+    const users = getAllSocketId(ownPost);
+    users.forEach((user) => {
+      if (user && user.socketId) {
+        io.to(user.socketId).emit("getComment", {
+          commenter,
+          nameCommenter,
+          ownPost,
+          text,
+        });
+        io.to(user.socketId).emit("fetchNoti", {});
+      }
+    });
   });
   socket.on(
     "createLikeComment",
