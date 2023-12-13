@@ -593,17 +593,17 @@ const getDetailPostService = async (req, res) => {
 const deletePostService = async (req, res, next) => {
   try {
     const post = await db.post.findByPk(req.params.id);
-    if (post.share_post_id) {
-      const parentPost = await db.post.findByPk(post.share_post_id);
-      if (!parentPost) return res.status(404).send("PARENT POST NOT FOUND");
-      parentPost.share_count = +parentPost.share_count - 1;
-      await parentPost.save();
-      const statusDelete = await db.share_post.destroy({
-        where: {
-          post_id: post?.share_post_id,
-        },
-      });
-    }
+    // if (post.share_post_id) {
+    //   const parentPost = await db.post.findByPk(post.share_post_id);
+    //   if (!parentPost) return res.status(404).send("PARENT POST NOT FOUND");
+    //   parentPost.share_count = +parentPost.share_count - 1;
+    //   await parentPost.save();
+    //   const statusDelete = await db.share_post.destroy({
+    //     where: {
+    //       post_id: post?.share_post_id,
+    //     },
+    //   });
+    // }
     const statusDelete = await db.post.destroy({
       where: {
         id: req.params.id,
